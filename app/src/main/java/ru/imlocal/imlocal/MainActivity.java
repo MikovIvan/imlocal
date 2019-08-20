@@ -1,14 +1,11 @@
 package ru.imlocal.imlocal;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -33,7 +30,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
-import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -57,19 +53,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static boolean isLogin = false;
     public static boolean isLoading;
-    //    FragmentLogin frLogin;
+
     public static Api api;
     public static AppBarLayout appBarLayout;
     public static ProgressBar progressBar;
-    private String[] scope = new String[]{VKScope.PHOTOS, VKScope.EMAIL};
     private boolean mToolBarNavigationListenerIsRegistered = false;
-    private NavigationView navigationView;
+    public static NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private MenuItem enter;
-
-    private GoogleSignInClient mGoogleSignInClient;
+    public static GoogleSignInClient mGoogleSignInClient;
+    private FragmentLogin frLogin;
 
     public static void showLoadingIndicator(boolean show) {
         isLoading = show;
@@ -84,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        frLogin = new FragmentLogin();
+        frLogin = new FragmentLogin();
 
         api = RetrofitClient.getInstance().getApi();
 
@@ -253,8 +248,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.nav_login:
+
                 if (!isLogin) {
-                    showLoginDialog();
+                    frLogin.show(getSupportFragmentManager().beginTransaction(), "Sign in");
                 }
                 break;
             case R.id.nav_help:
@@ -284,64 +280,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         return true;
-    }
-
-    private void showLoginDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_login, null);
-        builder.setView(dialogView);
-
-        final ImageButton ibLoginVk = dialogView.findViewById(R.id.btn_login_vk);
-        final ImageButton ibLoginFb = dialogView.findViewById(R.id.btn_login_fb);
-        final ImageButton ibLoginGoogle = dialogView.findViewById(R.id.btn_login_google);
-
-        final AlertDialog b = builder.create();
-        b.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        b.show();
-
-        ibLoginVk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signInVk();
-                navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
-                navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
-                b.dismiss();
-            }
-
-
-        });
-
-        ibLoginFb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        ibLoginGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signInGoogle();
-                navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
-                navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
-                b.dismiss();
-            }
-        });
-
-    }
-
-    private void signInVk() {
-        VKSdk.login(this, scope);
-    }
-
-    private void configGoogleAuth() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getResources().getString(R.string.server_client_id))
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     @Override
@@ -394,8 +332,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void signInGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, 0);
+    private void configGoogleAuth() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getResources().getString(R.string.server_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
+
 }
