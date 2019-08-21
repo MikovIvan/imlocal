@@ -1,13 +1,7 @@
 package ru.imlocal.imlocal;
 
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,9 +36,9 @@ import com.vk.sdk.VKSdk;
 import ru.imlocal.imlocal.api.Api;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
+import ru.imlocal.imlocal.ui.FragmentFeedback;
 import ru.imlocal.imlocal.ui.FragmentLogin;
 import ru.imlocal.imlocal.ui.FragmentPolicy;
-import ru.imlocal.imlocal.ui.FragmentTOU;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
 import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
@@ -139,6 +133,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onDestroy() {
         super.onDestroy();
         accessTokenTracker.stopTracking();
+    }
+
+    public void openFeedback() {
+        Fragment fragment = new FragmentFeedback();
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentFeedback")
+                .commit();
     }
 
     public void closeLogin() {
@@ -267,7 +270,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 return false;
             case R.id.nav_help:
-                Toast.makeText(this, "помощь", Toast.LENGTH_SHORT).show();
+//                getSupportActionBar().setDisplayShowTitleEnabled(true);
+//                getSupportActionBar().setTitle("Обратная связь");
+                openFeedback();
                 break;
             case R.id.nav_for_business:
                 Toast.makeText(this, "бизнесу", Toast.LENGTH_SHORT).show();
