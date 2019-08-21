@@ -4,20 +4,30 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.gson.Gson;
+
+import ru.imlocal.imlocal.entity.User;
+
 public class PreferenceUtils {
     public PreferenceUtils() {
 
     }
 
-    public static void saveUserName(String userName, Context context) {
+    public static void saveUser(User user, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor prefsEditor = prefs.edit();
-        prefsEditor.putString(Constants.USER_NAME, userName);
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        prefsEditor.putString(Constants.USER, json);
         prefsEditor.apply();
     }
 
-    public static String getUserName(Context context) {
+    public static User getUser(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(Constants.USER_NAME, "");
+        Gson gson = new Gson();
+        String json = prefs.getString(Constants.USER, "");
+        return gson.fromJson(json, User.class);
     }
+
+
 }
