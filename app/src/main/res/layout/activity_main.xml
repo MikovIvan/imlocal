@@ -21,7 +21,24 @@
         app:itemIconTint="@color/color_main"
         app:itemTextAppearance="@style/NavDrawerTextStyle"
         app:itemTextColor="@color/color_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:menu="@menu/activity_main_drawer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:clickable="true"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/footer_policy_link"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:textSize="15dp"
+                android:textColor="@color/color_main"
+                android:text="@string/policy" />
+        </LinearLayout>
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
 
