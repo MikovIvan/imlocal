@@ -1,11 +1,18 @@
 package ru.imlocal.imlocal;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,6 +43,8 @@ import ru.imlocal.imlocal.api.Api;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentLogin;
+import ru.imlocal.imlocal.ui.FragmentPolicy;
+import ru.imlocal.imlocal.ui.FragmentTOU;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
 import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
@@ -90,6 +99,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configFbAuth();
         configGoogleAuth();
         configAccessTokenTrakerFB();
+
+        TextView footer_policy_link = (TextView)findViewById(R.id.footer_policy_link);
+        footer_policy_link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.closeDrawer(GravityCompat.START);
+                openPolicy();
+            }
+        });
+    }
+
+    public void openPolicy()
+    {
+        Fragment fragment = new FragmentPolicy();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).setCustomAnimations(R.anim.enter_act, R.anim.exit_act).addToBackStack("FragmentPolicy").commit();
     }
 
     @Override
@@ -239,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!isLogin) {
                     openLogin();
                 }
-                break;
+                return false;
             case R.id.nav_help:
                 Toast.makeText(this, "помощь", Toast.LENGTH_SHORT).show();
                 break;

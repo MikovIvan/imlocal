@@ -1,16 +1,25 @@
 package ru.imlocal.imlocal.ui;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookCallback;
@@ -80,6 +89,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         ibLoginVk.setOnClickListener(this);
         ibLoginFb.setOnClickListener(this);
         ibLoginGoogle.setOnClickListener(this);
+        setUpCondLinks(view);
 
         return view;
     }
@@ -225,5 +235,53 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
     private void addFavoritesAndLogoutButtonsToNavigationDrawer() {
         navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
         navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+    }
+
+    public void setUpCondLinks(View view)
+    {
+        String login_disclaimer = "Продолжая, Вы соглашаетесь с нашими Условиями использования и подтверждаете, что прочли нашу Политику конфиденциальности.";
+        SpannableString ss = new SpannableString(login_disclaimer);
+
+        ClickableSpan cTOU = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                getFragmentManager().beginTransaction().remove(FragmentLogin.this).commit();
+                openTOU();
+            }
+        };
+
+        ClickableSpan cPolicy = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                getFragmentManager().beginTransaction().remove(FragmentLogin.this).commit();
+                openPolicy();
+            }
+        };
+
+        ss.setSpan(cTOU, login_disclaimer.indexOf("Условиями использования"), login_disclaimer.indexOf("Условиями использования") + "Условиями использования".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(cPolicy, login_disclaimer.indexOf("Политику конфиденциальности"), login_disclaimer.indexOf("Политику конфиденциальности") + "Политику конфиденциальности".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        TextView tvCond = (TextView) view.findViewById(R.id.tv_enter_social_networks_conditions);
+        tvCond.setText(ss);
+        tvCond.setLinksClickable(true);
+        tvCond.setMovementMethod(LinkMovementMethod.getInstance());
+        tvCond.setHighlightColor(Color.TRANSPARENT);
+        tvCond.setLinkTextColor(tvCond.getCurrentTextColor());
+    }
+
+    public void openPolicy()
+    {
+        Fragment fragment = new FragmentPolicy();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).setCustomAnimations(R.anim.enter_act, R.anim.exit_act).addToBackStack("FragmentPolicy").commit();
+    }
+
+    public void openTOU()
+    {
+        Fragment fragment = new FragmentTOU();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).setCustomAnimations(R.anim.enter_act, R.anim.exit_act).addToBackStack("FragmentTOU").commit();
     }
 }
