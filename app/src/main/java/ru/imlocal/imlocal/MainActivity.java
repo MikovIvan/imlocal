@@ -2,7 +2,6 @@ package ru.imlocal.imlocal;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,28 +18,22 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKApiConst;
-import com.vk.sdk.api.VKError;
-import com.vk.sdk.api.VKParameters;
-import com.vk.sdk.api.VKRequest;
-import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiUserFull;
-import com.vk.sdk.api.model.VKList;
 
 import ru.imlocal.imlocal.api.Api;
+import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentLogin;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
@@ -53,18 +46,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static boolean isLogin = false;
     public static boolean isLoading;
+    public static User user = new User();
+    public static AccessToken accessToken;
 
     public static Api api;
     public static AppBarLayout appBarLayout;
     public static ProgressBar progressBar;
-    private boolean mToolBarNavigationListenerIsRegistered = false;
     public static NavigationView navigationView;
+    public static MenuItem enter;
+    public static GoogleSignInClient mGoogleSignInClient;
+    public static CallbackManager callbackManager;
+    private GoogleSignInAccount account;
+
+    private boolean mToolBarNavigationListenerIsRegistered = false;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
     private Toolbar toolbar;
-    private MenuItem enter;
-    public static GoogleSignInClient mGoogleSignInClient;
-    private FragmentLogin frLogin;
+    private AccessTokenTracker accessTokenTracker;
 
     public static void showLoadingIndicator(boolean show) {
         isLoading = show;
@@ -79,33 +77,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        frLogin = new FragmentLogin();
 
         api = RetrofitClient.getInstance().getApi();
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        appBarLayout = findViewById(R.id.appbar);
+        initView();
+        initToolbar();
+        initNavigationDrawer();
 
-        drawer = findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = findViewById(R.id.nav_view);
-        Menu menu = navigationView.getMenu();
-        enter = menu.findItem(R.id.nav_login);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        progressBar = findViewById(R.id.progressbar);
-
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        appBarLayout.setVisibility(View.VISIBLE);
+        enableUpButtonViews(false);
         showLoadingIndicator(false);
 
+        configFbAuth();
         configGoogleAuth();
-        enableUpButtonViews(false);
+        configAccessTokenTrakerFB();
     }
 
     @Override
@@ -125,12 +109,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    public void openLogin() {
-        Fragment fragment = new FragmentLogin();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
+    }
+
+    public void closeLogin() {
         getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
-                .replace(R.id.frame, fragment)
-                .addToBackStack("FragmentL")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                .remove(getSupportFragmentManager().findFragmentById(R.id.frame_auth))
                 .commit();
     }
 
@@ -176,30 +164,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    @Override
-    protected void onStart() {
-        if (VKSdk.isLoggedIn()) {
-            enter.setTitle(PreferenceUtils.getUserName(this));
-            navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
-            navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
-        }
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account != null) {
-            enter.setTitle(account.getDisplayName());
-            navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
-            navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
-        }
-        if (!VKSdk.isLoggedIn() && account == null) {
-            navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(false);
-            navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
-        }
-        openViewPager();
-        super.onStart();
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
+    public void openLogin() {
+        Fragment fragment = new FragmentLogin();
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.frame_auth, fragment)
+                .addToBackStack("FragmentL")
+                .commit();
     }
 
     public void enableUpButtonViews(boolean enable) {
@@ -242,15 +213,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onStart() {
+        accessTokenTracker.startTracking();
+        accessToken = AccessToken.getCurrentAccessToken();
+        account = GoogleSignIn.getLastSignedInAccount(this);
+        if (VKSdk.isLoggedIn() || account != null || (accessToken != null && !accessToken.isExpired())) {
+            user = PreferenceUtils.getUser(MainActivity.this);
+            enter.setTitle(user.getFirstName() + " " + user.getLastName());
+            setFavoritesAndLogoutButtonsInNavigationDrawer(true);
+        }
+        if (!VKSdk.isLoggedIn() && account == null && accessToken == null) {
+            setFavoritesAndLogoutButtonsInNavigationDrawer(false);
+        }
+        openViewPager();
+        super.onStart();
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         drawer.closeDrawer(GravityCompat.START);
         int id = item.getItemId();
 
         switch (id) {
             case R.id.nav_login:
-
                 if (!isLogin) {
-                    frLogin.show(getSupportFragmentManager().beginTransaction(), "Sign in");
+                    openLogin();
                 }
                 break;
             case R.id.nav_help:
@@ -265,71 +252,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_logout:
                 if (VKSdk.isLoggedIn()) {
                     VKSdk.logout();
-                    Toast.makeText(this, "выход", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "VK logout", Toast.LENGTH_SHORT).show();
                 }
-                mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
-                    }
-                });
+                if (account != null) {
+                    mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(MainActivity.this, "Google logout", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                if (accessToken != null && !accessToken.isExpired()) {
+                    LoginManager.getInstance().logOut();
+                    Toast.makeText(this, "FB logout", Toast.LENGTH_SHORT).show();
+                }
+                user = new User();
+                PreferenceUtils.saveUser(user, this);
                 enter.setTitle("Вход");
-                navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(false);
-                navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
+                setFavoritesAndLogoutButtonsInNavigationDrawer(false);
                 isLogin = false;
                 break;
         }
         return true;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-            @Override
-            public void onResult(VKAccessToken res) {
-                Toast.makeText(getApplicationContext(), "успешно vk", Toast.LENGTH_LONG).show();
-                Log.d("TAG", "VKTOKEN " + res.accessToken);
-                final VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200, contacts, bdate, mobile_phone"));
-                request.executeWithListener(new VKRequest.VKRequestListener() {
-                    @Override
-                    public void onComplete(VKResponse response) {
-                        VKApiUserFull user = ((VKList<VKApiUserFull>) response.parsedModel).get(0);
-                        PreferenceUtils.saveUserName(user.first_name + " " + user.last_name, getApplicationContext());
-                        enter.setTitle(user.first_name + " " + user.last_name);
-                        Log.d("TAG", user.first_name + " " + user.last_name + " " + user.bdate + " " + user.id
-                                + " " + user.mobile_phone);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(VKError error) {
-                Toast.makeText(getApplicationContext(), "ошибка входа vk", Toast.LENGTH_LONG).show();
-            }
-        }))
-
-            if (requestCode == 0) {
-                // The Task returned from this call is always completed, no need to attach
-                // a listener.
-                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                handleSignInResult(task);
-            }
-    }
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            Toast.makeText(this, "успешно google", Toast.LENGTH_LONG).show();
-            enter.setTitle(account.getDisplayName());
-            isLogin = true;
-            Log.d("TAG", account.getIdToken() + " " + account.getEmail() + " " + account.getId() + " "
-                    + account.getDisplayName() + " " + account.getFamilyName() + " " + account.getGivenName());
-            this.openViewPager();
-        } catch (ApiException e) {
-            Toast.makeText(this, "ошибка входа google", Toast.LENGTH_LONG).show();
-            Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
-        }
+    private void setFavoritesAndLogoutButtonsInNavigationDrawer(boolean b) {
+        navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(b);
+        navigationView.getMenu().findItem(R.id.nav_logout).setVisible(b);
     }
 
     private void configGoogleAuth() {
@@ -338,6 +287,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        closeLogin();
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void configFbAuth() {
+        callbackManager = CallbackManager.Factory.create();
+    }
+
+    private void initView() {
+        progressBar = findViewById(R.id.progressbar);
+    }
+
+    private void initNavigationDrawer() {
+        drawer = findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+        enter = menu.findItem(R.id.nav_login);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void configAccessTokenTrakerFB() {
+        accessTokenTracker = new AccessTokenTracker() {
+            // This method is invoked everytime access token changes
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                if (currentAccessToken != null) {
+                    user = PreferenceUtils.getUser(MainActivity.this);
+                    enter.setTitle(user.getFirstName() + " " + user.getLastName());
+                } else {
+                    enter.setTitle("Вход");
+                }
+            }
+        };
+        accessToken = AccessToken.getCurrentAccessToken();
+    }
+
+    private void initToolbar() {
+        toolbar = findViewById(R.id.toolbar);
+        appBarLayout = findViewById(R.id.appbar);
+        setSupportActionBar(toolbar);
+        appBarLayout.setVisibility(View.VISIBLE);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
 }
