@@ -65,15 +65,20 @@ public class Shop implements Serializable {
     @SerializedName("shopPhotos")
     @Expose
     private List<ShopPhoto> shopPhotoArray;
-
     @SerializedName("events")
     @Expose
     private List<Action> shopActionArray;
+    @SerializedName("shopAddress")
+    @Expose
+    private ShopAddress shopAddress;
+    @SerializedName("shopAvgRating")
+    @Expose
+    private double shopAvgRating;
 
     public Shop() {
     }
 
-    public Shop(int shopId, String creatorId, String shopActive, String shopShortName, String shopFullName, int shopTypeId, String shopPhone, String shopWeb, String shopAddressId, String shopCostMin, String shopCostMax, String shopMiddleCost, String shopWorkTime, String shopAgregator, String shopStatusId, String shopShortDescription, String shopFullDescription, int shopRating, List<ShopPhoto> shopPhotoArray, List<Action> shopActionArray) {
+    public Shop(int shopId, String creatorId, String shopActive, String shopShortName, String shopFullName, int shopTypeId, String shopPhone, String shopWeb, String shopAddressId, String shopCostMin, String shopCostMax, String shopMiddleCost, String shopWorkTime, String shopAgregator, String shopStatusId, String shopShortDescription, String shopFullDescription, int shopRating, List<ShopPhoto> shopPhotoArray, List<Action> shopActionArray, ShopAddress shopAddress, double shopAvgRating) {
         this.shopId = shopId;
         this.creatorId = creatorId;
         this.shopActive = shopActive;
@@ -94,6 +99,24 @@ public class Shop implements Serializable {
         this.shopRating = shopRating;
         this.shopPhotoArray = shopPhotoArray;
         this.shopActionArray = shopActionArray;
+        this.shopAddress = shopAddress;
+        this.shopAvgRating = shopAvgRating;
+    }
+
+    public ShopAddress getShopAddress() {
+        return shopAddress;
+    }
+
+    public void setShopAddress(ShopAddress shopAddress) {
+        this.shopAddress = shopAddress;
+    }
+
+    public double getShopAvgRating() {
+        return shopAvgRating;
+    }
+
+    public void setShopAvgRating(double shopAvgRating) {
+        this.shopAvgRating = shopAvgRating;
     }
 
     public List<Action> getShopActionArray() {

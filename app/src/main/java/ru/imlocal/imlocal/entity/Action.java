@@ -40,12 +40,14 @@ public class Action implements Serializable {
     @SerializedName("creatorId")
     @Expose
     private int creatorId;
-
     @SerializedName("eventPhotos")
     @Expose
     private List<ActionPhoto> actionPhotos;
+    @SerializedName("shop")
+    @Expose
+    private Shop shop;
 
-    public Action(String id, String active, String isActionTop, int actionOwnerId, int actionTypeId, String title, String shortDesc, String fullDesc, String begin, String end, int creatorId, List<ActionPhoto> actionPhotos) {
+    public Action(String id, String active, String isActionTop, int actionOwnerId, int actionTypeId, String title, String shortDesc, String fullDesc, String begin, String end, int creatorId, List<ActionPhoto> actionPhotos, Shop shop) {
         this.id = id;
         this.active = active;
         this.isActionTop = isActionTop;
@@ -58,9 +60,18 @@ public class Action implements Serializable {
         this.end = end;
         this.creatorId = creatorId;
         this.actionPhotos = actionPhotos;
+        this.shop = shop;
     }
 
     public Action() {
+    }
+
+    public Shop getShop() {
+        return shop;
+    }
+
+    public void setShop(Shop shop) {
+        this.shop = shop;
     }
 
     public String getId() {
