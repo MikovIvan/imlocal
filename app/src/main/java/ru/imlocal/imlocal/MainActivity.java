@@ -47,7 +47,6 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static boolean isLogin = false;
     public static boolean isLoading;
     public static User user = new User();
     public static AccessToken accessToken;
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configGoogleAuth();
         configAccessTokenTrakerFB();
 
-        TextView footer_policy_link = (TextView)findViewById(R.id.footer_policy_link);
+        TextView footer_policy_link = findViewById(R.id.footer_policy_link);
         footer_policy_link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -265,13 +264,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.nav_login:
-                if (!isLogin) {
+                if (!user.isLogin()) {
                     openLogin();
                 }
                 return false;
             case R.id.nav_help:
-//                getSupportActionBar().setDisplayShowTitleEnabled(true);
-//                getSupportActionBar().setTitle("Обратная связь");
                 openFeedback();
                 break;
             case R.id.nav_for_business:
@@ -298,10 +295,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(this, "FB logout", Toast.LENGTH_SHORT).show();
                 }
                 user = new User();
+                user.setLogin(false);
                 PreferenceUtils.saveUser(user, this);
                 enter.setTitle("Вход");
                 setFavoritesAndLogoutButtonsInNavigationDrawer(false);
-                isLogin = false;
                 break;
         }
         return true;
