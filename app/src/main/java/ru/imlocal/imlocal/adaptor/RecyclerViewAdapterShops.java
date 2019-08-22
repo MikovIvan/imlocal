@@ -18,7 +18,6 @@ import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.utils.Utils;
 
 public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewAdapterShops.ViewHolder> implements Filterable {
     private List<Shop> dataShops;
@@ -49,7 +48,7 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
                 .into(holder.ivShopIcon);
         holder.tvShopTitle.setText(shop.getShopShortName());
         holder.tvShopDescription.setText(shop.getShopShortDescription());
-        holder.tvShopRating.setText(Utils.REAL_FORMATTER.format(shop.getShopRating()));
+        holder.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
     }
 
     @Override
