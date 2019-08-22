@@ -18,7 +18,6 @@ import com.squareup.picasso.Picasso;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
-import ru.imlocal.imlocal.entity.Shop;
 
 public class FragmentVitrinaAction extends Fragment {
 
@@ -52,15 +51,14 @@ public class FragmentVitrinaAction extends Fragment {
 
 
         Bundle bundle = getArguments();
-        Shop shop = (Shop) bundle.getSerializable("shop");
         Action action = (Action) bundle.getSerializable("action");
 
-        if (shop != null) {
+        if (action.getShop() != null) {
             Picasso.with(getContext())
-                    .load("https://imlocal.ru/img/shopPhoto/" + shop.getShopPhotoArray().get(0).getShopPhoto())
+                    .load("https://imlocal.ru/img/shopPhoto/" + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                     .into(ivShopPhoto);
-            tvShopName.setText(shop.getShopShortName());
-//        tvShopAdress.setText(shop.getShopShortName());
+            tvShopName.setText(action.getShop().getShopShortName());
+            tvShopAdress.setText(action.getShop().getShopAddress().toString());
         } else {
             tvShopName.setText("Неверный id");
             ivShopPhoto.setImageResource(R.drawable.testimg);

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,11 +41,11 @@ import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 
 public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    public static List<Shop> shopList = new ArrayList<>();
-    RecyclerView recyclerView;
-    RecyclerView rvCategory;
-    RecyclerViewAdapterShops adapter;
+    private List<Shop> shopList = new ArrayList<>();
     private List<Shop> copyList = new ArrayList<>();
+
+    private RecyclerView rvPlaces, rvCategory;
+    private RecyclerViewAdapterShops adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,16 +62,15 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
 
         getAllShops();
-        recyclerView = view.findViewById(R.id.rv_fragment_list_places);
+        rvPlaces = view.findViewById(R.id.rv_fragment_list_places);
         rvCategory = view.findViewById(R.id.rv_category);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_sort);
         spinner.setItems("по рейтингу", "по удаленности");
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-//                Snackbar.make(view, "Clicked " + item, Snackbar.LENGTH_LONG).show();
                 if (position == 0) {
                     sortByRating();
                 }
@@ -96,6 +96,7 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setQueryHint("Введите название места");
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -112,7 +113,6 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
     @Override
     public void onItemClickCategory(int position) {
         List<Shop> filterList = new ArrayList<>();
-
         switch (position) {
             case 0:
                 filter(filterList, 1);
@@ -158,7 +158,7 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
     }
 
     @SuppressLint("CheckResult")
-    public void getAllShops() {
+    private void getAllShops() {
         api.getAllShops()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -195,12 +195,12 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
 
     private void displayData(List<Shop> shops) {
         adapter = new RecyclerViewAdapterShops(shops, getContext());
-        recyclerView.setAdapter(adapter);
+        rvPlaces.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
     }
 
     private void sortByRating() {
-        Collections.sort(shopList, (s1, s2) -> Integer.compare(s1.getShopRating(), s2.getShopRating()));
+        Collections.sort(shopList, (s1, s2) -> Double.compare(s1.getShopAvgRating(), s2.getShopAvgRating()));
         Collections.reverse(shopList);
     }
 

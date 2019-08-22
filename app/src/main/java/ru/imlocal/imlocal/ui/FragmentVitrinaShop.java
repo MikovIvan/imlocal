@@ -28,7 +28,6 @@ import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
@@ -107,13 +106,13 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         setShopType(shop);
         tvVitrinaNameOfPlace.setText(shop.getShopShortName());
-        tvAdress.setText(shop.getShopAddressId());
-
+        tvAdress.setText(shop.getShopAddress().toString());
         tvShopTimetable.setText(shop.getShopWorkTime());
         tvShopPhone.setText(shop.getShopPhone());
         tvPrice.setText(shop.getShopCostMin() + "-" + shop.getShopCostMax());
         tvAboutShop.setText(shop.getShopFullDescription());
-        btnRating.setText(Utils.REAL_FORMATTER.format(shop.getShopRating()));
+        btnRating.setText(String.valueOf(shop.getShopAvgRating()));
+
         return view;
     }
 
