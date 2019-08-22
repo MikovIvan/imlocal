@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,25 +13,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
-import ru.imlocal.imlocal.entity.Shop;
-
-import static ru.imlocal.imlocal.utils.Utils.makeMap;
 
 
-public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerViewAdapterActions.ViewHolder> {
+public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerViewAdapterActions.ViewHolder> implements Filterable {
     private List<Action> dataActions;
-    private List<Shop> dataShops;
+    private List<Action> dataActionsFiltered;
     private Context context;
     private OnItemClickListener mListener;
 
 
-    public RecyclerViewAdapterActions(List<Action> dataActions, List<Shop> dataShops, Context context) {
+    public RecyclerViewAdapterActions(List<Action> dataActions, Context context) {
         this.dataActions = dataActions;
-        this.dataShops = dataShops;
+        this.dataActionsFiltered = dataActions;
         this.context = context;
     }
 
@@ -45,15 +45,13 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterActions.ViewHolder holder, int position) {
-        Action action = dataActions.get(position);
-        Shop shop = makeMap(dataShops).get(action.getActionOwnerId());
-
-        if (shop != null) {
-            if (shop.getShopShortName() != null) {
-                holder.tvShopTitle.setText(shop.getShopShortName());
-                Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + shop.getShopPhotoArray().get(0).getShopPhoto())
+        Action action = dataActionsFiltered.get(position);
+        if (action.getShop() != null) {
+            if (action.getShop().getShopShortName() != null) {
+                holder.tvShopTitle.setText(action.getShop().getShopShortName());
+                Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                         .into(holder.ivIcon);
-                holder.tvShopRating.setText(String.valueOf(shop.getShopRating()));
+                holder.tvShopRating.setText(String.valueOf(action.getShop().getShopAvgRating()));
             }
         } else {
             holder.tvShopTitle.setText("Неверный id");
@@ -71,17 +69,46 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
         } else {
             holder.ivActionIcon.setVisibility(View.GONE);
         }
-
-
     }
 
     @Override
     public int getItemCount() {
-        return dataActions.size();
+        return dataActionsFiltered.size();
     }
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    dataActionsFiltered = dataActions;
+                } else {
+                    List<Action> filteredList = new ArrayList<>();
+                    for (Action row : dataActions) {
+                        if (row.getShop().getShopShortName().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    dataActionsFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = dataActionsFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                dataActionsFiltered = (ArrayList<Action>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
