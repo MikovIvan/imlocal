@@ -1,7 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -57,7 +56,6 @@ import static com.vk.sdk.VKUIHelper.getApplicationContext;
 import static ru.imlocal.imlocal.MainActivity.accessToken;
 import static ru.imlocal.imlocal.MainActivity.callbackManager;
 import static ru.imlocal.imlocal.MainActivity.enter;
-import static ru.imlocal.imlocal.MainActivity.isLogin;
 import static ru.imlocal.imlocal.MainActivity.mGoogleSignInClient;
 import static ru.imlocal.imlocal.MainActivity.navigationView;
 import static ru.imlocal.imlocal.MainActivity.user;
@@ -76,12 +74,8 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_login, null);
-
-
-//        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
         setRetainInstance(true);
+
         final ImageButton ibLoginVk = view.findViewById(R.id.btn_login_vk);
         final ImageButton ibLoginFb = view.findViewById(R.id.btn_login_fb);
         final ImageButton ibLoginGoogle = view.findViewById(R.id.btn_login_google);
@@ -124,7 +118,6 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        isLogin = true;
                         accessToken = loginResult.getAccessToken();
                         loadUserProfile(accessToken);
                     }
@@ -160,7 +153,6 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                         addFavoritesAndLogoutButtonsToNavigationDrawer();
                         Log.d("TAG", user.toString());
                         enter.setTitle(userVK.first_name + " " + userVK.last_name);
-                        isLogin = true;
                         Log.d("TAG", userVK.first_name + " " + userVK.last_name + " " + userVK.bdate + " " + userVK.id
                                 + " " + userVK.mobile_phone + " " + userVK.id);
                     }
@@ -185,6 +177,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         user.setId(id);
         user.setFirstName(firstName);
         user.setLastName(lastName);
+        user.setLogin(true);
         PreferenceUtils.saveUser(user, getActivity());
     }
 
@@ -196,7 +189,6 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
             saveUser(account.getId(), account.getEmail(), account.getGivenName(), account.getFamilyName());
             addFavoritesAndLogoutButtonsToNavigationDrawer();
             Log.d("TAG", user.toString());
-            isLogin = true;
             Log.d("TAG", account.getIdToken() + " " + account.getEmail() + " " + account.getId() + " "
                     + account.getDisplayName() + " " + account.getFamilyName() + " " + account.getGivenName());
 
@@ -261,7 +253,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         ss.setSpan(cTOU, login_disclaimer.indexOf("Условиями использования"), login_disclaimer.indexOf("Условиями использования") + "Условиями использования".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         ss.setSpan(cPolicy, login_disclaimer.indexOf("Политику конфиденциальности"), login_disclaimer.indexOf("Политику конфиденциальности") + "Политику конфиденциальности".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        TextView tvCond = (TextView) view.findViewById(R.id.tv_enter_social_networks_conditions);
+        TextView tvCond = view.findViewById(R.id.tv_enter_social_networks_conditions);
         tvCond.setText(ss);
         tvCond.setLinksClickable(true);
         tvCond.setMovementMethod(LinkMovementMethod.getInstance());

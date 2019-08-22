@@ -1,5 +1,7 @@
 package ru.imlocal.imlocal.utils;
 
+import android.text.TextUtils;
+
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -16,5 +18,9 @@ public class Utils {
             map.put(shop.getShopId(), shop);
         }
         return map;
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 }

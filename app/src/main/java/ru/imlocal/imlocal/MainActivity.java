@@ -1,13 +1,7 @@
 package ru.imlocal.imlocal;
 
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,9 +36,9 @@ import com.vk.sdk.VKSdk;
 import ru.imlocal.imlocal.api.Api;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
+import ru.imlocal.imlocal.ui.FragmentFeedback;
 import ru.imlocal.imlocal.ui.FragmentLogin;
 import ru.imlocal.imlocal.ui.FragmentPolicy;
-import ru.imlocal.imlocal.ui.FragmentTOU;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
 import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
@@ -53,7 +47,6 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static boolean isLogin = false;
     public static boolean isLoading;
     public static User user = new User();
     public static AccessToken accessToken;
@@ -100,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configGoogleAuth();
         configAccessTokenTrakerFB();
 
-        TextView footer_policy_link = (TextView)findViewById(R.id.footer_policy_link);
+        TextView footer_policy_link = findViewById(R.id.footer_policy_link);
         footer_policy_link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +132,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onDestroy() {
         super.onDestroy();
         accessTokenTracker.stopTracking();
+    }
+
+    public void openFeedback() {
+        Fragment fragment = new FragmentFeedback();
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentFeedback")
+                .commit();
     }
 
     public void closeLogin() {
@@ -262,12 +264,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.nav_login:
-                if (!isLogin) {
+                if (!user.isLogin()) {
                     openLogin();
                 }
                 return false;
             case R.id.nav_help:
-                Toast.makeText(this, "помощь", Toast.LENGTH_SHORT).show();
+                openFeedback();
                 break;
             case R.id.nav_for_business:
                 Toast.makeText(this, "бизнесу", Toast.LENGTH_SHORT).show();
@@ -293,10 +295,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(this, "FB logout", Toast.LENGTH_SHORT).show();
                 }
                 user = new User();
+                user.setLogin(false);
                 PreferenceUtils.saveUser(user, this);
                 enter.setTitle("Вход");
                 setFavoritesAndLogoutButtonsInNavigationDrawer(false);
-                isLogin = false;
                 break;
         }
         return true;

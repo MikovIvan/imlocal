@@ -45,7 +45,7 @@
             android:id="@+id/btn_rating"
             android:layout_width="30dp"
             android:layout_height="24dp"
-            android:background="@drawable/btn_round"
+            android:background="@drawable/btn_round_main_color"
             android:text="4.5"
             android:textAlignment="center"
             android:textAllCaps="false"
