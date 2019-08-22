@@ -1,5 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,34 +29,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
-import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.entity.ShopAndEvent;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
-import static ru.imlocal.imlocal.utils.Utils.makeMap;
 
 public class FragmentListActions extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    static ShopAndEvent allShopsAndEvents = new ShopAndEvent();
-    private static List<Action> actionList = new ArrayList<>();
-    private static List<Shop> shopsList = new ArrayList<>();
-    private static List<Action> copyList = new ArrayList<>();
-    RecyclerView recyclerView;
-    RecyclerView rvCategory;
+    private List<Action> actionList = new ArrayList<>();
+    private List<Action> copyList = new ArrayList<>();
 
-    RecyclerViewAdapterActions adapter;
+    private RecyclerView rvActions, rvCategory;
+    private RecyclerViewAdapterActions adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,12 +64,11 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         appBarLayout.setVisibility(View.VISIBLE);
         showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        getAllShopsAndEvents();
-        recyclerView = view.findViewById(R.id.rv_fragment_list_actions);
+        getAllActions();
+
+        rvActions = view.findViewById(R.id.rv_fragment_list_actions);
         rvCategory = view.findViewById(R.id.rv_category);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        rvActions.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
         rvCategory.setAdapter(adaptorCategory);
@@ -87,9 +80,9 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 Snackbar.make(view, "Clicked " + item, Snackbar.LENGTH_LONG).show();
-//                if (position == 0) {
-//                    sortByRating();
-//                }
+                if (position == 0) {
+                    sortByRating();
+                }
 //                else {
 //                    sortByDistance();
 //                }
@@ -106,17 +99,16 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setQueryHint("Введите название акции");
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onItemClick(int position) {
-        Action action = allShopsAndEvents.getActions().get(position);
-        Shop shop = makeMap(allShopsAndEvents.getShops()).get(action.getActionOwnerId());
+        Action action = actionList.get(position);
         Bundle bundle = new Bundle();
         bundle.putSerializable("action", action);
-        bundle.putSerializable("shop", shop);
         ((MainActivity) getActivity()).openVitrinaAction(bundle);
     }
 
@@ -127,27 +119,27 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         switch (position) {
             case 0:
                 Toast.makeText(getContext(), "Еда", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 1);
+                filter(filterList, 1);
                 break;
             case 1:
                 Toast.makeText(getContext(), "Дети", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 2);
+                filter(filterList, 2);
                 break;
             case 2:
                 Toast.makeText(getContext(), "Фитнес", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 3);
+                filter(filterList, 3);
                 break;
             case 3:
                 Toast.makeText(getContext(), "Красота", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 4);
+                filter(filterList, 4);
                 break;
             case 4:
                 Toast.makeText(getContext(), "Покупки", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 5);
+                filter(filterList, 5);
                 break;
             case 5:
                 Toast.makeText(getContext(), "Все", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 0);
+                filter(filterList, 0);
                 break;
         }
     }
@@ -164,63 +156,55 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        adapter.getFilter().filter(query);
         return false;
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
+    public boolean onQueryTextChange(String query) {
+        adapter.getFilter().filter(query);
         return false;
     }
 
-    private void getAllShopsAndEvents() {
-        Observable<List<Shop>> shopsObservable =
-                api.getAllShops()
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread());
+    @SuppressLint("CheckResult")
+    private void getAllActions() {
+        api.getAllActions()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Action>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d("TAG", "onsub");
+                    }
 
-        Observable<List<Action>> eventsObservable =
-                api.getAllActions()
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread());
+                    @Override
+                    public void onNext(List<Action> actions) {
+                        Log.d("TAG", "onnext");
+                        actionList.clear();
+                        copyList.clear();
+                        actionList.addAll(actions);
+                        copyList.addAll(actions);
+                        displayData(actionList);
+                        showLoadingIndicator(false);
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("TAG", "onsub");
 
-        Observable<ShopAndEvent> combined = Observable.zip(shopsObservable, eventsObservable, new BiFunction<List<Shop>, List<Action>, ShopAndEvent>() {
-            @Override
-            public ShopAndEvent apply(List<Shop> shops, List<Action> events) throws Exception {
-                return new ShopAndEvent(shops, events);
-            }
-        });
+                    }
 
-        combined.subscribe(new Observer<ShopAndEvent>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+                    @Override
+                    public void onComplete() {
+                        Log.d("TAG", "oncomplete");
 
-            }
-
-            @Override
-            public void onNext(ShopAndEvent shopAndEvent) {
-                allShopsAndEvents = shopAndEvent;
-                copyList.addAll(shopAndEvent.getActions());
-                shopsList.addAll(shopAndEvent.getShops());
-                displayData(shopAndEvent);
-                showLoadingIndicator(false);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d("TAG", e.getMessage());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
+                    }
+                });
     }
 
-    private void displayData(ShopAndEvent shopAndEvent) {
-        adapter = new RecyclerViewAdapterActions(shopAndEvent.getActions(), shopAndEvent.getShops(), getContext());
-        recyclerView.setAdapter(adapter);
+    private void displayData(List<Action> actionList) {
+        adapter = new RecyclerViewAdapterActions(actionList, getContext());
+        rvActions.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
     }
 
@@ -235,14 +219,13 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
             }
             actionList.clear();
             actionList.addAll(filterList);
-            allShopsAndEvents.setActions(filterList);
         }
         adapter.notifyDataSetChanged();
     }
 
     private void sortByRating() {
-        Collections.sort(shopsList, (s1, s2) -> Integer.compare(s1.getShopRating(), s2.getShopRating()));
-        Collections.reverse(shopsList);
+        Collections.sort(actionList, (s1, s2) -> Double.compare(s1.getShop().getShopAvgRating(), s2.getShop().getShopAvgRating()));
+        Collections.reverse(actionList);
     }
 
 }
