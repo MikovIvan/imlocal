@@ -37,7 +37,11 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Введите тему сообщения"
-            android:padding="8dp"
+            android:imeOptions="actionDone"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
+            android:singleLine="true"
             android:textColorHint="@color/color_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,6 +68,7 @@
         app:hintTextAppearance="@style/MyHintText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:errorEnabled="true"
         app:layout_constraintTop_toBottomOf="@id/tv_feedback_email">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -71,8 +76,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:imeOptions="actionDone"
+            android:paddingStart="8dp"
             android:hint="Введите Ваш электронный адрес"
-            android:padding="8dp"
+            android:paddingEnd="8dp"
+            android:singleLine="true"
             android:textColorHint="@color/color_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,8 +113,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="Введите тему сообщения"
-            android:padding="8dp"
+            android:hint="Введите Ваше сообщение"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColorHint="@color/color_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 
