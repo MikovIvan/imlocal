@@ -1,7 +1,9 @@
 package ru.imlocal.imlocal.ui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +30,7 @@ import com.willy.ratingbar.ScaleRatingBar;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
+import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
 
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
@@ -50,12 +54,15 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private Button btnRating;
     private RecyclerView rvListPlaces;
     private ScaleRatingBar scaleRatingBar;
+    private Shop shop;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
+
     }
 
     @Nullable
@@ -65,7 +72,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         View view = inflater.inflate(R.layout.fragment_vitrina_shop, container, false);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
-
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         ivShopImage = view.findViewById(R.id.iv_vitrina);
         tvShopType = view.findViewById(R.id.tv_event_type);
         tvVitrinaNameOfPlace = view.findViewById(R.id.tv_vitrina_name_of_place);
@@ -91,9 +98,12 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         btnRating.setOnClickListener(this);
         tvEstimate.setOnClickListener(this);
+        tvWebsite.setOnClickListener(this);
+        tvAdress.setOnClickListener(this);
+        tvShopPhone.setOnClickListener(this);
 
         Bundle bundle = getArguments();
-        Shop shop = (Shop) bundle.getSerializable("shop");
+        shop = (Shop) bundle.getSerializable("shop");
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
@@ -116,10 +126,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         return view;
     }
 
-    @Override
-    public void onItemClick(int position) {
-
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -127,6 +133,15 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
             case android.R.id.home:
                 getActivity().onBackPressed();
                 return true;
+            case R.id.share:
+                Intent send = new Intent(Intent.ACTION_SEND);
+                send.setType("text/plain");
+                send.putExtra(Intent.EXTRA_SUBJECT, shop.getShopShortName());
+                send.putExtra(Intent.EXTRA_TEXT, shop.getShopShortName() + " " + shop.getShopWeb());
+                startActivity(Intent.createChooser(send, "Share using"));
+                return true;
+            case R.id.add_to_favorites:
+                Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -166,6 +181,42 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 btnRating.setVisibility(View.INVISIBLE);
                 scaleRatingBar.setVisibility(View.VISIBLE);
                 break;
+            case R.id.tv_adress:
+                String map = "http://maps.google.co.in/maps?q=" + tvAdress.getText();
+                Intent openMap = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                startActivity(openMap);
+                break;
+            case R.id.tv_website:
+                Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(shop.getShopWeb()));
+                startActivity(openWeb);
+                break;
+            case R.id.tv_shop_phone:
+                Intent openPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + tvShopPhone.getText()));
+                startActivity(openPhone);
+                break;
         }
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Action action = shop.getShopActionArray().get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("action", action);
+        ((MainActivity) getActivity()).openVitrinaAction(bundle);
+    }
+
+    @Override
+    public void onItemShare(int position) {
+        Action action = shop.getShopActionArray().get(position);
+        Intent send = new Intent(Intent.ACTION_SEND);
+        send.setType("text/plain");
+        send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
+        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + shop.getShopWeb() + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
+        startActivity(Intent.createChooser(send, "Share using"));
+    }
+
+    @Override
+    public void onItemAddToFavorites(int position) {
+        Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
 }

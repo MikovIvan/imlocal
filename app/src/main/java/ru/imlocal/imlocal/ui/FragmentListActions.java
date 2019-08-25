@@ -1,6 +1,7 @@
 package ru.imlocal.imlocal.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -110,6 +111,21 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         Bundle bundle = new Bundle();
         bundle.putSerializable("action", action);
         ((MainActivity) getActivity()).openVitrinaAction(bundle);
+    }
+
+    @Override
+    public void onItemShare(int position) {
+        Action action = actionList.get(position);
+        Intent send = new Intent(Intent.ACTION_SEND);
+        send.setType("text/plain");
+        send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
+        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + "http://wellscafe.com/" + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
+        startActivity(Intent.createChooser(send, "Share using"));
+    }
+
+    @Override
+    public void onItemAddToFavorites(int position) {
+        Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
 
 
