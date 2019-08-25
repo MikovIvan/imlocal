@@ -64,7 +64,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
-            android:id="@+id/ib_like"
+            android:id="@+id/ib_add_to_favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -86,7 +86,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_share_grey_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ib_like"
+            app:layout_constraintStart_toEndOf="@+id/ib_add_to_favorites"
             app:layout_constraintTop_toBottomOf="@+id/iv_action_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
