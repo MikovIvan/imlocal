@@ -49,11 +49,16 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static com.vk.sdk.VKUIHelper.getApplicationContext;
 import static ru.imlocal.imlocal.MainActivity.accessToken;
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.callbackManager;
 import static ru.imlocal.imlocal.MainActivity.enter;
 import static ru.imlocal.imlocal.MainActivity.mGoogleSignInClient;
@@ -149,7 +154,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     @Override
                     public void onComplete(VKResponse response) {
                         VKApiUserFull userVK = ((VKList<VKApiUserFull>) response.parsedModel).get(0);
-                        saveUser(String.valueOf(userVK.id), res.email, userVK.first_name, userVK.last_name);
+                        saveUser(String.valueOf(userVK.id), res.email, userVK.first_name, userVK.last_name, "vkontakte", res.accessToken);
                         addFavoritesAndLogoutButtonsToNavigationDrawer();
                         Log.d("TAG", user.toString());
                         enter.setTitle(userVK.first_name + " " + userVK.last_name);
@@ -172,11 +177,46 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
 
     }
 
-    private void saveUser(String id, String email, String firstName, String lastName) {
+    private void loginUser(User user) {
+        Call<User> call = api.loginUser(user);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+//                падает с ошибкой
+                Log.d("TAG", response.toString());
+                if (response.isSuccessful()) {
+                    Log.d("TAG", response.body().getId());
+                } else {
+                    Call<User> call2 = api.registerUser(user);
+                    call2.enqueue(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            Log.d("TAG", response.toString());
+                        }
+
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.d("TAG", t.getMessage());
+            }
+        });
+    }
+
+    private void saveUser(String source_id, String email, String firstName, String lastName, String source, String accessToken) {
+        user.setSource_id(source_id);
+        user.setSource(source);
         user.setEmail(email);
-        user.setId(id);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
+        user.setAccessToken(accessToken);
+        user.setUsername(firstName + " " + lastName);
+        Log.d("TAG", user.toString());
+        loginUser(user);
         user.setLogin(true);
         PreferenceUtils.saveUser(user, getActivity());
     }
@@ -186,7 +226,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Toast.makeText(getActivity(), "успешно google", Toast.LENGTH_LONG).show();
             enter.setTitle(account.getDisplayName());
-            saveUser(account.getId(), account.getEmail(), account.getGivenName(), account.getFamilyName());
+            saveUser(account.getId(), account.getEmail(), account.getGivenName(), account.getFamilyName(), "google", account.getIdToken());
             addFavoritesAndLogoutButtonsToNavigationDrawer();
             Log.d("TAG", user.toString());
             Log.d("TAG", account.getIdToken() + " " + account.getEmail() + " " + account.getId() + " "
@@ -207,7 +247,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     String lastName = object.getString("last_name");
                     String email = object.getString("email");
                     String id = object.getString("id");
-                    saveUser(id, email, firstName, lastName);
+                    saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken());
                     addFavoritesAndLogoutButtonsToNavigationDrawer();
                     Log.d("TAG", user.toString());
                     enter.setTitle(firstName + " " + lastName);
@@ -229,8 +269,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
     }
 
-    public void setUpCondLinks(View view)
-    {
+    public void setUpCondLinks(View view) {
         String login_disclaimer = "Продолжая, Вы соглашаетесь с нашими Условиями использования и подтверждаете, что прочли нашу Политику конфиденциальности.";
         SpannableString ss = new SpannableString(login_disclaimer);
 
@@ -261,16 +300,14 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         tvCond.setLinkTextColor(tvCond.getCurrentTextColor());
     }
 
-    public void openPolicy()
-    {
+    public void openPolicy() {
         Fragment fragment = new FragmentPolicy();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).setCustomAnimations(R.anim.enter_act, R.anim.exit_act).addToBackStack("FragmentPolicy").commit();
     }
 
-    public void openTOU()
-    {
+    public void openTOU() {
         Fragment fragment = new FragmentTOU();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

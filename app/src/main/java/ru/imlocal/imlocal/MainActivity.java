@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         account = GoogleSignIn.getLastSignedInAccount(this);
         if (VKSdk.isLoggedIn() || account != null || (accessToken != null && !accessToken.isExpired())) {
             user = PreferenceUtils.getUser(MainActivity.this);
-            enter.setTitle(user.getFirstName() + " " + user.getLastName());
+            enter.setTitle(user.getUsername());
             setFavoritesAndLogoutButtonsInNavigationDrawer(true);
         }
         if (!VKSdk.isLoggedIn() && account == null && accessToken == null) {
@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
                 if (currentAccessToken != null) {
                     user = PreferenceUtils.getUser(MainActivity.this);
-                    enter.setTitle(user.getFirstName() + " " + user.getLastName());
+                    enter.setTitle(user.getUsername());
                 } else {
                     enter.setTitle("Вход");
                 }
