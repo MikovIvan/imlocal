@@ -154,8 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = new FragmentViewPager();
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
-                .replace(R.id.frame, fragment)
-                .addToBackStack("FragmentViewPager")
+                .add(R.id.frame, fragment)
                 .commit();
     }
 
