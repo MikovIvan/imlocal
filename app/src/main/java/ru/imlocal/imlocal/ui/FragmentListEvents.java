@@ -1,6 +1,8 @@
 package ru.imlocal.imlocal.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,15 +13,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.suke.widget.SwitchButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +44,15 @@ import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 
-public class FragmentListEvents extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
+public class FragmentListEvents extends Fragment implements MenuItem.OnActionExpandListener, View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     RecyclerView recyclerView;
     RecyclerView rv_category;
     RecyclerViewAdapterEvent adapter;
+    SwitchButton sbFreeEvents;
+    TextView tvDatePicker;
     private List<Event> eventList = new ArrayList<>();
     private List<Event> copyList = new ArrayList<>();
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +72,8 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         getAllEvents();
         recyclerView = view.findViewById(R.id.rv_fragment_list_events);
         rv_category = view.findViewById(R.id.rv_category);
+        sbFreeEvents = view.findViewById(R.id.switch_free);
+        tvDatePicker = view.findViewById(R.id.tv_date_picker);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -71,6 +81,15 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
         rv_category.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
+
+        sbFreeEvents.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                Toast.makeText(getActivity(), "Отслеживание переключения: " + (isChecked ? "on" : "off"),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        tvDatePicker.setOnClickListener(this);
 
         return view;
     }
@@ -127,16 +146,6 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
 
     @Override
     public boolean onMenuItemActionCollapse(MenuItem item) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
         return false;
     }
 
@@ -197,4 +206,29 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tv_date_picker:
+                DialogFragment dialogFragment = new FragmentDialog();
+                dialogFragment.setTargetFragment(this, 2);
+                dialogFragment.show(getFragmentManager(), "dlg1");
+                Toast.makeText(getActivity(), "Date Picker", Toast.LENGTH_LONG).show();
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case 2:
+                    tvDatePicker.setText(data.getStringExtra("date"));
+                    break;
+                case 1:
+                    break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
