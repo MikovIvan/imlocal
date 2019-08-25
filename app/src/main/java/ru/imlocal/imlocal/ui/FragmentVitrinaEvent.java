@@ -1,5 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,13 +26,15 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
 
 public class FragmentVitrinaEvent extends Fragment {
-    ImageView ivEventPhoto;
-    TextView tvEventName;
-    TextView tvEventAdress;
-    TextView tvEventType;
-    TextView tvEventPrice;
-    TextView tvEventDate;
-    TextView tvEventDiscription;
+    private ImageView ivEventPhoto;
+    private TextView tvEventName;
+    private TextView tvEventAdress;
+    private TextView tvEventType;
+    private TextView tvEventPrice;
+    private TextView tvEventDate;
+    private TextView tvEventDiscription;
+
+    private Event event;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class FragmentVitrinaEvent extends Fragment {
         tvEventDiscription = view.findViewById(R.id.tv_about_event_text);
 
         Bundle bundle = getArguments();
-        Event event = (Event) bundle.getSerializable("event");
+        event = (Event) bundle.getSerializable("event");
 
         if (!event.getEventPhotoList().isEmpty()) {
             Picasso.with(getContext())
@@ -83,6 +87,15 @@ public class FragmentVitrinaEvent extends Fragment {
             case android.R.id.home:
                 getActivity().onBackPressed();
                 return true;
+            case R.id.share:
+                Intent send = new Intent(Intent.ACTION_SEND);
+                send.setType("text/plain");
+                send.putExtra(Intent.EXTRA_SUBJECT, event.getTitle());
+                send.putExtra(Intent.EXTRA_TEXT, event.getTitle() + " " + "https://imlocal.ru/happenings" + event.getId());
+                startActivity(Intent.createChooser(send, "Share using"));
+                return true;
+            case R.id.add_to_favorites:
+                Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
                 .replace(R.id.frame, fragment)
                 .addToBackStack("FragmentViewPager")
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void openVitrinaShop(Bundle bundle) {
