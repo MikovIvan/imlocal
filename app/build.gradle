@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -65,4 +66,10 @@ dependencies {
 
     implementation 'com.github.zcweng:switch-button:0.0.3@aar'
     implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
+
+//    localdate
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+
+//    Multidex support
+    implementation 'com.android.support:multidex:1.0.3'
 }

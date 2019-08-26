@@ -1,8 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,12 +17,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.TransitionManager;
 
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnRangeSelectedListener;
 import com.suke.widget.SwitchButton;
+
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +39,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import ru.imlocal.imlocal.Decorators.DisableDaysDecorator;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
@@ -45,20 +52,30 @@ import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 
 public class FragmentListEvents extends Fragment implements MenuItem.OnActionExpandListener, View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    RecyclerView recyclerView;
-    RecyclerView rv_category;
-    RecyclerViewAdapterEvent adapter;
-    SwitchButton sbFreeEvents;
-    TextView tvDatePicker;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM");
+
+    private RecyclerView recyclerView;
+    private RecyclerView rvCategory;
+    private RecyclerViewAdapterEvent adapter;
+    private SwitchButton sbFreeEvents;
+    private TextView tvDatePicker;
     private List<Event> eventList = new ArrayList<>();
     private List<Event> copyList = new ArrayList<>();
-
+    private ConstraintLayout constraintCalendar;
+    private ConstraintLayout constraintMain;
+    private TextView tvReady;
+    private TextView tvClear;
+    private MaterialCalendarView materialCalendarView;
+    private LocalDate localDateStart;
+    private LocalDate localDateEnd;
+    private LocalDate localDateSingle;
+    private String dateRange;
+    private LocalDate instance;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
     }
 
     @Nullable
@@ -70,18 +87,19 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         getAllEvents();
-        recyclerView = view.findViewById(R.id.rv_fragment_list_events);
-        rv_category = view.findViewById(R.id.rv_category);
-        sbFreeEvents = view.findViewById(R.id.switch_free);
-        tvDatePicker = view.findViewById(R.id.tv_date_picker);
+        instance = LocalDate.now();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        initView(view);
+        initRV();
+        initCalendarListeners();
+        setSwitchBtnListener();
+        setOnClickListeners();
 
-        rv_category.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
-        rv_category.setAdapter(adaptorCategory);
-        adaptorCategory.setOnItemClickListener(this);
+        setTodayToDatePicker();
+        return view;
+    }
 
+    private void setSwitchBtnListener() {
         sbFreeEvents.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
@@ -89,9 +107,58 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
                         Toast.LENGTH_SHORT).show();
             }
         });
-        tvDatePicker.setOnClickListener(this);
+    }
 
-        return view;
+    private void setOnClickListeners() {
+        tvDatePicker.setOnClickListener(this);
+        tvReady.setOnClickListener(this);
+        tvClear.setOnClickListener(this);
+    }
+
+    private void initRV() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
+        rvCategory.setAdapter(adaptorCategory);
+        adaptorCategory.setOnItemClickListener(this);
+    }
+
+    private void initView(View view) {
+        recyclerView = view.findViewById(R.id.rv_fragment_list_events);
+        rvCategory = view.findViewById(R.id.rv_category);
+        sbFreeEvents = view.findViewById(R.id.switch_free);
+        tvDatePicker = view.findViewById(R.id.tv_date_picker);
+        constraintCalendar = view.findViewById(R.id.constraint_calendar);
+        constraintMain = view.findViewById(R.id.main_constraint);
+        tvReady = view.findViewById(R.id.tv_ready);
+        tvClear = view.findViewById(R.id.tv_clear);
+        materialCalendarView = view.findViewById(R.id.calendarView);
+    }
+
+    private void initCalendarListeners() {
+        materialCalendarView.addDecorator(new DisableDaysDecorator(instance));
+        materialCalendarView.setDateTextAppearance(R.style.DateTextAppearance);
+        materialCalendarView.setWeekDayTextAppearance(R.style.WeekDayTextAppearance);
+        materialCalendarView.setLeftArrow(R.drawable.ic_arrow_back);
+        materialCalendarView.setRightArrow(R.drawable.ic_arrow_forward);
+        materialCalendarView.setSelectionColor(getResources().getColor(R.color.color_background_tab_button));
+        materialCalendarView.setOnRangeSelectedListener(new OnRangeSelectedListener() {
+            @Override
+            public void onRangeSelected(@NonNull MaterialCalendarView materialCalendarView, @NonNull List<CalendarDay> list) {
+                localDateStart = list.get(0).getDate();
+                localDateEnd = list.get(list.size() - 1).getDate();
+                dateRange = "c " + FORMATTER.format(localDateStart) + " по " + FORMATTER.format(localDateEnd);
+                Log.d("TAG", list.toString());
+            }
+        });
+        materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView materialCalendarView, @NonNull CalendarDay calendarDay, boolean b) {
+                localDateSingle = calendarDay.getDate();
+                localDateEnd = null;
+                Log.d("TAG", calendarDay.toString());
+            }
+        });
     }
 
     @Override
@@ -210,25 +277,33 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_date_picker:
-                DialogFragment dialogFragment = new FragmentDialog();
-                dialogFragment.setTargetFragment(this, 2);
-                dialogFragment.show(getFragmentManager(), "dlg1");
-                Toast.makeText(getActivity(), "Date Picker", Toast.LENGTH_LONG).show();
+                TransitionManager.beginDelayedTransition(constraintMain);
+                constraintCalendar.setVisibility(View.VISIBLE);
+                break;
+            case R.id.tv_ready:
+                if (localDateEnd != null) {
+                    tvDatePicker.setText(dateRange);
+                } else if (localDateStart != null) {
+                    tvDatePicker.setText(FORMATTER.format(localDateSingle));
+                } else {
+                    setTodayToDatePicker();
+                }
+                TransitionManager.beginDelayedTransition(constraintMain);
+                constraintCalendar.setVisibility(View.INVISIBLE);
+                break;
+            case R.id.tv_clear:
+                materialCalendarView.clearSelection();
+                localDateStart = null;
+                localDateEnd = null;
+                localDateSingle = null;
                 break;
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case 2:
-                    tvDatePicker.setText(data.getStringExtra("date"));
-                    break;
-                case 1:
-                    break;
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+    private void setTodayToDatePicker() {
+
+        materialCalendarView.setSelectedDate(instance);
+        tvDatePicker.setText(FORMATTER.format(instance));
     }
+
 }
