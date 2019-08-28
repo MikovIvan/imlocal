@@ -50,17 +50,15 @@
         app:layout_constraintStart_toEndOf="@+id/cv_icon"
         app:layout_constraintTop_toBottomOf="@+id/tv_shop_title" />
 
-    <ImageView
-        android:id="@+id/iv_action_icon"
+    <ViewFlipper
+        android:id="@+id/flipper_vitrina_action"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginTop="8dp"
-        android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@+id/tv_action_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_shop_adress"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_shop_adress"></ViewFlipper>
 
     <TextView
         android:id="@+id/tv_action_title"
@@ -73,7 +71,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_action_icon" />
+        app:layout_constraintTop_toBottomOf="@+id/flipper_vitrina_action" />
 
     <TextView
         android:id="@+id/tv_action_description"

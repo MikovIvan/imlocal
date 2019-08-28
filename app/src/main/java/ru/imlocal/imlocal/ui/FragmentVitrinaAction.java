@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,20 +22,19 @@ import com.squareup.picasso.Picasso;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.ActionPhoto;
 
 public class FragmentVitrinaAction extends Fragment implements View.OnClickListener {
 
     private ImageView ivShopPhoto;
-    private ImageView ivActionPhoto;
     private TextView tvShopName;
     private TextView tvShopAdress;
     private TextView tvActionTitle;
     private TextView tvActionDescription;
-    private ImageView ivLike;
-    private ImageView ivShare;
     private TextView tvWhen;
     private ImageButton ibShare;
     private ImageButton ibAddtoFavorites;
+    private ViewFlipper viewFlipperAction;
 
     private Action action;
 
@@ -46,9 +46,6 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
-        ivActionPhoto = view.findViewById(R.id.iv_action_icon);
-        ivLike = view.findViewById(R.id.ib_share);
-        ivShare = view.findViewById(R.id.ib_add_to_favorites);
         ivShopPhoto = view.findViewById(R.id.iv_icon);
         tvShopName = view.findViewById(R.id.tv_shop_title);
         tvShopAdress = view.findViewById(R.id.tv_shop_adress);
@@ -57,12 +54,21 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         tvWhen = view.findViewById(R.id.tv_date);
         ibShare = view.findViewById(R.id.ib_share);
         ibAddtoFavorites = view.findViewById(R.id.ib_add_to_favorites);
+        viewFlipperAction = view.findViewById(R.id.flipper_vitrina_action);
 
         ibShare.setOnClickListener(this);
         ibAddtoFavorites.setOnClickListener(this);
 
         Bundle bundle = getArguments();
         action = (Action) bundle.getSerializable("action");
+
+        if (action.getActionPhotos().size() > 1) {
+            for (ActionPhoto actionPhoto : action.getActionPhotos())
+                flipperImages(actionPhoto.getActionPhoto(), true);
+        } else {
+            for (ActionPhoto actionPhoto : action.getActionPhotos())
+                flipperImages(actionPhoto.getActionPhoto(), false);
+        }
 
         if (action.getShop() != null) {
             Picasso.with(getContext())
@@ -77,14 +83,11 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         }
 
         if (!action.getActionPhotos().isEmpty()) {
-            Picasso.with(getContext())
-                    .load("https://imlocal.ru/img/shopPhoto/" + action.getActionPhotos().get(0).getActionPhoto())
-                    .into(ivActionPhoto);
             tvActionTitle.setText(action.getTitle());
             tvActionDescription.setText(action.getFullDesc());
             tvWhen.setText(action.getBegin() + " - " + action.getEnd());
         } else {
-            ivActionPhoto.setVisibility(View.GONE);
+            viewFlipperAction.setVisibility(View.GONE);
         }
         return view;
     }
@@ -103,5 +106,18 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
                 break;
         }
+    }
+
+    private void flipperImages(String photo, boolean autostart) {
+        ImageView imageView = new ImageView(getActivity());
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        Picasso.with(getContext())
+                .load("https://imlocal.ru/img/shopPhoto/" + photo)
+                .into(imageView);
+        viewFlipperAction.addView(imageView);
+        viewFlipperAction.setFlipInterval(4000);
+        viewFlipperAction.setAutoStart(autostart);
+        viewFlipperAction.setInAnimation(getActivity(), android.R.anim.slide_in_left);
+        viewFlipperAction.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
     }
 }

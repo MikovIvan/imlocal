@@ -12,16 +12,13 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
-        <ImageView
-            android:id="@+id/iv_vitrina"
+        <ViewFlipper
+            android:id="@+id/flipper_vitrina_shop"
             android:layout_width="match_parent"
             android:layout_height="210dp"
-            android:foreground="@drawable/image_gradient"
-            android:scaleType="centerCrop"
-            android:src="@drawable/testimg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"></ViewFlipper>
 
         <TextView
             android:id="@+id/tv_estimate"
@@ -38,8 +35,8 @@
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:typeface="sans"
-            app:layout_constraintBottom_toBottomOf="@id/iv_vitrina"
-            app:layout_constraintEnd_toEndOf="@id/iv_vitrina" />
+            app:layout_constraintBottom_toBottomOf="@id/flipper_vitrina_shop"
+            app:layout_constraintEnd_toEndOf="@id/flipper_vitrina_shop" />
 
         <Button
             android:id="@+id/btn_rating"
@@ -65,7 +62,7 @@
             android:background="@drawable/btn_round_transparent"
             android:gravity="center"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_vitrina"
+            app:layout_constraintBottom_toBottomOf="@+id/flipper_vitrina_shop"
             app:layout_constraintEnd_toEndOf="parent"
             app:srb_clearRatingEnabled="true"
             app:srb_clickable="true"
@@ -103,7 +100,7 @@
             android:textColor="@color/color_icon"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/iv_vitrina"
+            app:layout_constraintBottom_toBottomOf="@id/flipper_vitrina_shop"
             app:layout_constraintStart_toStartOf="parent" />
 
 
