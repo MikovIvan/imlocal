@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openFeedback();
                 break;
             case R.id.nav_for_business:
-                Toast.makeText(this, "бизнесу", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Раздел в разработке", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_favorites:
                 Toast.makeText(this, "избранное", Toast.LENGTH_SHORT).show();
