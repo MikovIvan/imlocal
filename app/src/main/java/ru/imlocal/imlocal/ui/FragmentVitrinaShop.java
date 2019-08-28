@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,7 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.entity.ShopPhoto;
 
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
@@ -51,6 +53,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private TextView tvPrice;
     private TextView tvAboutShop;
     private TextView tvEstimate;
+    private ViewFlipper viewFlipperShop;
     private Button btnRating;
     private RecyclerView rvListPlaces;
     private ScaleRatingBar scaleRatingBar;
@@ -73,7 +76,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        ivShopImage = view.findViewById(R.id.iv_vitrina);
         tvShopType = view.findViewById(R.id.tv_event_type);
         tvVitrinaNameOfPlace = view.findViewById(R.id.tv_vitrina_name_of_place);
         tvAdress = view.findViewById(R.id.tv_adress);
@@ -86,6 +88,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         btnRating = view.findViewById(R.id.btn_rating);
         tvEstimate = view.findViewById(R.id.tv_estimate);
         scaleRatingBar = view.findViewById(R.id.simpleRatingBar);
+        viewFlipperShop = view.findViewById(R.id.flipper_vitrina_shop);
 
         scaleRatingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
             @Override
@@ -109,11 +112,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
         rvListPlaces.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
-
-        Picasso.with(getContext())
-                .load("https://imlocal.ru/img/shopPhoto/" + shop.getShopPhotoArray().get(0).getShopPhoto())
-                .into(ivShopImage);
-
         setShopType(shop);
         tvVitrinaNameOfPlace.setText(shop.getShopShortName());
         tvAdress.setText(shop.getShopAddress().toString());
@@ -123,7 +121,28 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAboutShop.setText(shop.getShopFullDescription());
         btnRating.setText(String.valueOf(shop.getShopAvgRating()));
 
+        if (shop.getShopPhotoArray().size() > 1) {
+            for (ShopPhoto shopPhoto : shop.getShopPhotoArray())
+                flipperImages(shopPhoto.getShopPhoto(), true);
+        } else {
+            for (ShopPhoto shopPhoto : shop.getShopPhotoArray())
+                flipperImages(shopPhoto.getShopPhoto(), false);
+        }
+
         return view;
+    }
+
+    private void flipperImages(String photo, boolean autostart) {
+        ImageView imageView = new ImageView(getActivity());
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        Picasso.with(getContext())
+                .load("https://imlocal.ru/img/shopPhoto/" + photo)
+                .into(imageView);
+        viewFlipperShop.addView(imageView);
+        viewFlipperShop.setFlipInterval(4000);
+        viewFlipperShop.setAutoStart(autostart);
+        viewFlipperShop.setInAnimation(getActivity(), android.R.anim.slide_in_left);
+        viewFlipperShop.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
     }
 
 

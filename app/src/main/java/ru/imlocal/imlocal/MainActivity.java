@@ -1,6 +1,7 @@
 package ru.imlocal.imlocal;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -366,6 +367,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initToolbar() {
         toolbar = findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.appbar);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            appBarLayout.setOutlineProvider(null);
+        }
         setSupportActionBar(toolbar);
         appBarLayout.setVisibility(View.VISIBLE);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
