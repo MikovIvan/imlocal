@@ -7,6 +7,13 @@
     android:layout_height="match_parent"
     android:background="@color/color_background">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="?attr/actionBarSize" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_icon"
         android:layout_width="50dp"
@@ -14,10 +21,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:elevation="12dp"
         app:cardCornerRadius="40dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/guideline5">
 
         <ImageView
             android:id="@+id/iv_icon"
@@ -38,7 +44,7 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/cv_icon"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline5" />
 
     <TextView
         android:id="@+id/tv_shop_adress"
@@ -58,7 +64,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tv_action_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_shop_adress"></ViewFlipper>
+        app:layout_constraintTop_toBottomOf="@+id/tv_shop_adress" />
 
     <TextView
         android:id="@+id/tv_action_title"
@@ -88,28 +94,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_action_title" />
-
-    <ImageButton
-        android:id="@+id/ib_add_to_favorites"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_favorite_border_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/ib_share"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_share_grey_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ib_add_to_favorites" />
 
     <TextView
         android:id="@+id/tv_date"

@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,11 +22,12 @@ import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
 
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.ActionPhoto;
 
-public class FragmentVitrinaAction extends Fragment implements View.OnClickListener {
+public class FragmentVitrinaAction extends Fragment {
 
     private ImageView ivShopPhoto;
     private TextView tvShopName;
@@ -32,11 +35,17 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     private TextView tvActionTitle;
     private TextView tvActionDescription;
     private TextView tvWhen;
-    private ImageButton ibShare;
-    private ImageButton ibAddtoFavorites;
     private ViewFlipper viewFlipperAction;
 
     private Action action;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        ((MainActivity) getActivity()).enableUpButtonViews(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
+    }
 
     @Nullable
     @Override
@@ -44,20 +53,13 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_action, container, false);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-
         ivShopPhoto = view.findViewById(R.id.iv_icon);
         tvShopName = view.findViewById(R.id.tv_shop_title);
         tvShopAdress = view.findViewById(R.id.tv_shop_adress);
         tvActionTitle = view.findViewById(R.id.tv_action_title);
         tvActionDescription = view.findViewById(R.id.tv_action_description);
         tvWhen = view.findViewById(R.id.tv_date);
-        ibShare = view.findViewById(R.id.ib_share);
-        ibAddtoFavorites = view.findViewById(R.id.ib_add_to_favorites);
         viewFlipperAction = view.findViewById(R.id.flipper_vitrina_action);
-
-        ibShare.setOnClickListener(this);
-        ibAddtoFavorites.setOnClickListener(this);
 
         Bundle bundle = getArguments();
         action = (Action) bundle.getSerializable("action");
@@ -93,19 +95,29 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ib_share:
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+            case R.id.share:
                 Intent send = new Intent(Intent.ACTION_SEND);
                 send.setType("text/plain");
-                send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
-                send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + "http://wellscafe.com/" + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
+                send.putExtra(Intent.EXTRA_SUBJECT, action.getShop().getShopShortName());
+                send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + action.getShop().getShopWeb());
                 startActivity(Intent.createChooser(send, "Share using"));
-                break;
-            case R.id.ib_add_to_favorites:
+                return true;
+            case R.id.add_to_favorites:
                 Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
-                break;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_vitrina, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void flipperImages(String photo, boolean autostart) {

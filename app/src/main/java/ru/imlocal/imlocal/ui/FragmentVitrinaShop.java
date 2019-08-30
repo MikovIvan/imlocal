@@ -65,7 +65,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
-
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
     }
 
     @Nullable
@@ -74,8 +74,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_shop, container, false);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         tvShopType = view.findViewById(R.id.tv_event_type);
         tvVitrinaNameOfPlace = view.findViewById(R.id.tv_vitrina_name_of_place);
         tvAdress = view.findViewById(R.id.tv_adress);
