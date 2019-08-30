@@ -50,6 +50,8 @@
                 android:layout_marginBottom="8dp"
                 android:padding="8dp"
                 android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
