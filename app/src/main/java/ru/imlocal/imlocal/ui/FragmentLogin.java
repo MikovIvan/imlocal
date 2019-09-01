@@ -184,10 +184,12 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
             public void onResponse(Call<User> call, Response<User> response) {
 //                падает с ошибкой
                 Log.d("AUTH", "response" + response.toString());
-                if (response.isSuccessful() && response.body() != null) {
-                    Log.d("AUTH", "body: " + response.body().toString());
-                    Log.d("AUTH", "message: " + response.message());
-                    Log.d("AUTH", "error: " + response.errorBody());
+//                if (response.isSuccessful() && response.body() != null) {
+//                    Log.d("AUTH", "body: " + response.body().toString());
+//                    Log.d("AUTH", "message: " + response.message());
+//                    Log.d("AUTH", "error: " + response.errorBody());
+                if (response.body().getId() != null) {
+                    Log.d("AUTH", "sucsecc " + response.body().getId());
                 } else {
                     Call<User> call2 = api.registerUser(user);
                     call2.enqueue(new Callback<User>() {
@@ -212,7 +214,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
             }
         });
     }
-
+//
 //    {
 //        "email": "mikov190189@gmail.com",
 //            "source": "google",
@@ -242,6 +244,8 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         user.setSource(source);
         user.setEmail(email);
         user.setAccessToken(accessToken);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setUsername(firstName + " " + lastName);
         Log.d("AUTH", "parametrs: " + user.toString());
         loginUser(user);
