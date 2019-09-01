@@ -39,11 +39,11 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ru.imlocal.imlocal.Decorators.DisableDaysDecorator;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
+import ru.imlocal.imlocal.decorators.DisableDaysDecorator;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 
