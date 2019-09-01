@@ -29,23 +29,17 @@
 
     <TextView
         android:id="@+id/tv_shop_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Кафе-паб «Гвозди»"
+        style="@style/HeaderTextStyle.Normal.Black"
         app:layout_constraintStart_toEndOf="@id/cv_icon"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Кафе-паб «Гвозди»" />
 
     <TextView
         android:id="@+id/tv_shop_adress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Москва, ул. Воронцовская, 20 "
+        style="@style/SubTitleTextStyle.Top"
         app:layout_constraintStart_toEndOf="@+id/cv_icon"
-        app:layout_constraintTop_toBottomOf="@+id/tv_shop_title" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_shop_title"
+        tools:text="Москва, ул. Воронцовская, 20 " />
 
     <TextView
         android:id="@+id/tv_shop_rating"
@@ -83,7 +77,7 @@
             <ImageView
                 android:id="@+id/iv_action_icon"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="230dp"
                 android:foreground="@drawable/image_gradient"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -109,10 +103,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:text="Смотрим Игру Престолов. 15% скидка на всё меню, кодовое слово «Тормунд»"
-                android:textSize="16sp"
                 android:maxLines="2"
                 android:padding="8dp"
+                android:text="Смотрим Игру Престолов. 15% скидка на всё меню, кодовое слово «Тормунд»"
+                android:textColor="@color/color_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iv_action_icon" />
@@ -145,15 +140,11 @@
 
             <TextView
                 android:id="@+id/tv_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="02.05.19–13.06.19"
+                style="@style/SubTitleTextStyle.RightBottomTop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_action_description" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_action_description"
+                tools:text="02.05.19–13.06.19" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -19,6 +19,23 @@
     <string name="menu_item_drawer_for_business">Бизнесу</string>
     <string name="menu_item_drawer_logout">Выход</string>
     <string name="feedback_email">feedback@imlocal.ru</string>
+    <string name="title_about_event">О событии</string>
+    <string name="title_news_actions">Новости, акции</string>
+    <string name="title_about_us">О нас</string>
+    <string name="web_site">веб-сайт</string>
+    <string name="title_theme">Тема</string>
+    <string name="e_mail">E-mail</string>
+    <string name="title_message">Сообщение</string>
+    <string name="btn_send">Отправить</string>
+    <string name="hint_enter_your_message">Введите Ваше сообщение</string>
+    <string name="hint_enter_your_email">Введите Ваш электронный адрес</string>
+    <string name="hint_enter_your_message_theme">Введите тему сообщения</string>
+    <string name="date">Дата:</string>
+    <string name="title_free">Бесплатные</string>
+    <string name="datepicker_ready">Готово</string>
+    <string name="datepicker_clear">Очистить</string>
+    <string name="title_login">Вход через  социальные сети</string>
+    <string name="title_conditions">Продолжая, Вы соглашаетесь с нашими Условиями использования и подтверждаете, что прочли нашу Политику конфиденциальности.</string>
 
     <string-array name="custom_months">
         <item>Январь</item>

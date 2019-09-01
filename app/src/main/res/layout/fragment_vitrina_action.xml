@@ -19,8 +19,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="@dimen/spacing_normal_16"
+        android:layout_marginTop="@dimen/spacing_small_8"
         app:cardCornerRadius="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline5">
@@ -36,31 +36,24 @@
 
     <TextView
         android:id="@+id/tv_shop_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Кафе-паб «Гвозди»"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/HeaderTextStyle.Normal.Black"
         app:layout_constraintStart_toEndOf="@id/cv_icon"
-        app:layout_constraintTop_toBottomOf="@+id/guideline5" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline5"
+        tools:text="Кафе-паб «Гвозди»" />
 
     <TextView
         android:id="@+id/tv_shop_adress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Тут дб адрес"
+        style="@style/SubTitleTextStyle.Top"
         app:layout_constraintStart_toEndOf="@+id/cv_icon"
-        app:layout_constraintTop_toBottomOf="@+id/tv_shop_title" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_shop_title"
+        tools:text="Тут дб адрес" />
 
     <ViewFlipper
         android:id="@+id/flipper_vitrina_action"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:foreground="@drawable/image_gradient"
         app:layout_constraintBottom_toTopOf="@+id/tv_action_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,41 +61,25 @@
 
     <TextView
         android:id="@+id/tv_action_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:padding="8dp"
-        android:text="Неделя грузинской кухни"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        style="@style/HeaderTextStyle.Black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/flipper_vitrina_action" />
+        app:layout_constraintTop_toBottomOf="@+id/flipper_vitrina_action"
+        tools:text="Неделя грузинской кухни" />
 
     <TextView
         android:id="@+id/tv_action_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:padding="16dp"
-        android:text="В своем стремлении улучшить пользовательский опыт мы упускаем, что стремящиеся вытеснить традиционное производство, нанотехнологии набирают популярность среди определенных слоев населения, а значит, должны быть смешаны с неуникальными данными до степени совершенной неузнаваемости, из-за чего возрастает их статус бесполезности. Лишь стремящиеся вытеснить традиционное производство
-
-В своем стремлении улучшить пользовательский опыт мы упускаем, что стремящиеся вытеснить традиционное производство, нанотехнологии набирают популярность среди определенных слоев населения, а значит, должны быть смешаны с неуникальными данными до степени совершенной "
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/DescriptionTextStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_action_title" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_action_title"
+        tools:text="В своем стремлении улучшить пользовательский опыт мы упускаем, что стремящиеся вытеснить традиционное производство, нанотехнологии набирают популярность среди определенных слоев населения, а значит, должны быть смешаны с неуникальными данными до степени совершенной неузнаваемости, из-за чего возрастает их статус бесполезности. Лишь стремящиеся вытеснить традиционное производство
+В своем стремлении улучшить пользовательский опыт мы упускаем, что стремящиеся вытеснить традиционное производство, нанотехнологии набирают популярность среди определенных слоев населения, а значит, должны быть смешаны с неуникальными данными до степени совершенной " />
 
     <TextView
         android:id="@+id/tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="02.05.19–13.06.19"
+        style="@style/SubTitleTextStyle.RightBottom"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="02.05.19–13.06.19" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
