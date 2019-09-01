@@ -62,7 +62,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
 
         if (!action.getActionPhotos().isEmpty()) {
             holder.tvEventTitle.setText(action.getTitle());
-            holder.tvEventAdress.setText(action.getTitle());
+            holder.tvEventAdress.setText(action.getShop().getShopAddress().toString());
             holder.tvActionDescription.setText(action.getFullDesc());
             holder.tvDate.setText(action.getBegin() + "-" + action.getEnd());
             Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getActionPhotos().get(0).getActionPhoto())

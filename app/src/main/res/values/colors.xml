@@ -11,6 +11,7 @@
     <color name="color_background">#FEFAF9</color>
     <color name="color_background_tab_button">#FCF7F4</color>
     <color name="color_text">#454545</color>
+    <color name="color_text_light">#8F8F8F</color>
     <color name="color_icon">#8F8F8F</color>
     <color name="color_hint">#C4C4C4</color>
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -18,29 +19,18 @@
 
     <TextView
         android:id="@+id/tv_vitrina_name_of_place"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Салют в честь открытия парка"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        style="@style/HeaderTextStyle"
         app:layout_constraintBottom_toTopOf="@id/tv_event_type"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Салют в честь открытия парка" />
 
     <TextView
         android:id="@+id/tv_event_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginBottom="18dp"
-        android:text="Шоу"
-        android:textColor="@color/color_icon"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        style="@style/SubTitleTextStyle"
         app:layout_constraintBottom_toBottomOf="@id/iv_vitrina"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Шоу" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
@@ -68,12 +58,8 @@
 
             <TextView
                 android:id="@+id/tv_adress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="8dp"
+                style="@style/MenuSmallTextStyle"
                 android:text="г. Москва, ул. Воронцовская, 20"
-                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_1"
                 app:layout_constraintStart_toEndOf="@+id/iv_1"
                 app:layout_constraintTop_toTopOf="@+id/iv_1" />
@@ -82,7 +68,7 @@
                 android:id="@+id/iv_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="@dimen/spacing_huge_32"
                 android:src="@drawable/ic_clock"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -90,20 +76,17 @@
 
             <TextView
                 android:id="@+id/tv_when"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="23:00, 18.09.19"
-                android:textSize="18sp"
+                style="@style/MenuSmallTextStyle"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_2"
                 app:layout_constraintStart_toEndOf="@+id/iv_2"
-                app:layout_constraintTop_toTopOf="@+id/iv_2" />
+                app:layout_constraintTop_toTopOf="@+id/iv_2"
+                tools:text="23:00, 18.09.19" />
 
             <ImageView
                 android:id="@+id/iv_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="@dimen/spacing_huge_32"
                 android:src="@drawable/ic_rectangle"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_when"
                 app:layout_constraintStart_toEndOf="@+id/tv_when"
@@ -111,41 +94,27 @@
 
             <TextView
                 android:id="@+id/tv_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Бесплатно"
-                android:textSize="18sp"
+                style="@style/MenuSmallTextStyle"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_3"
                 app:layout_constraintStart_toEndOf="@+id/iv_3"
-                app:layout_constraintTop_toTopOf="@+id/iv_3" />
+                app:layout_constraintTop_toTopOf="@+id/iv_3"
+                tools:text="Бесплатно" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/tv_about_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="О событии"
-        android:textAlignment="center"
-        android:textColor="@color/color_text"
-        android:textSize="22sp"
-        android:textStyle="bold"
+        style="@style/HeaderTextStyle.Normal.Black"
+        android:text="@string/title_about_event"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView2" />
 
     <TextView
         android:id="@+id/tv_about_event_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Товарищи! консультация с широким активом требуют определения и уточнения системы обучения кадров, соответствует насущным потребностям. С другой стороны сложившаяся структура организации способствует подготовки и реализации систем массового участия. Идейные соображения высшего порядка, а также постоянный количественный рост и сфера нашей активности играет важную роль в формировании новых предложений. С другой стороны укрепление и развитие структуры требуют от нас анализа дальнейших направлений развития."
+        style="@style/DescriptionTextStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_about_event" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_about_event"
+        tools:text="Товарищи! консультация с широким активом требуют определения и уточнения системы обучения кадров, соответствует насущным потребностям. С другой стороны сложившаяся структура организации способствует подготовки и реализации систем массового участия. Идейные соображения высшего порядка, а также постоянный количественный рост и сфера нашей активности играет важную роль в формировании новых предложений. С другой стороны укрепление и развитие структуры требуют от нас анализа дальнейших направлений развития." />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

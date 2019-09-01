@@ -5,7 +5,7 @@
     android:id="@+id/cardview"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_margin="@dimen/spacing_tiny_4"
     app:cardCornerRadius="8dp"
     app:cardElevation="10dp">
 
@@ -16,9 +16,9 @@
 
         <ImageView
             android:id="@+id/iv_shopimage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="8dp"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            android:layout_margin="@dimen/spacing_small_8"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/avatars" />
 
@@ -28,13 +28,8 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                style="@style/HeaderTextStyle.Normal.SmallMargin.Black"
+                android:layout_marginEnd="@dimen/spacing_small_8"
                 app:layout_constraintEnd_toStartOf="@+id/tv_rating"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -42,32 +37,19 @@
 
             <TextView
                 android:id="@+id/tv_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="8dp"
-                android:textSize="12sp"
+                style="@style/DescriptionTextStyle.InList"
+                android:ellipsize="end"
+                android:maxLines="3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title"
                 tools:text="Кофе собственной обжарки, легендарные блинчики, изысканные  " />
 
             <TextView
                 android:id="@+id/tv_rating"
-                android:layout_width="25dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/tv_round"
-                android:gravity="center"
-                android:padding="2dp"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:textStyle="normal"
+                style="@style/RatingStyle"
+                android:layout_marginTop="@dimen/spacing_small_8"
+                android:layout_marginEnd="@dimen/spacing_small_8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="4.3" />

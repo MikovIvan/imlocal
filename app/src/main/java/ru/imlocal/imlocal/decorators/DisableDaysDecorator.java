@@ -1,4 +1,4 @@
-package ru.imlocal.imlocal.Decorators;
+package ru.imlocal.imlocal.decorators;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;

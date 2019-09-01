@@ -229,9 +229,8 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
     }
 
-    public void setUpCondLinks(View view)
-    {
-        String login_disclaimer = "Продолжая, Вы соглашаетесь с нашими Условиями использования и подтверждаете, что прочли нашу Политику конфиденциальности.";
+    public void setUpCondLinks(View view) {
+        String login_disclaimer = getResources().getString(R.string.title_conditions);
         SpannableString ss = new SpannableString(login_disclaimer);
 
         ClickableSpan cTOU = new ClickableSpan() {
@@ -261,16 +260,14 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         tvCond.setLinkTextColor(tvCond.getCurrentTextColor());
     }
 
-    public void openPolicy()
-    {
+    public void openPolicy() {
         Fragment fragment = new FragmentPolicy();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).setCustomAnimations(R.anim.enter_act, R.anim.exit_act).addToBackStack("FragmentPolicy").commit();
     }
 
-    public void openTOU()
-    {
+    public void openTOU() {
         Fragment fragment = new FragmentTOU();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -15,41 +15,30 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_category"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        style="@style/RVCategory"
         app:layout_constraintTop_toBottomOf="@id/guideline2">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <com.jaredrummler.materialspinner.MaterialSpinner
         android:id="@+id/spinner_sort"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
+        style="@style/Spinner"
+        app:ms_arrow_tint="@color/color_main"
+        app:ms_hint="Сортировать:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rv_category"
-        app:ms_arrow_tint="@color/color_main"
-        app:ms_hint="Сортировать:"
         app:ms_text_color="@color/color_main" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_fragment_list_actions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:paddingBottom="188dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        style="@style/RvMain"
         app:layout_constraintTop_toBottomOf="@+id/spinner_sort" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

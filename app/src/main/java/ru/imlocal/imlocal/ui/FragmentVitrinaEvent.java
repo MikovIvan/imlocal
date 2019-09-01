@@ -50,8 +50,6 @@ public class FragmentVitrinaEvent extends Fragment {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_event, container, false);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-
         ivEventPhoto = view.findViewById(R.id.iv_vitrina);
         tvEventName = view.findViewById(R.id.tv_vitrina_name_of_place);
         tvEventAdress = view.findViewById(R.id.tv_adress);

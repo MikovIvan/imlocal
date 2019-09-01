@@ -9,23 +9,16 @@
 
     <TextView
         android:id="@+id/tv_enter_social_networks"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Вход через \nсоциальные сети"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        style="@style/LoginTextStyle"
+        android:text="@string/title_login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/btn_login_vk"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="@dimen/social_icons_40"
+        android:layout_height="@dimen/social_icons_40"
         android:src="@drawable/ic_vk"
         app:layout_constraintBottom_toTopOf="@+id/tv_enter_social_networks_conditions"
         app:layout_constraintEnd_toStartOf="@+id/btn_login_fb"
@@ -34,10 +27,10 @@
 
     <ImageButton
         android:id="@+id/btn_login_fb"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="@dimen/social_icons_40"
+        android:layout_height="@dimen/social_icons_40"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:layout_marginBottom="@dimen/spacing_small_8"
         android:src="@drawable/ic_fb"
         app:layout_constraintBottom_toTopOf="@+id/tv_enter_social_networks_conditions"
         app:layout_constraintEnd_toStartOf="@+id/btn_login_google"
@@ -46,8 +39,8 @@
 
     <ImageButton
         android:id="@+id/btn_login_google"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/social_icons_40"
+        android:layout_height="@dimen/social_icons_40"
         android:src="@drawable/ic_google"
         app:layout_constraintBottom_toTopOf="@+id/tv_enter_social_networks_conditions"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,13 +50,8 @@
 
     <TextView
         android:id="@+id/tv_enter_social_networks_conditions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Продолжая, Вы соглашаетесь с нашими Условиями использования и подтверждаете, что прочли нашу Политику конфиденциальности."
-        android:textAlignment="center"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        style="@style/LoginTextStyle.Small"
+        android:text="@string/title_conditions"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
