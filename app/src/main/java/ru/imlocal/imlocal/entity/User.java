@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class User implements Serializable {
 
@@ -31,6 +32,15 @@ public class User implements Serializable {
     @SerializedName("username")
     @Expose
     private String username;
+    @SerializedName("eventsFavorites")
+    @Expose
+    private List<Action> actionsFavoritesList;
+    @SerializedName("shopsFavorites")
+    @Expose
+    private List<Shop> shopsFavoritesList;
+    @SerializedName("happeningsFavorites")
+    @Expose
+    private List<Event> eventsFavoritesList;
 
     private boolean isLogin;
 
@@ -58,6 +68,30 @@ public class User implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<Action> getActionsFavoritesList() {
+        return actionsFavoritesList;
+    }
+
+    public void setActionsFavoritesList(List<Action> actionsFavoritesList) {
+        this.actionsFavoritesList = actionsFavoritesList;
+    }
+
+    public List<Shop> getShopsFavoritesList() {
+        return shopsFavoritesList;
+    }
+
+    public void setShopsFavoritesList(List<Shop> shopsFavoritesList) {
+        this.shopsFavoritesList = shopsFavoritesList;
+    }
+
+    public List<Event> getEventsFavoritesList() {
+        return eventsFavoritesList;
+    }
+
+    public void setEventsFavoritesList(List<Event> eventsFavoritesList) {
+        this.eventsFavoritesList = eventsFavoritesList;
     }
 
     public String getSource_id() {
@@ -135,6 +169,9 @@ public class User implements Serializable {
                 ", accessToken='" + accessToken + '\'' +
                 ", source='" + source + '\'' +
                 ", username='" + username + '\'' +
+                ", actionsFavoritesList=" + actionsFavoritesList +
+                ", shopsFavoritesList=" + shopsFavoritesList +
+                ", eventsFavoritesList=" + eventsFavoritesList +
                 ", isLogin=" + isLogin +
                 '}';
     }
