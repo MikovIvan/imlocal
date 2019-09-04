@@ -28,11 +28,11 @@ public interface Api {
     @GET("shops/{shopId}")
     Observable<Shop> getShop(@Path("shopId") int shopId);
 
-    @Headers("Content-Type: application/json")
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("user/register")
     Call<User> registerUser(@Body User user);
 
-    @Headers("Content-Type: application/json")
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("user/login")
     Call<User> loginUser(@Body User user);
 
