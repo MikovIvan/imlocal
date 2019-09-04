@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardView"
-    android:layout_width="174dp"
+    android:layout_width="184dp"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     app:cardCornerRadius="10dp"
@@ -40,8 +40,10 @@
             android:text="Неделя грузинской кухни"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="16sp"
+            android:ellipsize="end"
+            android:maxLines="2"
             app:layout_constraintBottom_toTopOf="@+id/tv_action_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -56,15 +58,16 @@
             android:text="Смотрим Игру Престолов. 15% скидка на всё меню, кодовое слово «Тормунд»"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="10sp"
-            android:textStyle="bold"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:maxLines="3"
             app:layout_constraintBottom_toBottomOf="@+id/iv_action_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
-            android:id="@+id/ib_like"
+            android:id="@+id/ib_add_to_favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -86,7 +89,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_share_grey_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ib_like"
+            app:layout_constraintStart_toEndOf="@+id/ib_add_to_favorites"
             app:layout_constraintTop_toBottomOf="@+id/iv_action_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

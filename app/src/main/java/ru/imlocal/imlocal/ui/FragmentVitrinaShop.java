@@ -1,7 +1,9 @@
 package ru.imlocal.imlocal.ui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +31,9 @@ import com.willy.ratingbar.ScaleRatingBar;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
+import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.entity.ShopPhoto;
 
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
@@ -47,15 +53,19 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private TextView tvPrice;
     private TextView tvAboutShop;
     private TextView tvEstimate;
+    private ViewFlipper viewFlipperShop;
     private Button btnRating;
     private RecyclerView rvListPlaces;
     private ScaleRatingBar scaleRatingBar;
+    private Shop shop;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
     }
 
     @Nullable
@@ -64,9 +74,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_shop, container, false);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
-
-        ivShopImage = view.findViewById(R.id.iv_vitrina);
         tvShopType = view.findViewById(R.id.tv_event_type);
         tvVitrinaNameOfPlace = view.findViewById(R.id.tv_vitrina_name_of_place);
         tvAdress = view.findViewById(R.id.tv_adress);
@@ -79,6 +86,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         btnRating = view.findViewById(R.id.btn_rating);
         tvEstimate = view.findViewById(R.id.tv_estimate);
         scaleRatingBar = view.findViewById(R.id.simpleRatingBar);
+        viewFlipperShop = view.findViewById(R.id.flipper_vitrina_shop);
 
         scaleRatingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
             @Override
@@ -91,19 +99,17 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         btnRating.setOnClickListener(this);
         tvEstimate.setOnClickListener(this);
+        tvWebsite.setOnClickListener(this);
+        tvAdress.setOnClickListener(this);
+        tvShopPhone.setOnClickListener(this);
 
         Bundle bundle = getArguments();
-        Shop shop = (Shop) bundle.getSerializable("shop");
+        shop = (Shop) bundle.getSerializable("shop");
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
         rvListPlaces.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
-
-        Picasso.with(getContext())
-                .load("https://imlocal.ru/img/shopPhoto/" + shop.getShopPhotoArray().get(0).getShopPhoto())
-                .into(ivShopImage);
-
         setShopType(shop);
         tvVitrinaNameOfPlace.setText(shop.getShopShortName());
         tvAdress.setText(shop.getShopAddress().toString());
@@ -113,13 +119,30 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAboutShop.setText(shop.getShopFullDescription());
         btnRating.setText(String.valueOf(shop.getShopAvgRating()));
 
+        if (shop.getShopPhotoArray().size() > 1) {
+            for (ShopPhoto shopPhoto : shop.getShopPhotoArray())
+                flipperImages(shopPhoto.getShopPhoto(), true);
+        } else {
+            for (ShopPhoto shopPhoto : shop.getShopPhotoArray())
+                flipperImages(shopPhoto.getShopPhoto(), false);
+        }
+
         return view;
     }
 
-    @Override
-    public void onItemClick(int position) {
-
+    private void flipperImages(String photo, boolean autostart) {
+        ImageView imageView = new ImageView(getActivity());
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        Picasso.with(getContext())
+                .load("https://imlocal.ru/img/shopPhoto/" + photo)
+                .into(imageView);
+        viewFlipperShop.addView(imageView);
+        viewFlipperShop.setFlipInterval(4000);
+        viewFlipperShop.setAutoStart(autostart);
+        viewFlipperShop.setInAnimation(getActivity(), android.R.anim.slide_in_left);
+        viewFlipperShop.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -127,6 +150,15 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
             case android.R.id.home:
                 getActivity().onBackPressed();
                 return true;
+            case R.id.share:
+                Intent send = new Intent(Intent.ACTION_SEND);
+                send.setType("text/plain");
+                send.putExtra(Intent.EXTRA_SUBJECT, shop.getShopShortName());
+                send.putExtra(Intent.EXTRA_TEXT, shop.getShopShortName() + " " + shop.getShopWeb());
+                startActivity(Intent.createChooser(send, "Share using"));
+                return true;
+            case R.id.add_to_favorites:
+                Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -166,6 +198,42 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 btnRating.setVisibility(View.INVISIBLE);
                 scaleRatingBar.setVisibility(View.VISIBLE);
                 break;
+            case R.id.tv_adress:
+                String map = "http://maps.google.co.in/maps?q=" + tvAdress.getText();
+                Intent openMap = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                startActivity(openMap);
+                break;
+            case R.id.tv_website:
+                Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(shop.getShopWeb()));
+                startActivity(openWeb);
+                break;
+            case R.id.tv_shop_phone:
+                Intent openPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + tvShopPhone.getText()));
+                startActivity(openPhone);
+                break;
         }
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Action action = shop.getShopActionArray().get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("action", action);
+        ((MainActivity) getActivity()).openVitrinaAction(bundle);
+    }
+
+    @Override
+    public void onItemShare(int position) {
+        Action action = shop.getShopActionArray().get(position);
+        Intent send = new Intent(Intent.ACTION_SEND);
+        send.setType("text/plain");
+        send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
+        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + shop.getShopWeb() + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
+        startActivity(Intent.createChooser(send, "Share using"));
+    }
+
+    @Override
+    public void onItemAddToFavorites(int position) {
+        Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
 }

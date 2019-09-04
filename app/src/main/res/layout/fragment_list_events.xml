@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -13,43 +14,116 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="?attr/actionBarSize" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_category"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_category">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_date"
+                style="@style/MenuSmallTextStyle.Date"
+                android:text="@string/date"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_date_picker"
+                style="@style/MenuSmallTextStyle.Date.DatePicker"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_date"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="с 18.07 по 31.08" />
+
+            <TextView
+                android:id="@+id/tv_free"
+                style="@style/MenuSmallTextStyle.Date.DatePicker"
+                android:text="@string/title_free"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/switch_free"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.suke.widget.SwitchButton
+                android:id="@+id/switch_free"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/spacing_small_8"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:sb_border_width="1dp"
+                app:sb_checked_color="@color/color_main"
+                app:sb_show_indicator="false"
+                app:sb_uncheck_color="@color/color_main" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cv_calendar">
+
+        <TextView
+            android:id="@+id/tv_ready"
+            style="@style/DatePickerButton.Right"
+            android:text="@string/datepicker_ready"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_clear"
+            style="@style/DatePickerButton.Right"
+            android:text="@string/datepicker_clear"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_small_8"
+            android:layout_marginEnd="@dimen/spacing_small_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_ready"
+            app:mcv_monthLabels="@array/custom_months"
+            app:mcv_selectionMode="range"
+            app:mcv_showOtherDates="all"
+            app:mcv_titleAnimationOrientation="horizontal" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_category"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/RVCategory"
         app:layout_constraintTop_toBottomOf="@id/guideline2">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <!--<com.jaredrummler.materialspinner.MaterialSpinner-->
-    <!--android:id="@+id/spinner_sort"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginStart="8dp"-->
-    <!--android:layout_marginTop="4dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintHorizontal_bias="1.0"-->
-    <!--app:layout_constraintStart_toStartOf="parent"-->
-    <!--app:layout_constraintTop_toBottomOf="@+id/rv_category"-->
-    <!--app:ms_arrow_tint="@color/color_main"-->
-    <!--app:ms_hint="Сортировать:"-->
-    <!--app:ms_text_color="@color/color_main" />-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_fragment_list_events"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:paddingBottom="140dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_category" />
+        style="@style/RvMain"
+        app:layout_constraintTop_toBottomOf="@+id/cv_calendar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

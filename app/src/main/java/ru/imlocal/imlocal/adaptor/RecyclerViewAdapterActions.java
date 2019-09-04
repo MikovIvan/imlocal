@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -61,7 +62,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
 
         if (!action.getActionPhotos().isEmpty()) {
             holder.tvEventTitle.setText(action.getTitle());
-            holder.tvEventAdress.setText(action.getTitle());
+            holder.tvEventAdress.setText(action.getShop().getShopAddress().toString());
             holder.tvActionDescription.setText(action.getFullDesc());
             holder.tvDate.setText(action.getBegin() + "-" + action.getEnd());
             Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getActionPhotos().get(0).getActionPhoto())
@@ -78,6 +79,10 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+
+        void onItemShare(int position);
+
+        void onItemAddToFavorites(int position);
     }
 
     @Override
@@ -121,6 +126,8 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
         TextView tvActionDescription;
         TextView tvDate;
         TextView tvShopRating;
+        ImageButton ibShare;
+        ImageButton ibAddToFavorites;
 
 
         ViewHolder(View v) {
@@ -131,9 +138,11 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
             tvEventAdress = v.findViewById(R.id.tv_shop_adress);
             tvActionDescription = v.findViewById(R.id.tv_action_description);
             tvDate = v.findViewById(R.id.tv_date);
-
+            ibShare = v.findViewById(R.id.ib_share);
+            ibAddToFavorites = v.findViewById(R.id.ib_add_to_favorites);
             ivIcon = v.findViewById(R.id.iv_icon);
             ivActionIcon = v.findViewById(R.id.iv_action_icon);
+
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -141,6 +150,30 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             mListener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            ibShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.onItemShare(position);
+                        }
+                    }
+                }
+            });
+
+            ibAddToFavorites.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.onItemAddToFavorites(position);
                         }
                     }
                 }

@@ -48,4 +48,280 @@
     <style name="MyHintText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textColor">@color/color_main</item>
     </style>
+
+    <style name="WeekDayTextAppearance" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/color_main</item>
+    </style>
+
+    <style name="DateTextAppearance" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@drawable/calendar_selector</item>
+    </style>
+
+    <style name="MenuSmallTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="MenuSmallTextStyle.Date">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small_8</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+        <item name="android:textColor">@color/color_icon</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="MenuSmallTextStyle.Date.DatePicker">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small_8</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+        <item name="android:textColor">@color/color_main</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="MenuSmallTextStyle.Timetable">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="HeaderTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/font_large_20</item>
+    </style>
+
+    <style name="HeaderTextStyle.Normal">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/font_normal_16</item>
+    </style>
+
+    <style name="HeaderTextStyle.Normal.SmallMargin">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/font_normal_16</item>
+    </style>
+
+    <style name="HeaderTextStyle.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="HeaderTextStyle.Black">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_large_20</item>
+    </style>
+
+    <style name="HeaderTextStyle.Normal.Black">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_normal_16</item>
+    </style>
+
+    <style name="HeaderTextStyle.Normal.SmallMargin.Black">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_normal_16</item>
+    </style>
+
+    <style name="SubTitleTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/color_text_light</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="SubTitleTextStyle.Top">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/color_text_light</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="SubTitleTextStyle.RightBottom">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_normal_16</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text_light</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="SubTitleTextStyle.RightBottomTop">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_normal_16</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text_light</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="DescriptionTextStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="DescriptionTextStyle.InList">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="RatingStyle">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:background">@drawable/tv_round</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DatePickerButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/color_main</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DatePickerButton.Right">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
+        <item name="android:textColor">@color/color_main</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DatePickerButton.Left">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:textColor">@color/color_main</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="RVCategory">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_large_24</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_small_8</item>
+    </style>
+
+    <style name="Spinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+    </style>
+
+    <style name="RvMain">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_small_8</item>
+        <item name="android:paddingBottom">208dp</item>
+    </style>
+
+    <style name="CategoryText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="LoginTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/spacing_small_8</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="LoginTextStyle.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/spacing_small_8</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
 </resources>

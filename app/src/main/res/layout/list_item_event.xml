@@ -44,28 +44,17 @@
 
         <TextView
             android:id="@+id/tv_event_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Салют в честь открытия парка"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            style="@style/HeaderTextStyle.Normal"
             app:layout_constraintBottom_toTopOf="@id/tv_event_date"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Салют в честь открытия парка" />
 
         <TextView
             android:id="@+id/tv_event_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="13:00 18.07.19"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:textStyle="normal"
+            style="@style/HeaderTextStyle.Small"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="13:00 18.07.19" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/like"
+        android:id="@+id/add_to_favorites"
         android:icon="@drawable/ic_heart"
         android:orderInCategory="100"
         android:title="Поиск"

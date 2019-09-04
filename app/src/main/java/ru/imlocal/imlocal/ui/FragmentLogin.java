@@ -302,7 +302,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
     }
 
     public void setUpCondLinks(View view) {
-        String login_disclaimer = "Продолжая, Вы соглашаетесь с нашими Условиями использования и подтверждаете, что прочли нашу Политику конфиденциальности.";
+        String login_disclaimer = getResources().getString(R.string.title_conditions);
         SpannableString ss = new SpannableString(login_disclaimer);
 
         ClickableSpan cTOU = new ClickableSpan() {
