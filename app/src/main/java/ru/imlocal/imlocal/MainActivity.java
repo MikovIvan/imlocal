@@ -155,9 +155,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = new FragmentViewPager();
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
-                .replace(R.id.frame, fragment)
+                .add(R.id.frame, fragment)
+                .commit();
+                /*.replace(R.id.frame, fragment)
                 .addToBackStack("FragmentViewPager")
-                .commitAllowingStateLoss();
+                .commitAllowingStateLoss();*/
     }
 
     public void openVitrinaShop(Bundle bundle) {
@@ -248,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         account = GoogleSignIn.getLastSignedInAccount(this);
         if (VKSdk.isLoggedIn() || account != null || (accessToken != null && !accessToken.isExpired())) {
             user = PreferenceUtils.getUser(MainActivity.this);
-            enter.setTitle(user.getFirstName() + " " + user.getLastName());
+            enter.setTitle(user.getUsername());
             setFavoritesAndLogoutButtonsInNavigationDrawer(true);
         }
         if (!VKSdk.isLoggedIn() && account == null && accessToken == null) {
@@ -273,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openFeedback();
                 break;
             case R.id.nav_for_business:
-                Toast.makeText(this, "бизнесу", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Раздел в разработке", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_favorites:
                 Toast.makeText(this, "избранное", Toast.LENGTH_SHORT).show();
@@ -355,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
                 if (currentAccessToken != null) {
                     user = PreferenceUtils.getUser(MainActivity.this);
-                    enter.setTitle(user.getFirstName() + " " + user.getLastName());
+                    enter.setTitle(user.getUsername());
                 } else {
                     enter.setTitle("Вход");
                 }
