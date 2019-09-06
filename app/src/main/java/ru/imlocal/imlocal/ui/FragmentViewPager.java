@@ -18,6 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.ViewPagerAdapter;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 public class FragmentViewPager extends Fragment {
 
@@ -38,6 +39,7 @@ public class FragmentViewPager extends Fragment {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getActivity(), fm);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setCurrentItem(PreferenceUtils.getTab(getActivity()));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -47,6 +49,7 @@ public class FragmentViewPager extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
+                PreferenceUtils.saveTab(position, getActivity());
 //                Toast.makeText(getActivity().getApplicationContext(), tabLayout.getTabAt(position).getText(), Toast.LENGTH_SHORT).show();
             }
 
@@ -58,4 +61,6 @@ public class FragmentViewPager extends Fragment {
         ((MainActivity) getActivity()).enableUpButtonViews(false);
         return view;
     }
+
+
 }
