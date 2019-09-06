@@ -111,6 +111,16 @@
         <item name="android:textSize">@dimen/font_large_20</item>
     </style>
 
+    <style name="HeaderTextStyle.MarginStart">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_icon</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
     <style name="HeaderTextStyle.Normal">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -129,6 +139,15 @@
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/font_normal_16</item>
+    </style>
+
+    <style name="HeaderTextStyle.Normal.SmallMargin.Grey">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_icon</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
     </style>
 
     <style name="HeaderTextStyle.Small">
@@ -185,6 +204,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
         <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/color_text_light</item>
@@ -217,17 +237,46 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
         <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="DescriptionTextStyle.Margin8">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_small_8</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="DescriptionTextStyle.Margin">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal_16</item>
         <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/color_text</item>
         <item name="android:textSize">@dimen/font_small_14</item>
     </style>
 
-    <style name="DescriptionTextStyle.InList">
+    <style name="DescriptionTextStyle.Margin.InList">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/spacing_small_8</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/color_text</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="DescriptionTextStyle.Margin.Item">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
         <item name="android:textColor">@color/color_text</item>
         <item name="android:textSize">@dimen/font_small_14</item>
     </style>

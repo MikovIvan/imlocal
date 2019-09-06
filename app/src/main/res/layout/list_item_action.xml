@@ -37,6 +37,8 @@
     <TextView
         android:id="@+id/tv_shop_adress"
         style="@style/SubTitleTextStyle.Top"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/cv_icon"
         app:layout_constraintTop_toBottomOf="@+id/tv_shop_title"
         tools:text="Москва, ул. Воронцовская, 20 " />
