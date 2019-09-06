@@ -63,7 +63,7 @@ public class FragmentVitrinaEvent extends Fragment {
 
         if (!event.getEventPhotoList().isEmpty()) {
             Picasso.with(getContext())
-                    .load("https://www.yiilessons.xyz/img/happeningPhoto/" + event.getEventPhotoList().get(0).getEventPhoto())
+                    .load("https://imlocal.ru/img/happeningPhoto/" + event.getEventPhotoList().get(0).getEventPhoto())
                     .into(ivEventPhoto);
         } else {
             ivEventPhoto.setImageResource(R.drawable.testimg);
