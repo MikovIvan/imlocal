@@ -44,7 +44,6 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.decorators.DisableDaysDecorator;
-import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 
 import static ru.imlocal.imlocal.MainActivity.api;
@@ -177,31 +176,31 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
 
     @Override
     public void onItemClickCategory(int position) {
-        List<Action> filterList = new ArrayList<>();
+        List<Event> filterList = new ArrayList<>();
         switch (position) {
             case 0:
                 Toast.makeText(getContext(), "Еда", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 1);
+                filter(filterList, 1);
                 break;
             case 1:
                 Toast.makeText(getContext(), "Дети", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 2);
+                filter(filterList, 2);
                 break;
             case 2:
                 Toast.makeText(getContext(), "Фитнес", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 3);
+                filter(filterList, 3);
                 break;
             case 3:
                 Toast.makeText(getContext(), "Красота", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 4);
+                filter(filterList, 4);
                 break;
             case 4:
                 Toast.makeText(getContext(), "Покупки", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 5);
+                filter(filterList, 5);
                 break;
             case 5:
                 Toast.makeText(getContext(), "Все", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 0);
+                filter(filterList, 0);
                 break;
         }
     }
