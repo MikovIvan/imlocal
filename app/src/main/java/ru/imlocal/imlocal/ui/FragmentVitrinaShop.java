@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.widget.ViewFlipper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,11 +37,15 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopPhoto;
 
+import static ru.imlocal.imlocal.MainActivity.favoritesShops;
+import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
 import static ru.imlocal.imlocal.utils.Constants.FOOD;
+import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.PURCHASES;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 
 public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapterActionsLight.OnItemClickListener, View.OnClickListener {
 
@@ -146,6 +152,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 getActivity().onBackPressed();
@@ -158,6 +165,14 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 startActivity(Intent.createChooser(send, "Share using"));
                 return true;
             case R.id.add_to_favorites:
+                if (!favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
+                    addToFavorites(Kind.shop, String.valueOf(shop.getShopId()), user.getId());
+                    favoritesShops.put(String.valueOf(shop.getShopId()), shop);
+                    item.setIcon(R.drawable.ic_heart_pressed);
+                } else {
+                    favoritesShops.remove(String.valueOf(shop.getShopId()));
+                    item.setIcon(R.drawable.ic_heart);
+                }
                 Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
@@ -167,6 +182,9 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_vitrina, menu);
+        if (favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -234,6 +252,11 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public void onItemAddToFavorites(int position) {
+        Log.d("AUTH", "parametrs :" + shop.getShopActionArray().get(position).getId() + user.getId());
+        addToFavorites(Kind.event, shop.getShopActionArray().get(position).getId(), user.getId());
         Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
+
+
 }
+

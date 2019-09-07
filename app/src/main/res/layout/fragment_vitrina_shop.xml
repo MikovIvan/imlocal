@@ -242,7 +242,7 @@
 
         <TextView
             android:id="@+id/tv_about_shop_text"
-            style="@style/DescriptionTextStyle"
+            style="@style/DescriptionTextStyle.Margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_about"

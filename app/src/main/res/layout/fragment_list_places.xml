@@ -18,7 +18,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/RVCategory"
-        app:layout_constraintTop_toBottomOf="@id/guideline2" />
+        android:orientation="horizontal"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/guideline2"
+        tools:listitem="@layout/list_item_category" />
 
     <com.jaredrummler.materialspinner.MaterialSpinner
         android:id="@+id/spinner_sort"
@@ -38,6 +41,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/RvMain"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_sort" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_sort"
+        tools:listitem="@layout/list_item_shop" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

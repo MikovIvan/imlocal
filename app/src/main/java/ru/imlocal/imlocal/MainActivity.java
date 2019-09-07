@@ -34,7 +34,13 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.vk.sdk.VKSdk;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ru.imlocal.imlocal.api.Api;
+import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
@@ -47,6 +53,13 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private long backPressedTime;
+    private Toast backToast;
+
+    public static Map<String, Shop> favoritesShops = new HashMap<>();
+    public static Map<String, Event> favoritesEvents = new HashMap<>();
+    public static Map<String, Action> favoritesActions = new HashMap<>();
 
     public static boolean isLoading;
     public static User user = new User();
@@ -72,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (isLoading) {
             progressBar.setVisibility(View.VISIBLE);
         } else {
-            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -80,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         api = RetrofitClient.getInstance().getApi();
 
         initView();
@@ -104,8 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void openPolicy()
-    {
+    public void openPolicy() {
         Fragment fragment = new FragmentPolicy();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -116,8 +127,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        }
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        }
+        Fragment fragmentViewPager = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
+        if (fragmentViewPager != null && fragmentViewPager.isVisible()) {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                backToast.cancel();
+                super.onBackPressed();
+                return;
+            } else {
+                backToast = Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT);
+                backToast.show();
+            }
+            backPressedTime = System.currentTimeMillis();
         }
     }
 
@@ -155,11 +179,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = new FragmentViewPager();
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
-                .add(R.id.frame, fragment)
+                .add(R.id.frame, fragment, "FragmentViewPager")
                 .commit();
-                /*.replace(R.id.frame, fragment)
-                .addToBackStack("FragmentViewPager")
-                .commitAllowingStateLoss();*/
     }
 
     public void openVitrinaShop(Bundle bundle) {
@@ -191,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment)
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
-                .addToBackStack("FragmentVitrinaShop")
+                .addToBackStack("FragmentVitrinaAction")
                 .commit();
     }
 
@@ -200,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.frame_auth, fragment)
-                .addToBackStack("FragmentL")
+                .addToBackStack("FragmentLogin")
                 .commit();
     }
 

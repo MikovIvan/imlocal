@@ -29,5 +29,15 @@ public class PreferenceUtils {
         return gson.fromJson(json, User.class);
     }
 
+    public static void saveTab(int tab, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        prefsEditor.putInt(Constants.TAB, tab);
+        prefsEditor.apply();
+    }
 
+    public static int getTab(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt(Constants.TAB, 0);
+    }
 }

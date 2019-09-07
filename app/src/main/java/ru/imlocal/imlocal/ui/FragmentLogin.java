@@ -61,9 +61,15 @@ import static ru.imlocal.imlocal.MainActivity.accessToken;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.callbackManager;
 import static ru.imlocal.imlocal.MainActivity.enter;
+import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
+import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.mGoogleSignInClient;
 import static ru.imlocal.imlocal.MainActivity.navigationView;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Utils.actionMap;
+import static ru.imlocal.imlocal.utils.Utils.eventMap;
+import static ru.imlocal.imlocal.utils.Utils.shopMap;
 
 
 /**
@@ -182,22 +188,28 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-//                падает с ошибкой
-                Log.d("AUTH", "response" + response.toString());
-//                if (response.isSuccessful() && response.body() != null) {
-//                    Log.d("AUTH", "body: " + response.body().toString());
-//                    Log.d("AUTH", "message: " + response.message());
-//                    Log.d("AUTH", "error: " + response.errorBody());
                 if (response.body().getId() != null) {
                     Log.d("AUTH", "sucsecc " + response.body().getId());
+                    Log.d("AUTH", "message: " + response.message());
+                    Log.d("AUTH", "user getActionsFavoritesList: " + response.body().getActionsFavoritesList());
+                    Log.d("AUTH", "user getEventsFavoritesList: " + response.body().getEventsFavoritesList());
+                    Log.d("AUTH", "user getShopsFavoritesList: " + response.body().getShopsFavoritesList());
+                    user.setId(response.body().getId());
+                    PreferenceUtils.saveUser(user, getActivity());
+                    favoritesShops = shopMap(user.getShopsFavoritesList());
+                    favoritesActions = actionMap(user.getActionsFavoritesList());
+                    favoritesEvents = eventMap(user.getEventsFavoritesList());
+                    Log.d("AUTH", "loginUser: " + user);
                 } else {
                     Call<User> call2 = api.registerUser(user);
                     call2.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
                             Log.d("AUTH", response.body().toString());
+                            user.setId(response.body().getId());
+                            PreferenceUtils.saveUser(user, getActivity());
+                            Log.d("AUTH", "registerUser: " + user);
                             Log.d("AUTH", "message: " + response.message());
-                            Log.d("AUTH", "error: " + response.errorBody());
                         }
 
                         @Override
@@ -214,30 +226,6 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
             }
         });
     }
-//
-//    {
-//        "email": "mikov190189@gmail.com",
-//            "source": "google",
-//            "source_id": "102998265505229591444",
-//            "username": "Иван Миков",
-//            "accessToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImY2ZjgwZjM3ZjIxYzIzZTYxZjJiZTQyMzFlMjdkMjY5ZDY2OTUzMjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI2NDcxOTcxNTAwMjEtdTNjaDlzaW1nNTI1NThtbWU2aHM4cTB2MGRjazBlZTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI2NDcxOTcxNTAwMjEtb2NvOHV0NHJudmVsaW1zODBzZGYyN3ZsNzZpcDh0aHMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDI5OTgyNjU1MDUyMjk1OTE0NDQiLCJlbWFpbCI6Im1pa292MTkwMTg5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoi0JjQstCw0L0g0JzQuNC60L7QsiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vLUFwSDlsdHkyeGlzL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FDSGkzcmZQX1htQW5YbmZ6aUo1TTdQVlkxUFdTbTF2Q3cvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6ItCY0LLQsNC9IiwiZmFtaWx5X25hbWUiOiLQnNC40LrQvtCyIiwibG9jYWxlIjoicnUiLCJpYXQiOjE1NjcwOTY2NjgsImV4cCI6MTU2NzEwMDI2OH0.mnPNgzP9ZvkUQhH0MhwIGvULSgtVpgJfdvQQpwevXbq2pmjYFNd6aAem1DEN_5qKsge4-tPXBSNGhCDu602sMTlenct6Ussgzjya0q5xs5ut00qmgMQEMeKJcuoK50SrDy98Gch4aNiHbSLWVCeu2D24-AW8T0isSpIvQPmejujZ_gGNzJ147SBT12t3iVorw2AuZxETxskhsxqbnZIlrPOVu5-gyHVlm6JRLwIoxtZL6UPG8f3L_4yWYexP_sgI5YolEuPUAYImLZOSgDb75Prqj6FcSh3krhP3ZOAofVhcL96SdDLu_RDS303DzIRQrhYh-xbh8hC1HaeCdYTmQQ"
-//    }
-//
-//    {
-//        "email": "mikov1989@rambler.ru",
-//            "source": "facebook",
-//            "source_id": "2393256167427509",
-//            "username": "Иван Миков",
-//            "accessToken": "EAAjBP6yi2PMBAPAsJmTwEBo9hZB7Yyy9sWiXPTltpZCSqBTybbzrZANsPZB7DZCzpBkbQ438ZBlUtQZCYOszST0IuWTTzv6mMIAGujV2rH8IGZB7t2UK93SH6P8w3kWAcO1VL1TLeYZBIhot15Dz6YnzOjNEm79qGC1HKbZB2u5SeZCTKJL8ZCxiTcsYpRcbgaynkmz1JVfbILA7ogZDZD"
-//    }
-//
-//    {
-//        "email": "mikov1989@rambler.ru",
-//            "source": "vkontakte",
-//            "source_id": "485338511",
-//            "username": "Ivan Mikov",
-//            "accessToken": "3925a167025512533eb97db4eafc113d46b7da0801d6260d467e4131f8012c6643ec5a572a6a5eee0081b"
-//    }
 
     private void saveUser(String source_id, String email, String firstName, String lastName, String source, String accessToken) {
         user.setSource_id(source_id);
@@ -250,7 +238,6 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         Log.d("AUTH", "parametrs: " + user.toString());
         loginUser(user);
         user.setLogin(true);
-        PreferenceUtils.saveUser(user, getActivity());
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {

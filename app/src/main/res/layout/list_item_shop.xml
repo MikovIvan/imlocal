@@ -5,45 +5,64 @@
     android:id="@+id/cardview"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/spacing_tiny_4"
+    android:layout_margin="@dimen/spacing_small_8"
     app:cardCornerRadius="8dp"
     app:cardElevation="10dp">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        tools:layout_editor_absoluteX="104dp">
 
         <ImageView
             android:id="@+id/iv_shopimage"
             android:layout_width="104dp"
-            android:layout_height="104dp"
-            android:layout_margin="@dimen/spacing_small_8"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_list_item_shop_image"
             android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/tv_title"
                 style="@style/HeaderTextStyle.Normal.SmallMargin.Black"
                 android:layout_marginEnd="@dimen/spacing_small_8"
+                android:ellipsize="end"
+                android:maxLength="60"
+                android:maxLines="3"
+                app:layout_constraintBottom_toTopOf="@+id/tv_distance"
+                app:layout_constraintHeight_percent="0.3"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintEnd_toStartOf="@+id/tv_rating"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_shopimage"
+                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Кафе-паб Гвозди" />
+                tools:text="Детская художественная школа им. В.Ф. Стожарова" />
+
+        <TextView
+            android:id="@+id/tv_distance"
+            style="@style/HeaderTextStyle.MarginStart"
+            android:text="100 м от Вас"
+            app:layout_constraintBottom_toTopOf="@+id/tv_description"
+            app:layout_constraintHeight_percent="0.15"
+            app:layout_constraintStart_toEndOf="@id/iv_shopimage"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
             <TextView
                 android:id="@+id/tv_description"
-                style="@style/DescriptionTextStyle.InList"
+                style="@style/DescriptionTextStyle.Margin8"
+                android:layout_marginBottom="@dimen/spacing_small_8"
                 android:ellipsize="end"
                 android:maxLines="3"
+                app:layout_constraintHeight_percent="0.5"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_shopimage"
+                app:layout_constraintTop_toBottomOf="@+id/tv_distance"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:text="Кофе собственной обжарки, легендарные блинчики, изысканные  " />
+                tools:text="Дополнительное образование для школьников на бюджетной и внебюджетной основе. " />
 
             <TextView
                 android:id="@+id/tv_rating"
@@ -55,5 +74,4 @@
                 tools:text="4.3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.cardview.widget.CardView>

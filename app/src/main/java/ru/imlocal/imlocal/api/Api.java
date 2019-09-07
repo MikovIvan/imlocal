@@ -5,10 +5,11 @@ import java.util.List;
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
@@ -25,9 +26,6 @@ public interface Api {
     @GET("happenings")
     Observable<List<Event>> getAllEvents();
 
-    @GET("shops/{shopId}")
-    Observable<Shop> getShop(@Path("shopId") int shopId);
-
     @Headers("Content-Type: application/json; charset=utf-8")
     @POST("user/register")
     Call<User> registerUser(@Body User user);
@@ -36,4 +34,11 @@ public interface Api {
     @POST("user/login")
     Call<User> loginUser(@Body User user);
 
+    @FormUrlEncoded
+    @POST("user/favorite")
+    Call<User> addFavorites(
+            @Field("kind") String kind,
+            @Field("source_id") String sourceId,
+            @Field("user_id") String userId
+    );
 }

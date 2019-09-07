@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -44,9 +45,30 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
     @Override
     public void onBindViewHolder(RecyclerViewAdapterShops.ViewHolder holder, int position) {
         Shop shop = dataShopsFiltered.get(position);
+        holder.tvShopTitle.setText(shop.getShopShortName());
+
+//       для отображения описания магазина, чтобы соответсвовало макетам
+        holder.tvShopTitle.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                holder.tvShopTitle.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int linecount = holder.tvShopTitle.getLineCount();
+                switch (linecount) {
+                    case 1:
+                        holder.tvShopDescription.setMaxLines(3);
+                        break;
+                    case 2:
+                        holder.tvShopDescription.setMaxLines(2);
+                        break;
+                    case 3:
+                        holder.tvShopDescription.setMaxLines(3);
+                        break;
+                }
+            }
+        });
+
         Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + shop.getShopPhotoArray().get(0).getShopPhoto())
                 .into(holder.ivShopIcon);
-        holder.tvShopTitle.setText(shop.getShopShortName());
         holder.tvShopDescription.setText(shop.getShopShortDescription());
         holder.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
     }
@@ -92,6 +114,7 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvDistance;
         ImageView ivShopIcon;
         TextView tvShopTitle;
         TextView tvShopDescription;
@@ -99,6 +122,7 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
 
         ViewHolder(View v) {
             super(v);
+            tvDistance = v.findViewById(R.id.tv_distance);
             ivShopIcon = v.findViewById(R.id.iv_shopimage);
             tvShopTitle = v.findViewById(R.id.tv_title);
             tvShopDescription = v.findViewById(R.id.tv_description);
@@ -116,5 +140,4 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
             });
         }
     }
-
 }
