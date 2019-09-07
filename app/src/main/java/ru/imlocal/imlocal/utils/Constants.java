@@ -11,4 +11,10 @@ public class Constants {
     public static final String USER = "user";
 
     public static final String TAB = "tab";
+
+    public enum Kind {
+        shop,
+        event,
+        happening
+    }
 }

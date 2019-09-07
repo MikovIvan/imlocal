@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
@@ -24,6 +25,11 @@ import com.squareup.picasso.Picasso;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
+
+import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
+import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Constants.Kind;
+import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 
 public class FragmentVitrinaEvent extends Fragment {
     private ImageView ivEventPhoto;
@@ -93,6 +99,15 @@ public class FragmentVitrinaEvent extends Fragment {
                 startActivity(Intent.createChooser(send, "Share using"));
                 return true;
             case R.id.add_to_favorites:
+                if (!favoritesEvents.containsKey(String.valueOf(event.getId()))) {
+                    addToFavorites(Kind.happening, String.valueOf(event.getId()), user.getId());
+                    favoritesEvents.put(String.valueOf(event.getId()), event);
+                    item.setIcon(R.drawable.ic_heart_pressed);
+                } else {
+                    favoritesEvents.remove(String.valueOf(event.getId()));
+                    item.setIcon(R.drawable.ic_heart);
+                }
+
                 Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
@@ -102,6 +117,9 @@ public class FragmentVitrinaEvent extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_vitrina, menu);
+        if (favoritesEvents.containsKey(String.valueOf(event.getId()))) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 }

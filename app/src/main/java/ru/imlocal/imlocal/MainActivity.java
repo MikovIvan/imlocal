@@ -34,7 +34,13 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.vk.sdk.VKSdk;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ru.imlocal.imlocal.api.Api;
+import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
@@ -50,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private long backPressedTime;
     private Toast backToast;
+
+    public static Map<String, Shop> favoritesShops = new HashMap<>();
+    public static Map<String, Event> favoritesEvents = new HashMap<>();
+    public static Map<String, Action> favoritesActions = new HashMap<>();
 
     public static boolean isLoading;
     public static User user = new User();

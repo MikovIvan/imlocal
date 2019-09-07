@@ -20,6 +20,8 @@ import java.util.List;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 
+import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+
 
 public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerViewAdapterActions.ViewHolder> implements Filterable {
     private List<Action> dataActions;
@@ -47,6 +49,10 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(RecyclerViewAdapterActions.ViewHolder holder, int position) {
         Action action = dataActionsFiltered.get(position);
+        if (favoritesActions.containsKey(action.getId())) {
+            holder.ibAddToFavorites.setImageResource(R.drawable.ic_heart_pressed);
+        }
+
         if (action.getShop() != null) {
             if (action.getShop().getShopShortName() != null) {
                 holder.tvShopTitle.setText(action.getShop().getShopShortName());
@@ -82,7 +88,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
 
         void onItemShare(int position);
 
-        void onItemAddToFavorites(int position);
+        void onItemAddToFavorites(int position, ImageButton imageButton);
     }
 
     @Override
@@ -173,7 +179,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemAddToFavorites(position);
+                            mListener.onItemAddToFavorites(position, ibAddToFavorites);
                         }
                     }
                 }

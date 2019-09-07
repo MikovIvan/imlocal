@@ -18,6 +18,7 @@ import android.widget.ViewFlipper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
@@ -26,6 +27,11 @@ import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.ActionPhoto;
+import ru.imlocal.imlocal.utils.Constants;
+
+import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 
 public class FragmentVitrinaAction extends Fragment {
 
@@ -108,6 +114,15 @@ public class FragmentVitrinaAction extends Fragment {
                 startActivity(Intent.createChooser(send, "Share using"));
                 return true;
             case R.id.add_to_favorites:
+                if (!favoritesActions.containsKey(action.getId())) {
+                    addToFavorites(Constants.Kind.event, action.getId(), user.getId());
+                    favoritesActions.put((action.getId()), action);
+                    item.setIcon(R.drawable.ic_heart_pressed);
+                } else {
+                    favoritesActions.remove(action.getId());
+                    item.setIcon(R.drawable.ic_heart);
+                }
+
                 Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
@@ -117,6 +132,9 @@ public class FragmentVitrinaAction extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_vitrina, menu);
+        if (favoritesActions.containsKey(String.valueOf(action.getId()))) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 

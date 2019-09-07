@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,10 +40,15 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.utils.Constants;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
+import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
+import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Constants.Kind;
+import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 
 public class FragmentListActions extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     private List<Action> actionList = new ArrayList<>();
@@ -124,7 +130,16 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
     }
 
     @Override
-    public void onItemAddToFavorites(int position) {
+    public void onItemAddToFavorites(int position, ImageButton imageButton) {
+        if (!favoritesActions.containsKey(actionList.get(position).getId())) {
+            addToFavorites(Constants.Kind.event, actionList.get(position).getId(), user.getId());
+            favoritesActions.put(actionList.get(position).getId(), actionList.get(position));
+            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart_pressed));
+        } else {
+            favoritesActions.remove(actionList.get(position).getId());
+            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart));
+        }
+        addToFavorites(Kind.event, actionList.get(position).getId(), user.getId());
         Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
 
