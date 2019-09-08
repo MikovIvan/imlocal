@@ -15,10 +15,16 @@ import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 
 import static ru.imlocal.imlocal.MainActivity.api;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
 
 public class Utils {
     public static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static String newDateFormat(String date) {
+        return FORMATTER3.format(FORMATTER2.parse(date));
     }
 
     public static void addToFavorites(Constants.Kind kind, String sourceId, String userId) {

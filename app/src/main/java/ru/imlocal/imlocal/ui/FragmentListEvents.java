@@ -29,7 +29,6 @@ import com.prolificinteractive.materialcalendarview.OnRangeSelectedListener;
 import com.suke.widget.SwitchButton;
 
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +47,10 @@ import ru.imlocal.imlocal.entity.Event;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
 
 public class FragmentListEvents extends Fragment implements View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM");
-    private static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private RecyclerView recyclerView;
     private RecyclerView rvCategory;

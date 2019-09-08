@@ -17,6 +17,8 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.utils.Constants;
 
+import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
+
 public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewAdapterEvent.ViewHolder> {
     private List<Event> dataEvents;
     private Context context;
@@ -47,7 +49,7 @@ public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewA
         } else {
             holder.tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
         }
-        holder.tvEventDate.setText(event.getBegin());
+        holder.tvEventDate.setText(newDateFormat(event.getBegin()));
         holder.tvEventTitle.setText(event.getTitle());
         if (event.getEventPhotoList().isEmpty()) {
             holder.ivEventImage.setImageResource(R.drawable.testimg);
