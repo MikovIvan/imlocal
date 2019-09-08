@@ -61,15 +61,9 @@ import static ru.imlocal.imlocal.MainActivity.accessToken;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.callbackManager;
 import static ru.imlocal.imlocal.MainActivity.enter;
-import static ru.imlocal.imlocal.MainActivity.favoritesActions;
-import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
-import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.mGoogleSignInClient;
 import static ru.imlocal.imlocal.MainActivity.navigationView;
 import static ru.imlocal.imlocal.MainActivity.user;
-import static ru.imlocal.imlocal.utils.Utils.actionMap;
-import static ru.imlocal.imlocal.utils.Utils.eventMap;
-import static ru.imlocal.imlocal.utils.Utils.shopMap;
 
 
 /**
@@ -196,9 +190,10 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     Log.d("AUTH", "user getShopsFavoritesList: " + response.body().getShopsFavoritesList());
                     user.setId(response.body().getId());
                     PreferenceUtils.saveUser(user, getActivity());
-                    favoritesShops = shopMap(user.getShopsFavoritesList());
-                    favoritesActions = actionMap(user.getActionsFavoritesList());
-                    favoritesEvents = eventMap(user.getEventsFavoritesList());
+//                    сервер не возвращает эти данные
+//                    favoritesShops = shopMap(user.getShopsFavoritesList());
+//                    favoritesActions = actionMap(user.getActionsFavoritesList());
+//                    favoritesEvents = eventMap(user.getEventsFavoritesList());
                     Log.d("AUTH", "loginUser: " + user);
                 } else {
                     Call<User> call2 = api.registerUser(user);

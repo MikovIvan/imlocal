@@ -1,7 +1,6 @@
 package ru.imlocal.imlocal.utils;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,8 @@ public class Utils {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.d("AUTH", kind.toString() + " addFavorites " + response.body().toString());
+//                падает из-за пустого тела ответа
+//                Log.d("AUTH", kind.toString() + " addFavorites " + response.body().toString());
             }
 
             @Override
