@@ -60,4 +60,25 @@ public class Utils {
         }
         return hashMap;
     }
+
+    public static String replaceString(String input) {
+//        добавить еще сокращения и подумать как получше написать
+        String output = "";
+        if (input.toLowerCase().contains("улица")) {
+            output = input.replace("улица", "ул.");
+        } else if (input.toLowerCase().contains("проспект")) {
+            output = input.replace("проспект", "пр.");
+        } else if (input.toLowerCase().contains("бульвар")) {
+            output = input.replace("бульвар", "бул.");
+        } else if (input.toLowerCase().contains("переулок")) {
+            output = input.replace("переулок", "пер.");
+        } else if (input.toLowerCase().contains("проспект")) {
+            output = input.replace("набережная", "наб.");
+        } else if (input.toLowerCase().contains("аллея")) {
+            output = input.replace("аллея", "ал.");
+        } else if (input.toLowerCase().contains("площадь")) {
+            output = input.replace("площадь", "пл.");
+        }
+        return output;
+    }
 }

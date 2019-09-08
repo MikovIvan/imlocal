@@ -19,6 +19,7 @@ import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 
@@ -68,7 +69,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
 
         if (!action.getActionPhotos().isEmpty()) {
             holder.tvEventTitle.setText(action.getTitle());
-            holder.tvEventAdress.setText(action.getShop().getShopAddress().toString());
+            holder.tvEventAdress.setText(Utils.replaceString(action.getShop().getShopAddress().toString()));
             holder.tvActionDescription.setText(action.getFullDesc());
             holder.tvDate.setText(action.getBegin() + "-" + action.getEnd());
             Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getActionPhotos().get(0).getActionPhoto())
