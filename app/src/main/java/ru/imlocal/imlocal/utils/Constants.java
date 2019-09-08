@@ -1,5 +1,7 @@
 package ru.imlocal.imlocal.utils;
 
+import android.text.Html;
+
 public class Constants {
     public static final String FOOD = "Еда";
     public static final String CHILDREN = "Дети";
@@ -11,6 +13,8 @@ public class Constants {
     public static final String USER = "user";
 
     public static final String TAB = "tab";
+
+    public static String KEY_RUB = String.valueOf(Html.fromHtml("&#8381;"));
 
     public enum Kind {
         shop,
