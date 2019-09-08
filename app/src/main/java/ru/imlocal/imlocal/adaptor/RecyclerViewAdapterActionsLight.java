@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,10 +52,6 @@ public class RecyclerViewAdapterActionsLight extends RecyclerView.Adapter<Recycl
 
     public interface OnItemClickListener {
         void onItemClick(int position);
-
-        void onItemShare(int position);
-
-        void onItemAddToFavorites(int position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -64,16 +59,12 @@ public class RecyclerViewAdapterActionsLight extends RecyclerView.Adapter<Recycl
         TextView tvEventTitle;
         ImageView ivActionIcon;
         TextView tvActionDescription;
-        ImageButton ibShare;
-        ImageButton ibAddToFavorites;
 
         ViewHolder(View v) {
             super(v);
             tvEventTitle = v.findViewById(R.id.tv_action_title);
             tvActionDescription = v.findViewById(R.id.tv_action_description);
             ivActionIcon = v.findViewById(R.id.iv_action_icon);
-            ibShare = v.findViewById(R.id.ib_share);
-            ibAddToFavorites = v.findViewById(R.id.ib_add_to_favorites);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -81,30 +72,6 @@ public class RecyclerViewAdapterActionsLight extends RecyclerView.Adapter<Recycl
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             mListener.onItemClick(position);
-                        }
-                    }
-                }
-            });
-
-            ibShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemShare(position);
-                        }
-                    }
-                }
-            });
-
-            ibAddToFavorites.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemAddToFavorites(position);
                         }
                     }
                 }

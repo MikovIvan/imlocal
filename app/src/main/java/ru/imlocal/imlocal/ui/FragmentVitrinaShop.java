@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -239,24 +238,5 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         bundle.putSerializable("action", action);
         ((MainActivity) getActivity()).openVitrinaAction(bundle);
     }
-
-    @Override
-    public void onItemShare(int position) {
-        Action action = shop.getShopActionArray().get(position);
-        Intent send = new Intent(Intent.ACTION_SEND);
-        send.setType("text/plain");
-        send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
-        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + shop.getShopWeb() + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
-        startActivity(Intent.createChooser(send, "Share using"));
-    }
-
-    @Override
-    public void onItemAddToFavorites(int position) {
-        Log.d("AUTH", "parametrs :" + shop.getShopActionArray().get(position).getId() + user.getId());
-        addToFavorites(Kind.event, shop.getShopActionArray().get(position).getId(), user.getId());
-        Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
-    }
-
-
 }
 

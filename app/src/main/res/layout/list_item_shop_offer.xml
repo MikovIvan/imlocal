@@ -6,7 +6,7 @@
     android:layout_width="184dp"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    app:cardCornerRadius="10dp"
+    app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
     app:layout_constraintBottom_toTopOf="@+id/gl_bottom"
     app:layout_constraintEnd_toEndOf="parent"
@@ -32,65 +32,36 @@
             android:id="@+id/tv_action_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:padding="8dp"
-            android:text="Неделя грузинской кухни"
+            android:layout_margin="@dimen/spacing_small_8"
+            android:padding="@dimen/spacing_small_8"
+            android:textSize="@dimen/font_normal_16"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:fontFamily="sans-serif-medium"
-            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
             android:ellipsize="end"
             android:maxLines="2"
             app:layout_constraintBottom_toTopOf="@+id/tv_action_description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/iv_action_icon" />
+            tools:text="Неделя грузинской кухни" />
 
         <TextView
             android:id="@+id/tv_action_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:padding="4dp"
-            android:text="Смотрим Игру Престолов. 15% скидка на всё меню, кодовое слово «Тормунд»"
+            android:layout_marginBottom="@dimen/spacing_small_8"
+            android:padding="@dimen/spacing_tiny_4"
+            android:textColor="@color/color_text"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="3"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_action_icon"
+            app:layout_constraintTop_toBottomOf="@id/iv_action_icon"
             app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Смотрим Игру Престолов. 15% скидка на всё меню, кодовое слово «Тормунд»"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageButton
-            android:id="@+id/ib_add_to_favorites"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_favorite_border_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_action_icon" />
-
-        <ImageButton
-            android:id="@+id/ib_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_share_grey_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ib_add_to_favorites"
-            app:layout_constraintTop_toBottomOf="@+id/iv_action_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
