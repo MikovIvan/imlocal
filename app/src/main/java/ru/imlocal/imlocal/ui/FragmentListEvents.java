@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -30,7 +29,6 @@ import com.prolificinteractive.materialcalendarview.OnRangeSelectedListener;
 import com.suke.widget.SwitchButton;
 
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +42,15 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.decorators.DisableDaysDecorator;
-import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
 
-public class FragmentListEvents extends Fragment implements MenuItem.OnActionExpandListener, View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM");
+public class FragmentListEvents extends Fragment implements View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
 
     private RecyclerView recyclerView;
     private RecyclerView rvCategory;
@@ -61,6 +59,8 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
     private TextView tvDatePicker;
     private List<Event> eventList = new ArrayList<>();
     private List<Event> copyList = new ArrayList<>();
+    private boolean isShowFree;
+    private int category = 0;
     private ConstraintLayout constraintCalendar;
     private ConstraintLayout constraintMain;
     private TextView tvReady;
@@ -103,6 +103,9 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         sbFreeEvents.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                isShowFree = isChecked;
+                List<Event> filterList = new ArrayList<>();
+                filter(filterList, category);
                 Toast.makeText(getActivity(), "Отслеживание переключения: " + (isChecked ? "on" : "off"),
                         Toast.LENGTH_SHORT).show();
             }
@@ -174,50 +177,45 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         ((MainActivity) getActivity()).openVitrinaEvent(bundle);
     }
 
-
     @Override
     public void onItemClickCategory(int position) {
-        List<Action> filterList = new ArrayList<>();
+        List<Event> filterList = new ArrayList<>();
         switch (position) {
             case 0:
+                category = 1;
                 Toast.makeText(getContext(), "Еда", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 1);
+                filter(filterList, category);
                 break;
             case 1:
+                category = 2;
                 Toast.makeText(getContext(), "Дети", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 2);
+                filter(filterList, category);
                 break;
             case 2:
+                category = 3;
                 Toast.makeText(getContext(), "Фитнес", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 3);
+                filter(filterList, category);
                 break;
             case 3:
+                category = 4;
                 Toast.makeText(getContext(), "Красота", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 4);
+                filter(filterList, category);
                 break;
             case 4:
+                category = 5;
                 Toast.makeText(getContext(), "Покупки", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 5);
+                filter(filterList, category);
                 break;
             case 5:
+                category = 0;
                 Toast.makeText(getContext(), "Все", Toast.LENGTH_SHORT).show();
-//                filter(filterList, 0);
+                filter(filterList, category);
                 break;
         }
     }
 
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return false;
-    }
-
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return false;
-    }
-
     @SuppressLint("CheckResult")
-    public void getAllEvents() {
+    private void getAllEvents() {
         api.getAllEvents()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -258,23 +256,123 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
         adapter.setOnItemClickListener(this);
     }
 
-    private void filter(List<Event> filterList, int i) {
+    private void filter(List<Event> filterList, int category) {
         eventList.clear();
         eventList.addAll(copyList);
-        if (i != 0) {
-            for (Event event : eventList) {
-                if (event.getEventTypeId() == i) {
-                    filterList.add(event);
+        if (localDateEnd != null) {
+            if (isShowFree && category != 0) {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isAfter(localDateStart.minusDays(1)) &&
+                            LocalDate.parse(event.getBegin(), FORMATTER2).isBefore(localDateEnd.plusDays(1))
+                            && event.getPrice() == 0 && event.getEventTypeId() == category) {
+                        filterList.add(event);
+                    }
                 }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else if (isShowFree) {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isAfter(localDateStart.minusDays(1)) &&
+                            LocalDate.parse(event.getBegin(), FORMATTER2).isBefore(localDateEnd.plusDays(1))
+                            && event.getPrice() == 0) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else if (category != 0) {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isAfter(localDateStart.minusDays(1)) &&
+                            LocalDate.parse(event.getBegin(), FORMATTER2).isBefore(localDateEnd.plusDays(1))
+                            && event.getEventTypeId() == category) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isAfter(localDateStart.minusDays(1)) &&
+                            LocalDate.parse(event.getBegin(), FORMATTER2).isBefore(localDateEnd.plusDays(1))) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
             }
-            eventList.clear();
-            eventList.addAll(filterList);
+        } else if (localDateStart != null) {
+            if (isShowFree && category != 0) {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isEqual(localDateSingle)
+                            && event.getPrice() == 0 && event.getEventTypeId() == category) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else if (isShowFree) {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isEqual(localDateSingle)
+                            && event.getPrice() == 0) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else if (category != 0) {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isEqual(localDateSingle)
+                            && event.getEventTypeId() == category) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else {
+                for (Event event : eventList) {
+                    if (LocalDate.parse(event.getBegin(), FORMATTER2).isEqual(localDateSingle)) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            }
+        } else {
+            if (isShowFree && category != 0) {
+                for (Event event : eventList) {
+                    if (event.getPrice() == 0 && event.getEventTypeId() == category) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else if (isShowFree) {
+                for (Event event : eventList) {
+                    if (event.getPrice() == 0) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else if (category != 0) {
+                for (Event event : eventList) {
+                    if (event.getEventTypeId() == category) {
+                        filterList.add(event);
+                    }
+                }
+                eventList.clear();
+                eventList.addAll(filterList);
+            } else {
+                eventList.clear();
+                eventList.addAll(copyList);
+            }
         }
         adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
+        List<Event> filterList = new ArrayList<>();
         switch (view.getId()) {
             case R.id.tv_date_picker:
                 TransitionManager.beginDelayedTransition(constraintMain);
@@ -282,8 +380,10 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
                 break;
             case R.id.tv_ready:
                 if (localDateEnd != null) {
+                    filter(filterList, category);
                     tvDatePicker.setText(dateRange);
                 } else if (localDateStart != null) {
+                    filter(filterList, category);
                     tvDatePicker.setText(FORMATTER.format(localDateSingle));
                 } else {
                     setTodayToDatePicker();
@@ -296,12 +396,18 @@ public class FragmentListEvents extends Fragment implements MenuItem.OnActionExp
                 localDateStart = null;
                 localDateEnd = null;
                 localDateSingle = null;
+                setDefaultEventList();
                 break;
         }
     }
 
-    private void setTodayToDatePicker() {
+    private void setDefaultEventList() {
+        eventList.clear();
+        eventList.addAll(copyList);
+        adapter.notifyDataSetChanged();
+    }
 
+    private void setTodayToDatePicker() {
         materialCalendarView.setSelectedDate(instance);
         tvDatePicker.setText(FORMATTER.format(instance));
     }

@@ -1,7 +1,6 @@
 package ru.imlocal.imlocal.utils;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +15,16 @@ import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 
 import static ru.imlocal.imlocal.MainActivity.api;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
 
 public class Utils {
     public static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static String newDateFormat(String date) {
+        return FORMATTER3.format(FORMATTER2.parse(date));
     }
 
     public static void addToFavorites(Constants.Kind kind, String sourceId, String userId) {
@@ -27,7 +32,8 @@ public class Utils {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.d("AUTH", kind.toString() + " addFavorites " + response.body().toString());
+//                падает из-за пустого тела ответа
+//                Log.d("AUTH", kind.toString() + " addFavorites " + response.body().toString());
             }
 
             @Override
@@ -59,5 +65,26 @@ public class Utils {
             hashMap.put(String.valueOf(action.getId()), action);
         }
         return hashMap;
+    }
+
+    public static String replaceString(String input) {
+//        добавить еще сокращения и подумать как получше написать
+        String output = "";
+        if (input.toLowerCase().contains("улица")) {
+            output = input.replace("улица", "ул.");
+        } else if (input.toLowerCase().contains("проспект")) {
+            output = input.replace("проспект", "пр.");
+        } else if (input.toLowerCase().contains("бульвар")) {
+            output = input.replace("бульвар", "бул.");
+        } else if (input.toLowerCase().contains("переулок")) {
+            output = input.replace("переулок", "пер.");
+        } else if (input.toLowerCase().contains("проспект")) {
+            output = input.replace("набережная", "наб.");
+        } else if (input.toLowerCase().contains("аллея")) {
+            output = input.replace("аллея", "ал.");
+        } else if (input.toLowerCase().contains("площадь")) {
+            output = input.replace("площадь", "пл.");
+        }
+        return output;
     }
 }

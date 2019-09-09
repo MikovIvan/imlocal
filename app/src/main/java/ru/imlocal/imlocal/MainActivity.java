@@ -44,6 +44,7 @@ import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
+import ru.imlocal.imlocal.ui.FragmentListPlaces;
 import ru.imlocal.imlocal.ui.FragmentLogin;
 import ru.imlocal.imlocal.ui.FragmentPolicy;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
@@ -53,6 +54,7 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    FragmentListPlaces fragmentViewPager;
 
     private long backPressedTime;
     private Toast backToast;
@@ -114,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openPolicy();
             }
         });
+
+        if (savedInstanceState == null) {
+            openViewPager();
+        }
     }
 
     public void openPolicy() {
@@ -180,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
                 .add(R.id.frame, fragment, "FragmentViewPager")
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void openVitrinaShop(Bundle bundle) {
@@ -277,7 +283,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!VKSdk.isLoggedIn() && account == null && accessToken == null) {
             setFavoritesAndLogoutButtonsInNavigationDrawer(false);
         }
-        openViewPager();
         super.onStart();
     }
 
@@ -398,4 +403,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

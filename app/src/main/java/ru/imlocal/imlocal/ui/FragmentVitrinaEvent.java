@@ -25,11 +25,13 @@ import com.squareup.picasso.Picasso;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.utils.Constants;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 
 public class FragmentVitrinaEvent extends Fragment {
     private ImageView ivEventPhoto;
@@ -76,10 +78,14 @@ public class FragmentVitrinaEvent extends Fragment {
         }
 
         tvEventName.setText(event.getTitle());
-        tvEventAdress.setText(event.getAddress());
+        tvEventAdress.setText(event.getAddress().substring(0, event.getAddress().length() - 8));
         tvEventType.setText(String.valueOf(event.getEventTypeId()));
-        tvEventPrice.setText(String.valueOf(event.getPrice()));
-        tvEventDate.setText(event.getBegin());
+        if (event.getPrice() > 0) {
+            tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
+        } else {
+            tvEventPrice.setText("Бесплатно");
+        }
+        tvEventDate.setText(newDateFormat(event.getBegin()));
         tvEventDiscription.setText(event.getDescription());
 
         return view;

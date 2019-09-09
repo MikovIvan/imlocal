@@ -15,6 +15,9 @@ import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.utils.Constants;
+
+import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 
 public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewAdapterEvent.ViewHolder> {
     private List<Event> dataEvents;
@@ -41,8 +44,12 @@ public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewA
     public void onBindViewHolder(RecyclerViewAdapterEvent.ViewHolder holder, int position) {
         Event event = dataEvents.get(position);
 
-        holder.tvEventPrice.setText(String.valueOf(event.getPrice()));
-        holder.tvEventDate.setText(event.getBegin());
+        if (event.getPrice() == 0) {
+            holder.tvEventPrice.setText(R.string.event_price_free);
+        } else {
+            holder.tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
+        }
+        holder.tvEventDate.setText(newDateFormat(event.getBegin()));
         holder.tvEventTitle.setText(event.getTitle());
         if (event.getEventPhotoList().isEmpty()) {
             holder.ivEventImage.setImageResource(R.drawable.testimg);

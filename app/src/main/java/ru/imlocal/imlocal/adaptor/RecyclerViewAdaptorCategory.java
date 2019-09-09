@@ -15,7 +15,7 @@ import java.util.List;
 import ru.imlocal.imlocal.R;
 
 public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerViewAdaptorCategory.ViewHolder> {
-    private int category_index = -1;
+    private int category_index = 5;
     private List<String> data;
     private Context context;
     private OnItemCategoryClickListener mListener;
@@ -30,11 +30,6 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
         data.add("Все");
         this.context = context;
     }
-
-//    public RecyclerViewAdaptorCategory(List<String> data, Context context) {
-//        this.data = data;
-//        this.context = context;
-//    }
 
     public void setOnItemClickListener(OnItemCategoryClickListener listener) {
         mListener = listener;

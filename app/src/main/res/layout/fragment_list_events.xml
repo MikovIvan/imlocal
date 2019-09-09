@@ -22,7 +22,6 @@
         android:layout_marginStart="@dimen/spacing_small_8"
         android:layout_marginEnd="@dimen/spacing_small_8"
         app:cardCornerRadius="15dp"
-        app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_category">
@@ -59,7 +58,7 @@
                 android:id="@+id/switch_free"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/spacing_small_8"
+                android:layout_margin="@dimen/spacing_tiny_4"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -76,7 +75,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:elevation="2dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -128,8 +126,16 @@
         android:id="@+id/rv_fragment_list_events"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="@dimen/spacing_small_8"
         style="@style/RvMain"
         app:layout_constraintTop_toBottomOf="@+id/cv_calendar"
+        app:layout_constraintBottom_toTopOf="@id/guideline3"
         tools:listitem="@layout/list_item_event" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="40dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

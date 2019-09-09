@@ -321,7 +321,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
-        <item name="android:layout_marginTop">@dimen/spacing_large_24</item>
+        <item name="android:layout_marginTop">@dimen/spacing_normal_16</item>
         <item name="android:layout_marginEnd">@dimen/spacing_small_8</item>
     </style>
 
@@ -335,11 +335,11 @@
 
     <style name="RvMain">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
-        <item name="android:layout_marginStart">@dimen/spacing_small_8</item>
-        <item name="android:layout_marginEnd">@dimen/spacing_small_8</item>
-        <item name="android:paddingBottom">208dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginTop">168dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+
     </style>
 
     <style name="CategoryText">

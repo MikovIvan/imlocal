@@ -13,6 +13,13 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="?attr/actionBarSize" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="40dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_category"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,12 +43,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_fragment_list_places"
-        android:paddingBottom="210dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/RvMain"
         app:layout_constraintTop_toBottomOf="@+id/spinner_sort"
+        app:layout_constraintBottom_toTopOf="@id/guideline3"
         tools:listitem="@layout/list_item_shop" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

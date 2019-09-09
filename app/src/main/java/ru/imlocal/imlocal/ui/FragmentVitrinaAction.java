@@ -32,6 +32,7 @@ import ru.imlocal.imlocal.utils.Constants;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.replaceString;
 
 public class FragmentVitrinaAction extends Fragment {
 
@@ -83,7 +84,7 @@ public class FragmentVitrinaAction extends Fragment {
                     .load("https://imlocal.ru/img/shopPhoto/" + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                     .into(ivShopPhoto);
             tvShopName.setText(action.getShop().getShopShortName());
-            tvShopAdress.setText(action.getShop().getShopAddress().toString());
+            tvShopAdress.setText(replaceString(action.getShop().getShopAddress().toString()));
         } else {
             tvShopName.setText("Неверный id");
             ivShopPhoto.setImageResource(R.drawable.testimg);
