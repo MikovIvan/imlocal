@@ -22,8 +22,10 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 public class FragmentViewPager extends Fragment {
 
-    TabLayout tabLayout;
-    ViewPager viewPager;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private View vLeft;
+    private View vRight;
 
     @Nullable
     @Override
@@ -34,12 +36,15 @@ public class FragmentViewPager extends Fragment {
         tabLayout = view.findViewById(R.id.tabLayout);
         viewPager = view.findViewById(R.id.viewpager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        vLeft = view.findViewById(R.id.v_left);
+        vRight = view.findViewById(R.id.v_right);
 
         FragmentManager fm = getChildFragmentManager();
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getActivity(), fm);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(PreferenceUtils.getTab(getActivity()));
+        setUpLeftRightViewColor(PreferenceUtils.getTab(getActivity()));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -49,6 +54,7 @@ public class FragmentViewPager extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
+                setUpLeftRightViewColor(position);
                 PreferenceUtils.saveTab(position, getActivity());
 //                Toast.makeText(getActivity().getApplicationContext(), tabLayout.getTabAt(position).getText(), Toast.LENGTH_SHORT).show();
             }
@@ -60,6 +66,23 @@ public class FragmentViewPager extends Fragment {
         });
         ((MainActivity) getActivity()).enableUpButtonViews(false);
         return view;
+    }
+
+    private void setUpLeftRightViewColor(int position) {
+        switch (position) {
+            case 0:
+                vLeft.setBackgroundColor(getResources().getColor(R.color.color_background_tab_button));
+                vRight.setBackgroundColor(getResources().getColor(R.color.color_main));
+                break;
+            case 1:
+                vLeft.setBackgroundColor(getResources().getColor(R.color.color_main));
+                vRight.setBackgroundColor(getResources().getColor(R.color.color_main));
+                break;
+            case 2:
+                vLeft.setBackgroundColor(getResources().getColor(R.color.color_main));
+                vRight.setBackgroundColor(getResources().getColor(R.color.color_background_tab_button));
+                break;
+        }
     }
 
 
