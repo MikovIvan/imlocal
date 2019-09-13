@@ -32,6 +32,7 @@ import ru.imlocal.imlocal.utils.Constants;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.removeToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
 
 public class FragmentVitrinaAction extends Fragment {
@@ -119,12 +120,13 @@ public class FragmentVitrinaAction extends Fragment {
                     addToFavorites(Constants.Kind.event, action.getId(), user.getId());
                     favoritesActions.put((action.getId()), action);
                     item.setIcon(R.drawable.ic_heart_pressed);
+                    Toast.makeText(getActivity(), "add", Toast.LENGTH_LONG).show();
                 } else {
                     favoritesActions.remove(action.getId());
+                    removeToFavorites(Constants.Kind.event, action.getId(), user.getId());
                     item.setIcon(R.drawable.ic_heart);
+                    Toast.makeText(getActivity(), "remove", Toast.LENGTH_LONG).show();
                 }
-
-                Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
         }

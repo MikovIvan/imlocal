@@ -3,6 +3,7 @@ package ru.imlocal.imlocal.api;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -40,5 +41,14 @@ public interface Api {
             @Field("kind") String kind,
             @Field("source_id") String sourceId,
             @Field("user_id") String userId
+    );
+
+    @FormUrlEncoded
+    @POST("user/favorite")
+    Call<RequestBody> removeFavorites(
+            @Field("kind") String kind,
+            @Field("source_id") String sourceId,
+            @Field("user_id") String userId,
+            @Field("delete") String delete
     );
 }
