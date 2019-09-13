@@ -26,7 +26,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     implementation 'com.google.code.gson:gson:2.8.5'
@@ -45,7 +45,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
 //бургер кнопка кастом
@@ -72,4 +72,9 @@ dependencies {
 
 //    Multidex support
     implementation 'com.android.support:multidex:1.0.3'
+
+//    yandex mapkit
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.yandex.android:mapkit:3.4.0'
+
 }
