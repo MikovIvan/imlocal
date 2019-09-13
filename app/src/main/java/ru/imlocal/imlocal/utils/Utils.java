@@ -1,6 +1,10 @@
 package ru.imlocal.imlocal.utils;
 
 import android.content.Context;
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +12,9 @@ import android.view.View;
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.map.PlacemarkMapObject;
+import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +29,11 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
+import ru.imlocal.imlocal.gps.MyLocation;
 
 import static ru.imlocal.imlocal.MainActivity.api;
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
 
@@ -145,5 +155,22 @@ public class Utils {
             output = input.replace("площадь", "пл.");
         }
         return output;
+    }
+
+    public static void getCurrentLocation(Context context) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
+                @Override
+                public void gotLocation(Location location) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
+                }
+            };
+            MyLocation myLocation = new MyLocation();
+            myLocation.getLocation(context, locationResult);
+        }
     }
 }
