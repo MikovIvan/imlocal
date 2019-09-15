@@ -39,11 +39,13 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
 import static ru.imlocal.imlocal.utils.Constants.FOOD;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.PURCHASES;
+import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
@@ -142,7 +144,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         ImageView imageView = new ImageView(getActivity());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Picasso.with(getContext())
-                .load("https://imlocal.ru/img/shopPhoto/" + photo)
+                .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + photo)
                 .into(imageView);
         viewFlipperShop.addView(imageView);
         viewFlipperShop.setFlipInterval(4000);

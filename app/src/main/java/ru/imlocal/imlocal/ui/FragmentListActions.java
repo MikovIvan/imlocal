@@ -127,7 +127,7 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("text/plain");
         send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
-        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + "http://wellscafe.com/" + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
+        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + action.getShop().getShopWeb() + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
         startActivity(Intent.createChooser(send, "Share using"));
     }
 

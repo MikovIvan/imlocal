@@ -32,6 +32,8 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
@@ -83,7 +85,7 @@ public class FragmentVitrinaAction extends Fragment {
 
         if (action.getShop() != null) {
             Picasso.with(getContext())
-                    .load("https://imlocal.ru/img/shopPhoto/" + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
+                    .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                     .into(ivShopPhoto);
             tvShopName.setText(action.getShop().getShopShortName());
             tvShopAdress.setText(replaceString(action.getShop().getShopAddress().toString()));
@@ -153,7 +155,7 @@ public class FragmentVitrinaAction extends Fragment {
         ImageView imageView = new ImageView(getActivity());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Picasso.with(getContext())
-                .load("https://imlocal.ru/img/shopPhoto/" + photo)
+                .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + photo)
                 .into(imageView);
         viewFlipperAction.addView(imageView);
         viewFlipperAction.setFlipInterval(4000);

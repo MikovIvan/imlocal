@@ -30,6 +30,8 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
@@ -74,7 +76,7 @@ public class FragmentVitrinaEvent extends Fragment {
 
         if (!event.getEventPhotoList().isEmpty()) {
             Picasso.with(getContext())
-                    .load("https://imlocal.ru/img/happeningPhoto/" + event.getEventPhotoList().get(0).getEventPhoto())
+                    .load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
                     .into(ivEventPhoto);
         } else {
             ivEventPhoto.setImageResource(R.drawable.testimg);
@@ -104,7 +106,7 @@ public class FragmentVitrinaEvent extends Fragment {
                 Intent send = new Intent(Intent.ACTION_SEND);
                 send.setType("text/plain");
                 send.putExtra(Intent.EXTRA_SUBJECT, event.getTitle());
-                send.putExtra(Intent.EXTRA_TEXT, event.getTitle() + " " + "https://imlocal.ru/happenings" + event.getId());
+                send.putExtra(Intent.EXTRA_TEXT, event.getTitle() + " " + BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getId());
                 startActivity(Intent.createChooser(send, "Share using"));
                 return true;
             case R.id.add_to_favorites:
