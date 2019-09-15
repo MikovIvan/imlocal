@@ -70,6 +70,7 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         View view = inflater.inflate(R.layout.fragment_list_places, container, false);
         showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
 
         Utils.getCurrentLocation(getActivity());
 

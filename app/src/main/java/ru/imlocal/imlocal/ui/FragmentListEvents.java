@@ -86,6 +86,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
         appBarLayout.setVisibility(View.VISIBLE);
         showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
         getAllEvents();
         instance = LocalDate.now();
 

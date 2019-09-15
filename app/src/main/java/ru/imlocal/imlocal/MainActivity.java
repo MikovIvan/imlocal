@@ -490,8 +490,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -503,13 +502,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
-
                         requestingLocationPermission = true;
                         PreferenceUtils.saveRequestingLocationPermission(requestingLocationPermission, this);
                         openViewPager();
 //                        Utils.getCurrentLocation(getApplicationContext());
                     }
-
                 } else {
                     Toast.makeText(this, "Без этого разрешения ничего работать не будет", Toast.LENGTH_LONG).show();
                     // permission denied, boo! Disable the

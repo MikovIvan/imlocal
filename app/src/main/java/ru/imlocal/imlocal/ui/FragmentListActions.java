@@ -71,6 +71,7 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         appBarLayout.setVisibility(View.VISIBLE);
         showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
         getAllActions();
 
         rvActions = view.findViewById(R.id.rv_fragment_list_actions);

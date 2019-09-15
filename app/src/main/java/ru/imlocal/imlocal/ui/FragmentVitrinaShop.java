@@ -71,6 +71,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
     }
 
     @Nullable
