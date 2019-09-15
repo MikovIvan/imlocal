@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import com.yandex.mapkit.geometry.Geo;
+import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +47,8 @@ import ru.imlocal.imlocal.utils.Utils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
@@ -91,10 +95,9 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
                 Snackbar.make(view, "Clicked " + item, Snackbar.LENGTH_LONG).show();
                 if (position == 0) {
                     sortByRating();
+                } else {
+                    sortByDistance();
                 }
-//                else {
-//                    sortByDistance();
-//                }
                 adapter.notifyDataSetChanged();
             }
         });
@@ -267,4 +270,9 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         Collections.reverse(actionList);
     }
 
+    private void sortByDistance() {
+        Collections.sort(actionList, (s1, s2) ->
+                Double.compare(Geo.distance(new Point(s1.getShop().getShopAddress().getLatitude(), s1.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude)),
+                        Geo.distance(new Point(s2.getShop().getShopAddress().getLatitude(), s2.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude))));
+    }
 }
