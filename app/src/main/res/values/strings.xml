@@ -40,6 +40,10 @@
     <string name="title_location_permission">Доступ к данным о местонахождении устройства</string>
     <string name="ok">ок</string>
     <string name="text_location_permission">Это разрешение необходимо для корректной работы приложения</string>
+    <string name="add_to_favorite">Добавлено в избранное</string>
+    <string name="delete_from_favorites">Удалено из избранного</string>
+    <string name="need_login">Необходимо войти</string>
+    <string name="login">Войти</string>
 
     <string-array name="custom_months">
         <item>Январь</item>

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import ru.imlocal.imlocal.MainActivity;
@@ -28,11 +28,12 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.ActionPhoto;
 import ru.imlocal.imlocal.utils.Constants;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
-import static ru.imlocal.imlocal.utils.Utils.removeToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
 
 public class FragmentVitrinaAction extends Fragment {
@@ -52,7 +53,6 @@ public class FragmentVitrinaAction extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
     }
 
@@ -117,16 +117,21 @@ public class FragmentVitrinaAction extends Fragment {
                 startActivity(Intent.createChooser(send, "Share using"));
                 return true;
             case R.id.add_to_favorites:
-                if (!favoritesActions.containsKey(action.getId())) {
-                    addToFavorites(Constants.Kind.event, action.getId(), user.getId());
-                    favoritesActions.put((action.getId()), action);
-                    item.setIcon(R.drawable.ic_heart_pressed);
-                    Toast.makeText(getActivity(), "add", Toast.LENGTH_LONG).show();
+                if (user.isLogin()) {
+                    if (!favoritesActions.containsKey(action.getId())) {
+                        addToFavorites(Constants.Kind.event, action.getId(), user.getId());
+                        favoritesActions.put((action.getId()), action);
+                        item.setIcon(R.drawable.ic_heart_pressed);
+                        Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        favoritesActions.remove(action.getId());
+                        removeFromFavorites(Constants.Kind.event, action.getId(), user.getId());
+                        item.setIcon(R.drawable.ic_heart);
+                        Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();
+                    }
                 } else {
-                    favoritesActions.remove(action.getId());
-                    removeToFavorites(Constants.Kind.event, action.getId(), user.getId());
-                    item.setIcon(R.drawable.ic_heart);
-                    Toast.makeText(getActivity(), "remove", Toast.LENGTH_LONG).show();
+                    Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
             default:
                 return super.onOptionsItemSelected(item);
@@ -138,6 +143,8 @@ public class FragmentVitrinaAction extends Fragment {
         inflater.inflate(R.menu.menu_vitrina, menu);
         if (favoritesActions.containsKey(String.valueOf(action.getId()))) {
             menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        } else {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

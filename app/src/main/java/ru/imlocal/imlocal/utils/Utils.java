@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import androidx.core.content.ContextCompat;
 
@@ -17,6 +18,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
@@ -32,6 +34,15 @@ import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
 public class Utils {
     public static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static View.OnClickListener setSnackbarOnClickListener(Context context) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) (context)).openLogin();
+            }
+        };
     }
 
     public static String newDateFormat(String date) {
@@ -54,7 +65,7 @@ public class Utils {
         });
     }
 
-    public static void removeToFavorites(Constants.Kind kind, String sourceId, String userId) {
+    public static void removeFromFavorites(Constants.Kind kind, String sourceId, String userId) {
         Call<RequestBody> call = api.removeFavorites(String.valueOf(kind), sourceId, userId, "");
         call.enqueue(new Callback<RequestBody>() {
             @Override

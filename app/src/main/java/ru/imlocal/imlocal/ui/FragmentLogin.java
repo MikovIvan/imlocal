@@ -239,7 +239,11 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Toast.makeText(getActivity(), "успешно google", Toast.LENGTH_LONG).show();
-            enter.setTitle(account.getDisplayName());
+            if (account.getDisplayName() != null) {
+                enter.setTitle(account.getDisplayName());
+            } else {
+                enter.setTitle("Профиль");
+            }
             saveUser(account.getId(), account.getEmail(), account.getGivenName(), account.getFamilyName(), "google", account.getIdToken());
             addFavoritesAndLogoutButtonsToNavigationDrawer();
             Log.d("TAG", user.toString());

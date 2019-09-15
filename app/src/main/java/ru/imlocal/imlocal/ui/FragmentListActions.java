@@ -40,7 +40,7 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
-import ru.imlocal.imlocal.utils.Constants;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
@@ -49,6 +49,7 @@ import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentListActions extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     private List<Action> actionList = new ArrayList<>();
@@ -132,16 +133,22 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
 
     @Override
     public void onItemAddToFavorites(int position, ImageButton imageButton) {
-        if (!favoritesActions.containsKey(actionList.get(position).getId())) {
-            addToFavorites(Constants.Kind.event, actionList.get(position).getId(), user.getId());
-            favoritesActions.put(actionList.get(position).getId(), actionList.get(position));
-            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart_pressed));
+        if (user.isLogin()) {
+            if (!favoritesActions.containsKey(actionList.get(position).getId())) {
+                addToFavorites(Kind.event, actionList.get(position).getId(), user.getId());
+                favoritesActions.put(actionList.get(position).getId(), actionList.get(position));
+                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart_pressed));
+                Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
+            } else {
+                removeFromFavorites(Kind.event, actionList.get(position).getId(), user.getId());
+                favoritesActions.remove(actionList.get(position).getId());
+                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart));
+                Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();
+            }
         } else {
-            favoritesActions.remove(actionList.get(position).getId());
-            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart));
+            Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
+                    .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
         }
-        addToFavorites(Kind.event, actionList.get(position).getId(), user.getId());
-        Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
 
 

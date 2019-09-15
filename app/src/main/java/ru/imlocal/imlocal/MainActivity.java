@@ -259,6 +259,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
+    private void refreshFragmentViewPager() {
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
+    }
+
     public void enableUpButtonViews(boolean enable) {
         // To keep states of Ac
         // tionBar and ActionBarDrawerToggle synchronized,
@@ -359,7 +368,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(this, "FB logout", Toast.LENGTH_SHORT).show();
                 }
                 user = new User();
+                favoritesActions.clear();
+                favoritesEvents.clear();
+                favoritesShops.clear();
                 user.setLogin(false);
+                refreshFragmentViewPager();
                 PreferenceUtils.saveUser(user, this);
                 enter.setTitle("Вход");
                 setFavoritesAndLogoutButtonsInNavigationDrawer(false);
@@ -442,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         appBarLayout.setVisibility(View.VISIBLE);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
-    
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

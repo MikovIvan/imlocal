@@ -52,6 +52,8 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
         Action action = dataActionsFiltered.get(position);
         if (favoritesActions.containsKey(action.getId())) {
             holder.ibAddToFavorites.setImageResource(R.drawable.ic_heart_pressed);
+        } else {
+            holder.ibAddToFavorites.setImageResource(R.drawable.ic_heart);
         }
 
         if (action.getShop() != null) {

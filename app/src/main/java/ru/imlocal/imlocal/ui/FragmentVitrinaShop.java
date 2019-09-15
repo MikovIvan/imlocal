@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
@@ -25,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 import com.willy.ratingbar.BaseRatingBar;
 import com.willy.ratingbar.ScaleRatingBar;
@@ -35,6 +35,7 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopPhoto;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.user;
@@ -45,6 +46,7 @@ import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.PURCHASES;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapterActionsLight.OnItemClickListener, View.OnClickListener {
 
@@ -165,15 +167,22 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 startActivity(Intent.createChooser(send, "Share using"));
                 return true;
             case R.id.add_to_favorites:
-                if (!favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
-                    addToFavorites(Kind.shop, String.valueOf(shop.getShopId()), user.getId());
-                    favoritesShops.put(String.valueOf(shop.getShopId()), shop);
-                    item.setIcon(R.drawable.ic_heart_pressed);
+                if (user.isLogin()) {
+                    if (!favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
+                        addToFavorites(Kind.shop, String.valueOf(shop.getShopId()), user.getId());
+                        favoritesShops.put(String.valueOf(shop.getShopId()), shop);
+                        item.setIcon(R.drawable.ic_heart_pressed);
+                        Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        removeFromFavorites(Kind.shop, String.valueOf(shop.getShopId()), user.getId());
+                        favoritesShops.remove(String.valueOf(shop.getShopId()));
+                        item.setIcon(R.drawable.ic_heart);
+                        Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();
+                    }
                 } else {
-                    favoritesShops.remove(String.valueOf(shop.getShopId()));
-                    item.setIcon(R.drawable.ic_heart);
+                    Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
-                Toast.makeText(getActivity(), "like", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -184,6 +193,8 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         inflater.inflate(R.menu.menu_vitrina, menu);
         if (favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
             menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        } else {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
