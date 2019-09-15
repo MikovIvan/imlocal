@@ -1,14 +1,13 @@
 package ru.imlocal.imlocal.utils;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import androidx.core.content.ContextCompat;
+import com.yandex.mapkit.geometry.Geo;
+import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.map.PlacemarkMapObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +22,8 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
-import ru.imlocal.imlocal.gps.MyLocation;
 
 import static ru.imlocal.imlocal.MainActivity.api;
-import static ru.imlocal.imlocal.MainActivity.latitude;
-import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
 
@@ -47,6 +43,32 @@ public class Utils {
 
     public static String newDateFormat(String date) {
         return FORMATTER3.format(FORMATTER2.parse(date));
+    }
+
+    public static String getDistance(PlacemarkMapObject placemarkMapObject, double latitude, double longitude) {
+        String result;
+        double distance = Geo.distance(placemarkMapObject.getGeometry(), new Point(latitude, longitude));
+        Log.d("DISTANCE", placemarkMapObject.getGeometry().getLatitude() + " " + placemarkMapObject.getGeometry().getLongitude() + " / " + latitude + " " + longitude);
+        Log.d("DISTANCE", String.valueOf(distance));
+        if (distance >= 1000) {
+            result = String.valueOf((int) (distance / 1000)).concat(" км от Вас");
+        } else {
+            result = String.valueOf((int) distance).concat(" м от Вас");
+        }
+        return result;
+    }
+
+    public static String getDistanceInList(double latitude1, double longitude1, double latitude2, double longitude2) {
+        String result;
+        double distance = Geo.distance(new Point(latitude1, longitude1), new Point(latitude2, longitude2));
+        Log.d("DISTANCE", latitude1 + " " + longitude1 + " / " + latitude2 + " " + longitude2);
+        Log.d("DISTANCE", String.valueOf(distance));
+        if (distance >= 1000) {
+            result = String.valueOf((int) (distance / 1000)).concat(" км от Вас");
+        } else {
+            result = String.valueOf((int) distance).concat(" м от Вас");
+        }
+        return result;
     }
 
     public static void addToFavorites(Constants.Kind kind, String sourceId, String userId) {
@@ -123,22 +145,5 @@ public class Utils {
             output = input.replace("площадь", "пл.");
         }
         return output;
-    }
-
-    public static void getCurrentLocation(Context context) {
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
-                @Override
-                public void gotLocation(Location location) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
-                }
-            };
-            MyLocation myLocation = new MyLocation();
-            myLocation.getLocation(context, locationResult);
-        }
     }
 }

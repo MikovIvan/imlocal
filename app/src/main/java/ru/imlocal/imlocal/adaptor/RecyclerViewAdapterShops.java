@@ -19,7 +19,10 @@ import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.utils.Utils;
 
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
@@ -74,6 +77,12 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
                 .into(holder.ivShopIcon);
         holder.tvShopDescription.setText(shop.getShopShortDescription());
         holder.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
+        if (latitude != 0 && longitude != 0) {
+            holder.tvDistance.setText(Utils.getDistanceInList(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude(), latitude, longitude));
+        } else {
+            holder.tvDistance.setText("");
+        }
+
     }
 
     @Override
