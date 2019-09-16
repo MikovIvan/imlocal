@@ -56,6 +56,7 @@ import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
+import ru.imlocal.imlocal.ui.FragmentFavorites;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
 import ru.imlocal.imlocal.ui.FragmentLogin;
 import ru.imlocal.imlocal.ui.FragmentMap;
@@ -267,6 +268,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
+    public void openFavorites()
+    {
+        Fragment fragment = new FragmentFavorites();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment)
+                .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
+                .addToBackStack("FragmentFavorites")
+                .commit();
+    }
+
     private void refreshFragmentViewPager() {
         Fragment frg = null;
         frg = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
@@ -356,8 +368,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Раздел в разработке", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_favorites:
-                Toast.makeText(this, "избранное", Toast.LENGTH_SHORT).show();
-                break;
+                openFavorites();
+                return false;
             case R.id.nav_logout:
                 if (VKSdk.isLoggedIn()) {
                     VKSdk.logout();
