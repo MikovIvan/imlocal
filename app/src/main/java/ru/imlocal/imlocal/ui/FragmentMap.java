@@ -79,7 +79,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 }
                 isSelected = true;
                 selected = shopObject;
-                shopObject.setIconStyle(new IconStyle().setScale(1.5f).setAnchor(new PointF(0.5f, 0.52f))
+                shopObject.setIconStyle(new IconStyle().setScale(1.5f).setAnchor(new PointF(0.5f, 0.85f))
                         .setRotationType(RotationType.ROTATE)
                         .setZIndex(0f));
                 if (userData instanceof Shop) {
@@ -153,7 +153,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
     private void createMapObjects() {
         for (Shop shop : shopList) {
             PlacemarkMapObject placemarkMapObject = mapObjects.addPlacemark(new Point(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude()),
-                    ImageProvider.fromResource(getActivity(), R.drawable.untitled));
+                    ImageProvider.fromResource(getActivity(), R.drawable.ic_marker));
             placemarkMapObject.setIconStyle(new IconStyle().setScale(0.5f).setAnchor(new PointF(0.5f, 0.5f)));
             placemarkMapObject.setUserData(shop);
             placemarkMapObject.addTapListener(mapObjectTapListener);
