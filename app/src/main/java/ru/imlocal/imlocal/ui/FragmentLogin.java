@@ -1,6 +1,7 @@
 package ru.imlocal.imlocal.ui;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -117,6 +118,72 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         VKSdk.login(getActivity(), scope);
     }
 
+    private static void loginUser(User user, Context context) {
+        Call<User> call = api.loginUser(user);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.body().getId() != null) {
+                    Log.d("AUTH", "sucsecc " + response.body().getId());
+                    Log.d("AUTH", "message: " + response.message());
+                    Log.d("AUTH", "user getActionsFavoritesList: " + response.body().getActionsFavoritesList());
+                    Log.d("AUTH", "user getEventsFavoritesList: " + response.body().getEventsFavoritesList());
+                    Log.d("AUTH", "user getShopsFavoritesList: " + response.body().getShopsFavoritesList());
+                    Toast.makeText(context, response.body().getId(), Toast.LENGTH_LONG).show();
+                    user.setId(response.body().getId());
+                    PreferenceUtils.saveUser(user, context);
+////                    сервер не возвращает эти данные
+//                    favoritesShops = shopMap(user.getShopsFavoritesList());
+//                    favoritesActions = actionMap(user.getActionsFavoritesList());
+//                    favoritesEvents = eventMap(user.getEventsFavoritesList());
+                    Log.d("AUTH", "loginUser: " + user);
+                } else {
+                    Call<User> call2 = api.registerUser(user);
+                    call2.enqueue(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            Log.d("AUTH", response.body().toString());
+                            Toast.makeText(context, response.body().toString(), Toast.LENGTH_LONG).show();
+                            user.setId(response.body().getId());
+                            PreferenceUtils.saveUser(user, context);
+                            Log.d("AUTH", "registerUser: " + user);
+                            Log.d("AUTH", "message: " + response.message());
+                        }
+
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+                            Log.d("AUTH", "onFailure " + t.getMessage());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(context, "onFailure ", Toast.LENGTH_LONG).show();
+                Log.d("AUTH", "onFailure " + t.getMessage());
+            }
+        });
+    }
+
+    public static void saveUser(String source_id, String email, String firstName, String lastName, String source, String accessToken, Context context) {
+        user.setSource_id(source_id);
+        user.setSource(source);
+        user.setEmail(email);
+        user.setAccessToken(accessToken);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setUsername(firstName + " " + lastName);
+        Log.d("AUTH", "parametrs: " + user.toString());
+        loginUser(user, context);
+        user.setLogin(true);
+    }
+
+    public static void addFavoritesAndLogoutButtonsToNavigationDrawer() {
+        navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
+        navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+    }
+
     private void signInFB() {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -124,16 +191,19 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         accessToken = loginResult.getAccessToken();
+                        Toast.makeText(getActivity(), accessToken.toString(), Toast.LENGTH_LONG).show();
                         loadUserProfile(accessToken);
                     }
 
                     @Override
                     public void onCancel() {
+                        Toast.makeText(getActivity(), "On cancel", Toast.LENGTH_LONG).show();
                         Log.d("TAG", "On cancel");
                     }
 
                     @Override
                     public void onError(FacebookException error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
                         Log.d("TAG", error.toString());
                     }
                 });
@@ -154,7 +224,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     @Override
                     public void onComplete(VKResponse response) {
                         VKApiUserFull userVK = ((VKList<VKApiUserFull>) response.parsedModel).get(0);
-                        saveUser(String.valueOf(userVK.id), res.email, userVK.first_name, userVK.last_name, "vkontakte", res.accessToken);
+                        saveUser(String.valueOf(userVK.id), res.email, userVK.first_name, userVK.last_name, "vkontakte", res.accessToken, getActivity());
                         addFavoritesAndLogoutButtonsToNavigationDrawer();
                         Log.d("TAG", user.toString());
                         enter.setTitle(userVK.first_name + " " + userVK.last_name);
@@ -177,74 +247,12 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
 
     }
 
-    private void loginUser(User user) {
-        Call<User> call = api.loginUser(user);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.body().getId() != null) {
-                    Log.d("AUTH", "sucsecc " + response.body().getId());
-                    Log.d("AUTH", "message: " + response.message());
-                    Log.d("AUTH", "user getActionsFavoritesList: " + response.body().getActionsFavoritesList());
-                    Log.d("AUTH", "user getEventsFavoritesList: " + response.body().getEventsFavoritesList());
-                    Log.d("AUTH", "user getShopsFavoritesList: " + response.body().getShopsFavoritesList());
-                    user.setId(response.body().getId());
-                    PreferenceUtils.saveUser(user, getActivity());
-//                    сервер не возвращает эти данные
-//                    favoritesShops = shopMap(user.getShopsFavoritesList());
-//                    favoritesActions = actionMap(user.getActionsFavoritesList());
-//                    favoritesEvents = eventMap(user.getEventsFavoritesList());
-                    Log.d("AUTH", "loginUser: " + user);
-                } else {
-                    Call<User> call2 = api.registerUser(user);
-                    call2.enqueue(new Callback<User>() {
-                        @Override
-                        public void onResponse(Call<User> call, Response<User> response) {
-                            Log.d("AUTH", response.body().toString());
-                            user.setId(response.body().getId());
-                            PreferenceUtils.saveUser(user, getActivity());
-                            Log.d("AUTH", "registerUser: " + user);
-                            Log.d("AUTH", "message: " + response.message());
-                        }
-
-                        @Override
-                        public void onFailure(Call<User> call, Throwable t) {
-                            Log.d("AUTH", "onFailure " + t.getMessage());
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.d("AUTH", "onFailure " + t.getMessage());
-            }
-        });
-    }
-
-    private void saveUser(String source_id, String email, String firstName, String lastName, String source, String accessToken) {
-        user.setSource_id(source_id);
-        user.setSource(source);
-        user.setEmail(email);
-        user.setAccessToken(accessToken);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setUsername(firstName + " " + lastName);
-        Log.d("AUTH", "parametrs: " + user.toString());
-        loginUser(user);
-        user.setLogin(true);
-    }
-
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Toast.makeText(getActivity(), "успешно google", Toast.LENGTH_LONG).show();
-            if (account.getDisplayName() != null) {
-                enter.setTitle(account.getDisplayName());
-            } else {
-                enter.setTitle("Профиль");
-            }
-            saveUser(account.getId(), account.getEmail(), account.getGivenName(), account.getFamilyName(), "google", account.getIdToken());
+            enter.setTitle(account.getDisplayName());
+            saveUser(account.getId(), account.getEmail(), account.getGivenName(), account.getFamilyName(), "google", account.getIdToken(), getActivity());
             addFavoritesAndLogoutButtonsToNavigationDrawer();
             Log.d("TAG", user.toString());
             Log.d("TAG", account.getIdToken() + " " + account.getEmail() + " " + account.getId() + " "
@@ -265,7 +273,8 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     String lastName = object.getString("last_name");
                     String email = object.getString("email");
                     String id = object.getString("id");
-                    saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken());
+                    Toast.makeText(getActivity(), "успешно facebook", Toast.LENGTH_LONG).show();
+                    saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken(), getActivity());
                     addFavoritesAndLogoutButtonsToNavigationDrawer();
                     Log.d("TAG", user.toString());
                     enter.setTitle(firstName + " " + lastName);
@@ -280,11 +289,6 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
         parameters.putString("fields", "first_name,last_name,email,id");
         request.setParameters(parameters);
         request.executeAsync();
-    }
-
-    private void addFavoritesAndLogoutButtonsToNavigationDrawer() {
-        navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(true);
-        navigationView.getMenu().findItem(R.id.nav_logout).setVisible(true);
     }
 
     public void setUpCondLinks(View view) {

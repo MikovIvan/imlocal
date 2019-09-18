@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -40,6 +43,9 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +66,8 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
 import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
+import static ru.imlocal.imlocal.ui.FragmentLogin.addFavoritesAndLogoutButtonsToNavigationDrawer;
+import static ru.imlocal.imlocal.ui.FragmentLogin.saveUser;
 import static ru.imlocal.imlocal.utils.Constants.MAPKIT_API_KEY;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -435,8 +443,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
                 if (currentAccessToken != null) {
-                    user = PreferenceUtils.getUser(MainActivity.this);
-                    enter.setTitle(user.getUsername());
+                    GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject object, GraphResponse response) {
+                            try {
+                                String firstName = object.getString("first_name");
+                                String lastName = object.getString("last_name");
+                                String email = object.getString("email");
+                                String id = object.getString("id");
+                                Toast.makeText(MainActivity.this, "успешно facebook", Toast.LENGTH_LONG).show();
+                                saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken(), MainActivity.this);
+                                addFavoritesAndLogoutButtonsToNavigationDrawer();
+                                Log.d("TAG", user.toString());
+                                enter.setTitle(firstName + " " + lastName);
+                                Log.d("TAG", firstName + " " + lastName + " " + email + " " + id);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    Bundle parameters = new Bundle();
+                    parameters.putString("fields", "first_name,last_name,email,id");
+                    request.setParameters(parameters);
+                    request.executeAsync();
                 } else {
                     enter.setTitle("Вход");
                 }
