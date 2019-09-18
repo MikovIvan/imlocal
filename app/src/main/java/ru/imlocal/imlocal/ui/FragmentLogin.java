@@ -185,6 +185,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
     }
 
     private void signInFB() {
+//        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile","user_friends"));
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
