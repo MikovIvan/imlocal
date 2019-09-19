@@ -279,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
+
     private void refreshFragmentViewPager() {
         Fragment frg = null;
         frg = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
@@ -287,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ft.attach(frg);
         ft.commit();
     }
+
 
     public void enableUpButtonViews(boolean enable) {
         // To keep states of Ac
