@@ -22,33 +22,53 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_category"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         style="@style/RVCategory"
         android:orientation="horizontal"
         app:layoutManager="LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline2"
         tools:listitem="@layout/list_item_category" />
 
     <com.jaredrummler.materialspinner.MaterialSpinner
         android:id="@+id/spinner_sort"
         style="@style/Spinner"
-        app:ms_arrow_tint="@color/color_main"
-        app:ms_hint="Сортировать:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rv_category"
+        app:ms_arrow_tint="@color/color_main"
+        app:ms_hint="Сортировать:"
         app:ms_text_color="@color/color_main" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_fragment_list_places"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="168dp"
+        android:layout_marginBottom="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        style="@style/RvMain"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_sort"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_sort">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_fragment_list_places"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/list_item_shop" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_normal_16"
+        android:src="@drawable/ic_place_black_24dp"
         app:layout_constraintBottom_toTopOf="@id/guideline3"
-        tools:listitem="@layout/list_item_shop" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

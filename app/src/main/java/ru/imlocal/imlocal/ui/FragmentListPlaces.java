@@ -1,9 +1,14 @@
 package ru.imlocal.imlocal.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,11 +22,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import com.yandex.mapkit.geometry.Geo;
+import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,16 +46,23 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.gps.MyLocation;
 
 import static ru.imlocal.imlocal.MainActivity.api;
+import static ru.imlocal.imlocal.MainActivity.appBarLayout;
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 
-public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    private List<Shop> shopList = new ArrayList<>();
+public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
+    public static List<Shop> shopList = new ArrayList<>();
     private List<Shop> copyList = new ArrayList<>();
 
     private RecyclerView rvPlaces, rvCategory;
     private RecyclerViewAdapterShops adapter;
+    FloatingActionButton fab;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,12 +76,43 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_list_places, container, false);
         showLoadingIndicator(true);
+        appBarLayout.setVisibility(View.VISIBLE);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
 
-        getAllShops();
+        getCurrentLocation(getActivity());
+
+        fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) getActivity()).openMap();
+            }
+        });
         rvPlaces = view.findViewById(R.id.rv_fragment_list_places);
         rvCategory = view.findViewById(R.id.rv_category);
         rvPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        rvPlaces.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    fab.show();
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && fab.isShown())
+                    fab.hide();
+            }
+        });
+
+        mSwipeRefreshLayout = view.findViewById(R.id.refreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        mSwipeRefreshLayout.setColorSchemeColors(
+                Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_sort);
         spinner.setItems("по рейтингу", "по удаленности");
@@ -73,10 +121,9 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 if (position == 0) {
                     sortByRating();
+                } else {
+                    sortByDistance();
                 }
-//                else {
-//                    sortByDistance();
-//                }
                 adapter.notifyDataSetChanged();
             }
         });
@@ -87,6 +134,19 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
         adaptorCategory.setOnItemClickListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getCurrentLocation(getActivity());
+                Log.d("GPS2", "Swipe gps: " + longitude + " " + latitude);
+                mSwipeRefreshLayout.setRefreshing(false);
+                adapter.notifyDataSetChanged();
+            }
+        }, 4000);
     }
 
     @Override
@@ -176,7 +236,7 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
                         shopList.addAll(shops);
                         copyList.addAll(shops);
                         displayData(shopList);
-                        showLoadingIndicator(false);
+
                     }
 
                     @Override
@@ -197,11 +257,18 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
         adapter = new RecyclerViewAdapterShops(shops, getContext());
         rvPlaces.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
+        showLoadingIndicator(false);
     }
 
     private void sortByRating() {
         Collections.sort(shopList, (s1, s2) -> Double.compare(s1.getShopAvgRating(), s2.getShopAvgRating()));
         Collections.reverse(shopList);
+    }
+
+    private void sortByDistance() {
+        Collections.sort(shopList, (s1, s2) ->
+                Double.compare(Geo.distance(new Point(s1.getShopAddress().getLatitude(), s1.getShopAddress().getLongitude()), new Point(latitude, longitude)),
+                        Geo.distance(new Point(s2.getShopAddress().getLatitude(), s2.getShopAddress().getLongitude()), new Point(latitude, longitude))));
     }
 
     private void filter(List<Shop> filterList, int i) {
@@ -217,5 +284,23 @@ public class FragmentListPlaces extends Fragment implements MenuItem.OnActionExp
             shopList.addAll(filterList);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    private void getCurrentLocation(Context context) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
+                @Override
+                public void gotLocation(Location location) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    getAllShops();
+                    Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
+                }
+            };
+            MyLocation myLocation = new MyLocation();
+            myLocation.getLocation(context, locationResult);
+        }
     }
 }

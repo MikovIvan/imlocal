@@ -16,6 +16,9 @@ import java.util.List;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 
+import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+
 public class RecyclerViewAdapterActionsLight extends RecyclerView.Adapter<RecyclerViewAdapterActionsLight.ViewHolder> {
     private List<Action> dataActions;
     private Context context;
@@ -39,7 +42,7 @@ public class RecyclerViewAdapterActionsLight extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(RecyclerViewAdapterActionsLight.ViewHolder holder, int position) {
         Action action = dataActions.get(position);
-        Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getActionPhotos().get(0).getActionPhoto())
+        Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
                 .into(holder.ivActionIcon);
         holder.tvEventTitle.setText(action.getTitle());
         holder.tvActionDescription.setText(action.getFullDesc());

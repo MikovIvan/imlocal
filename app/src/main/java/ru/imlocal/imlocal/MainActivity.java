@@ -1,8 +1,12 @@
 package ru.imlocal.imlocal;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,8 +16,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -23,6 +30,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +42,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.vk.sdk.VKSdk;
+import com.yandex.mapkit.MapKitFactory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +58,8 @@ import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentFavorites;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
-import ru.imlocal.imlocal.ui.FragmentListPlaces;
 import ru.imlocal.imlocal.ui.FragmentLogin;
+import ru.imlocal.imlocal.ui.FragmentMap;
 import ru.imlocal.imlocal.ui.FragmentPolicy;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
 import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
@@ -54,11 +67,17 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
 import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    FragmentListPlaces fragmentViewPager;
+import static ru.imlocal.imlocal.ui.FragmentLogin.addFavoritesAndLogoutButtonsToNavigationDrawer;
+import static ru.imlocal.imlocal.ui.FragmentLogin.saveUser;
+import static ru.imlocal.imlocal.utils.Constants.MAPKIT_API_KEY;
 
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static double latitude;
+    public static double longitude;
     private long backPressedTime;
     private Toast backToast;
+    private static boolean requestingLocationPermission;
 
     public static Map<String, Shop> favoritesShops = new HashMap<>();
     public static Map<String, Event> favoritesEvents = new HashMap<>();
@@ -95,7 +114,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initYandexMaps();
         setContentView(R.layout.activity_main);
+
         api = RetrofitClient.getInstance().getApi();
 
         initView();
@@ -109,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configGoogleAuth();
         configAccessTokenTrakerFB();
 
+
         TextView footer_policy_link = findViewById(R.id.footer_policy_link);
         footer_policy_link.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,9 +140,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        if (savedInstanceState == null) {
+        requestingLocationPermission = PreferenceUtils.getRequestingLocationPermission(this);
+        if (!requestingLocationPermission) {
+            checkLocationPermission();
+        } else if (savedInstanceState == null) {
             openViewPager();
         }
+
+
     }
 
     public void openPolicy() {
@@ -190,6 +217,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commitAllowingStateLoss();
     }
 
+    public void openMap() {
+        Fragment fragment = new FragmentMap();
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentMap")
+                .commit();
+    }
+
     public void openVitrinaShop(Bundle bundle) {
         Fragment fragment = new FragmentVitrinaShop();
         fragment.setArguments(bundle);
@@ -243,6 +279,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
+
+    private void refreshFragmentViewPager() {
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
+    }
+
+
     public void enableUpButtonViews(boolean enable) {
         // To keep states of Ac
         // tionBar and ActionBarDrawerToggle synchronized,
@@ -284,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onStart() {
+        MapKitFactory.getInstance().onStart();
         accessTokenTracker.startTracking();
         accessToken = AccessToken.getCurrentAccessToken();
         account = GoogleSignIn.getLastSignedInAccount(this);
@@ -296,6 +344,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setFavoritesAndLogoutButtonsInNavigationDrawer(false);
         }
         super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        MapKitFactory.getInstance().onStop();
+        super.onStop();
     }
 
     @Override
@@ -336,7 +390,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(this, "FB logout", Toast.LENGTH_SHORT).show();
                 }
                 user = new User();
+                favoritesActions.clear();
+                favoritesEvents.clear();
+                favoritesShops.clear();
                 user.setLogin(false);
+                refreshFragmentViewPager();
                 PreferenceUtils.saveUser(user, this);
                 enter.setTitle("Вход");
                 setFavoritesAndLogoutButtonsInNavigationDrawer(false);
@@ -388,14 +446,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void initYandexMaps() {
+        MapKitFactory.setApiKey(MAPKIT_API_KEY);
+        MapKitFactory.initialize(this);
+    }
+
     private void configAccessTokenTrakerFB() {
         accessTokenTracker = new AccessTokenTracker() {
             // This method is invoked everytime access token changes
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
                 if (currentAccessToken != null) {
-                    user = PreferenceUtils.getUser(MainActivity.this);
-                    enter.setTitle(user.getUsername());
+                    GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject object, GraphResponse response) {
+                            try {
+                                String firstName = object.getString("first_name");
+                                String lastName = object.getString("last_name");
+                                String email = object.getString("email");
+                                String id = object.getString("id");
+                                Toast.makeText(MainActivity.this, "успешно facebook", Toast.LENGTH_LONG).show();
+                                saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken(), MainActivity.this);
+                                addFavoritesAndLogoutButtonsToNavigationDrawer();
+                                Log.d("TAG", user.toString());
+                                enter.setTitle(firstName + " " + lastName);
+                                Log.d("TAG", firstName + " " + lastName + " " + email + " " + id);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    Bundle parameters = new Bundle();
+                    parameters.putString("fields", "first_name,last_name,email,id");
+                    request.setParameters(parameters);
+                    request.executeAsync();
                 } else {
                     enter.setTitle("Вход");
                 }
@@ -418,5 +503,76 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_location_permission)
+                        .setMessage(R.string.text_location_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        requestingLocationPermission = true;
+                        PreferenceUtils.saveRequestingLocationPermission(requestingLocationPermission, this);
+                        openViewPager();
+//                        Utils.getCurrentLocation(getApplicationContext());
+                    }
+                } else {
+                    Toast.makeText(this, "Без этого разрешения ничего работать не будет", Toast.LENGTH_LONG).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                }
+                return;
+            }
+
+        }
     }
 }

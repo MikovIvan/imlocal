@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import com.yandex.mapkit.geometry.Geo;
+import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,15 +42,18 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
-import ru.imlocal.imlocal.utils.Constants;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
+import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentListActions extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     private List<Action> actionList = new ArrayList<>();
@@ -71,6 +76,7 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         appBarLayout.setVisibility(View.VISIBLE);
         showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
         getAllActions();
 
         rvActions = view.findViewById(R.id.rv_fragment_list_actions);
@@ -89,10 +95,9 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
                 Snackbar.make(view, "Clicked " + item, Snackbar.LENGTH_LONG).show();
                 if (position == 0) {
                     sortByRating();
+                } else {
+                    sortByDistance();
                 }
-//                else {
-//                    sortByDistance();
-//                }
                 adapter.notifyDataSetChanged();
             }
         });
@@ -125,22 +130,28 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("text/plain");
         send.putExtra(Intent.EXTRA_SUBJECT, action.getTitle());
-        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + "http://wellscafe.com/" + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
+        send.putExtra(Intent.EXTRA_TEXT, action.getShop().getShopShortName() + " " + action.getShop().getShopWeb() + " " + action.getTitle() + " " + "https://imlocal.ru/events/" + action.getId());
         startActivity(Intent.createChooser(send, "Share using"));
     }
 
     @Override
     public void onItemAddToFavorites(int position, ImageButton imageButton) {
-        if (!favoritesActions.containsKey(actionList.get(position).getId())) {
-            addToFavorites(Constants.Kind.event, actionList.get(position).getId(), user.getId());
-            favoritesActions.put(actionList.get(position).getId(), actionList.get(position));
-            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart_pressed));
+        if (user.isLogin()) {
+            if (!favoritesActions.containsKey(actionList.get(position).getId())) {
+                addToFavorites(Kind.event, actionList.get(position).getId(), user.getId());
+                favoritesActions.put(actionList.get(position).getId(), actionList.get(position));
+                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart_pressed));
+                Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
+            } else {
+                removeFromFavorites(Kind.event, actionList.get(position).getId(), user.getId());
+                favoritesActions.remove(actionList.get(position).getId());
+                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart));
+                Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();
+            }
         } else {
-            favoritesActions.remove(actionList.get(position).getId());
-            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart));
+            Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
+                    .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
         }
-        addToFavorites(Kind.event, actionList.get(position).getId(), user.getId());
-        Toast.makeText(getActivity(), "like" + position, Toast.LENGTH_LONG).show();
     }
 
 
@@ -259,4 +270,9 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         Collections.reverse(actionList);
     }
 
+    private void sortByDistance() {
+        Collections.sort(actionList, (s1, s2) ->
+                Double.compare(Geo.distance(new Point(s1.getShop().getShopAddress().getLatitude(), s1.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude)),
+                        Geo.distance(new Point(s2.getShop().getShopAddress().getLatitude(), s2.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude))));
+    }
 }

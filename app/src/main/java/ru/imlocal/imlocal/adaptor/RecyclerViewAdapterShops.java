@@ -19,6 +19,12 @@ import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.utils.Utils;
+
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
 public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewAdapterShops.ViewHolder> implements Filterable {
     private List<Shop> dataShops;
@@ -67,10 +73,16 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
             }
         });
 
-        Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + shop.getShopPhotoArray().get(0).getShopPhoto())
+        Picasso.with(context).load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
                 .into(holder.ivShopIcon);
         holder.tvShopDescription.setText(shop.getShopShortDescription());
         holder.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
+        if (latitude != 0 && longitude != 0) {
+            holder.tvDistance.setText(Utils.getDistanceInList(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude(), latitude, longitude));
+        } else {
+            holder.tvDistance.setText("");
+        }
+
     }
 
     @Override

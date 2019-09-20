@@ -22,6 +22,8 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 
 
 public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerViewAdapterActions.ViewHolder> implements Filterable {
@@ -52,12 +54,14 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
         Action action = dataActionsFiltered.get(position);
         if (favoritesActions.containsKey(action.getId())) {
             holder.ibAddToFavorites.setImageResource(R.drawable.ic_heart_pressed);
+        } else {
+            holder.ibAddToFavorites.setImageResource(R.drawable.ic_heart);
         }
 
         if (action.getShop() != null) {
             if (action.getShop().getShopShortName() != null) {
                 holder.tvShopTitle.setText(action.getShop().getShopShortName());
-                Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
+                Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                         .into(holder.ivIcon);
                 holder.tvShopRating.setText(String.valueOf(action.getShop().getShopAvgRating()));
             }
@@ -72,7 +76,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
             holder.tvEventAdress.setText(Utils.replaceString(action.getShop().getShopAddress().toString()));
             holder.tvActionDescription.setText(action.getFullDesc());
             holder.tvDate.setText(action.getBegin() + "-" + action.getEnd());
-            Picasso.with(context).load("https://imlocal.ru/img/shopPhoto/" + action.getActionPhotos().get(0).getActionPhoto())
+            Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
                     .into(holder.ivActionIcon);
         } else {
             holder.ivActionIcon.setVisibility(View.GONE);

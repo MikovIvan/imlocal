@@ -17,6 +17,8 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.utils.Constants;
 
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 
 public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewAdapterEvent.ViewHolder> {
@@ -54,7 +56,7 @@ public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewA
         if (event.getEventPhotoList().isEmpty()) {
             holder.ivEventImage.setImageResource(R.drawable.testimg);
         } else {
-            Picasso.with(context).load("https://www.yiilessons.xyz/img/happeningPhoto/" + event.getEventPhotoList().get(0).getEventPhoto())
+            Picasso.with(context).load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
                     .into(holder.ivEventImage);
         }
     }
