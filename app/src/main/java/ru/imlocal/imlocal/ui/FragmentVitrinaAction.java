@@ -32,13 +32,15 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
+import static ru.imlocal.imlocal.utils.Utils.shopMap;
 
-public class FragmentVitrinaAction extends Fragment {
+public class FragmentVitrinaAction extends Fragment implements View.OnClickListener {
 
     private ImageView ivShopPhoto;
     private TextView tvShopName;
@@ -71,6 +73,9 @@ public class FragmentVitrinaAction extends Fragment {
         tvActionDescription = view.findViewById(R.id.tv_action_description);
         tvWhen = view.findViewById(R.id.tv_date);
         viewFlipperAction = view.findViewById(R.id.flipper_vitrina_action);
+
+        ivShopPhoto.setOnClickListener(this);
+        tvShopName.setOnClickListener(this);
 
         Bundle bundle = getArguments();
         action = (Action) bundle.getSerializable("action");
@@ -162,5 +167,21 @@ public class FragmentVitrinaAction extends Fragment {
         viewFlipperAction.setAutoStart(autostart);
         viewFlipperAction.setInAnimation(getActivity(), android.R.anim.slide_in_left);
         viewFlipperAction.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_icon:
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("shop", shopMap(shopList).get(String.valueOf(action.getShop().getShopAddress().getId())));
+                ((MainActivity) getActivity()).openVitrinaShop(bundle);
+                break;
+            case R.id.tv_shop_title:
+                Bundle bundle2 = new Bundle();
+                bundle2.putSerializable("shop", shopMap(shopList).get(String.valueOf(action.getShop().getShopAddress().getId())));
+                ((MainActivity) getActivity()).openVitrinaShop(bundle2);
+                break;
+        }
     }
 }
