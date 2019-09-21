@@ -122,7 +122,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
     private void initRV() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
+        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "event");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
     }
@@ -194,20 +194,35 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
                 break;
             case 2:
                 category = 3;
-                Toast.makeText(getContext(), "Фитнес", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Спорт", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;
             case 3:
                 category = 4;
-                Toast.makeText(getContext(), "Красота", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Город", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;
             case 4:
                 category = 5;
-                Toast.makeText(getContext(), "Покупки", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Театр", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;
             case 5:
+                category = 6;
+                Toast.makeText(getContext(), "Шоу", Toast.LENGTH_SHORT).show();
+                filter(filterList, category);
+                break;
+            case 6:
+                category = 7;
+                Toast.makeText(getContext(), "Ярмарка", Toast.LENGTH_SHORT).show();
+                filter(filterList, category);
+                break;
+            case 7:
+                category = 8;
+                Toast.makeText(getContext(), "Творчество", Toast.LENGTH_SHORT).show();
+                filter(filterList, category);
+                break;
+            case 8:
                 category = 0;
                 Toast.makeText(getContext(), "Все", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
