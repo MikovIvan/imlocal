@@ -61,6 +61,7 @@ import ru.imlocal.imlocal.ui.FragmentFeedback;
 import ru.imlocal.imlocal.ui.FragmentLogin;
 import ru.imlocal.imlocal.ui.FragmentMap;
 import ru.imlocal.imlocal.ui.FragmentPolicy;
+import ru.imlocal.imlocal.ui.FragmentProfile;
 import ru.imlocal.imlocal.ui.FragmentViewPager;
 import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
@@ -199,6 +200,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
                 .replace(R.id.frame, fragment)
                 .addToBackStack("FragmentFeedback")
+                .commit();
+    }
+
+    public void openProfile() {
+        Fragment fragment = new FragmentProfile();
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_act, R.anim.exit_act)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentProfile")
                 .commit();
     }
 
@@ -361,8 +371,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_login:
                 if (!user.isLogin()) {
                     openLogin();
+                } else {
+                    openProfile();
                 }
-                return false;
+                break;
             case R.id.nav_help:
                 openFeedback();
                 break;

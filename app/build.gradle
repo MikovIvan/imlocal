@@ -76,5 +76,6 @@ dependencies {
 //    yandex mapkit
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.yandex.android:mapkit:3.4.0'
+    implementation 'com.yandex.android:search:3.4.0'
 
 }

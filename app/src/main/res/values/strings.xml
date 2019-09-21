@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">i\'mlocal</string>
     <string name="policy"><u>Политика конфиденциальности</u></string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--auth-->
     <string name="facebook_app_id">2464279037139187</string>
@@ -44,6 +43,21 @@
     <string name="delete_from_favorites">Удалено из избранного</string>
     <string name="need_login">Необходимо войти</string>
     <string name="login">Войти</string>
+    <string name="profile">Профиль</string>
+    <string name="personal_data">Личные данные</string>
+    <string name="family_name">Фамилия</string>
+    <string name="enter_your_family_name">Введите Вашу фамилию</string>
+    <string name="name">Имя</string>
+    <string name="enter_your_name">Введите Ваше имя</string>
+    <string name="middle_name">Отчество</string>
+    <string name="enter_your_middle_name">Введите Ваше отчество</string>
+    <string name="address">Адрес</string>
+    <string name="enter_your_address">Введите Ваш адрес</string>
+    <string name="link_another_account">Привязать другой аккаунт</string>
+
+    <string name="network_error_message">Network error</string>
+    <string name="remote_error_message">Remote server error</string>
+    <string name="unknown_error_message">Unknown error</string>
 
     <string-array name="custom_months">
         <item>Январь</item>
