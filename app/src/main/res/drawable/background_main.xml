@@ -3,9 +3,8 @@
     <item>
         <color android:color="@color/color_background_tab_button" />
     </item>
-    <item>
-        <bitmap
+    <item
             android:gravity="center"
-            android:src="@drawable/ic_imlocal_start" />
+        android:drawable="@drawable/ic_imlocal_start">
     </item>
 </layer-list>
