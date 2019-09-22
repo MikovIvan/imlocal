@@ -19,7 +19,7 @@ public class Constants {
     public static final String BEAUTY = "Красота";
     public static final String PURCHASES = "Покупки";
 
-    public static final String USER_NAME = "user_name";
+    public static final String SHOP = "shop";
     public static final String USER = "user";
 
     public static final String TAB = "tab";

@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_small_8"
                     android:layout_marginBottom="@dimen/spacing_small_8"
-                    android:src="@drawable/ic_place_black_24dp"
+                    android:src="@drawable/ic_place_black"
                     app:layout_constraintBottom_toTopOf="@+id/iv_2"
                     app:layout_constraintEnd_toEndOf="@+id/iv_2"
                     app:layout_constraintStart_toStartOf="@+id/iv_2"
@@ -124,7 +124,7 @@
                     android:id="@+id/iv_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_huge_32"
+                    android:layout_marginStart="@dimen/spacing_normal_16"
                     android:src="@drawable/ic_clock"
                     app:layout_constraintBottom_toTopOf="@+id/iv_4"
                     app:layout_constraintStart_toStartOf="parent"
@@ -140,7 +140,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/guideline5"
                     app:layout_constraintStart_toEndOf="@+id/iv_2"
                     app:layout_constraintTop_toTopOf="@+id/iv_2"
-                    tools:text="08:00-23:00" />
+                    tools:text="Пн-пт 16:00-21:00. Сб-вс 10:00-20:00" />
 
                 <ImageView
                     android:id="@+id/iv_3"
@@ -184,7 +184,7 @@
                     android:id="@+id/iv_5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_small_8"
+                    android:layout_marginStart="@dimen/spacing_normal_16"
                     android:src="@drawable/ic_globus"
                     app:layout_constraintBottom_toBottomOf="@id/iv_2"
                     app:layout_constraintStart_toStartOf="@+id/guideline5"
@@ -204,7 +204,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_begin="205dp"
                     app:layout_constraintGuide_percent="0.5" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

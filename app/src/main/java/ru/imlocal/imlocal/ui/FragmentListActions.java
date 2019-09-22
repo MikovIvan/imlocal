@@ -83,7 +83,7 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         rvCategory = view.findViewById(R.id.rv_category);
         rvActions.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
+        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "action");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 

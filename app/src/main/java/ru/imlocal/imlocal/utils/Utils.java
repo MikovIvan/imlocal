@@ -1,20 +1,20 @@
 package ru.imlocal.imlocal.utils;
 
-import android.content.Context;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
+import androidx.core.content.ContextCompat;
 
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.map.PlacemarkMapObject;
-import android.util.Log;
-
-import androidx.core.content.ContextCompat;
 
 import java.util.HashMap;
 import java.util.List;
@@ -172,5 +172,10 @@ public class Utils {
             MyLocation myLocation = new MyLocation();
             myLocation.getLocation(context, locationResult);
         }
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

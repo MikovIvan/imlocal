@@ -47,6 +47,7 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.gps.MyLocation;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
@@ -79,21 +80,21 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         appBarLayout.setVisibility(View.VISIBLE);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
-
+        getAllShops();
         getCurrentLocation(getActivity());
 
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                PreferenceUtils.saveShop(null, getActivity());
                 ((MainActivity) getActivity()).openMap();
             }
         });
         rvPlaces = view.findViewById(R.id.rv_fragment_list_places);
         rvCategory = view.findViewById(R.id.rv_category);
         rvPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        rvPlaces.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        rvPlaces.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE)
@@ -107,7 +108,6 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                     fab.hide();
             }
         });
-
         mSwipeRefreshLayout = view.findViewById(R.id.refreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
@@ -129,7 +129,7 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         });
 
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext());
+        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 
@@ -236,7 +236,7 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                         shopList.addAll(shops);
                         copyList.addAll(shops);
                         displayData(shopList);
-
+                        Log.d("GPS2", "LIST shopList: " + shopList);
                     }
 
                     @Override
@@ -248,7 +248,7 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                     @Override
                     public void onComplete() {
                         Log.d("TAG", "oncomplete");
-
+                        showLoadingIndicator(false);
                     }
                 });
     }
@@ -257,7 +257,6 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         adapter = new RecyclerViewAdapterShops(shops, getContext());
         rvPlaces.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
-        showLoadingIndicator(false);
     }
 
     private void sortByRating() {
@@ -295,7 +294,8 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                 public void gotLocation(Location location) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
-                    getAllShops();
+// когда будет готово апи получение магазинов будет тут
+//                    getAllShops();
                     Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
                 }
             };

@@ -90,7 +90,7 @@
 
         <TextView
             android:id="@+id/tv_clear"
-            style="@style/DatePickerButton.Right"
+            style="@style/DatePickerButton.Left"
             android:text="@string/datepicker_clear"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -107,6 +107,7 @@
             app:mcv_monthLabels="@array/custom_months"
             app:mcv_selectionMode="range"
             app:mcv_showOtherDates="all"
+            app:mcv_tileHeight="40dp"
             app:mcv_titleAnimationOrientation="horizontal" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

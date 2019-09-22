@@ -15,20 +15,53 @@ import java.util.List;
 import ru.imlocal.imlocal.R;
 
 public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerViewAdaptorCategory.ViewHolder> {
-    private int category_index = 5;
+    private int category_index;
     private List<String> data;
     private Context context;
     private OnItemCategoryClickListener mListener;
 
-    public RecyclerViewAdaptorCategory(Context context) {
-        data = new ArrayList<>();
-        data.add("Еда");
-        data.add("Дети");
-        data.add("Фитнес");
-        data.add("Красота");
-        data.add("Покупки");
-        data.add("Все");
-        this.context = context;
+    public RecyclerViewAdaptorCategory(Context context, String category) {
+        switch (category) {
+            case "shop":
+                category_index = 5;
+                data = new ArrayList<>();
+                data.add("Еда");
+                data.add("Дети");
+                data.add("Фитнес");
+                data.add("Красота");
+                data.add("Покупки");
+                data.add("Все");
+                this.context = context;
+                break;
+            case "action":
+                category_index = 5;
+                data = new ArrayList<>();
+                data.add("Еда");
+                data.add("Дети");
+                data.add("Фитнес");
+                data.add("Красота");
+                data.add("Покупки");
+                data.add("Все");
+                this.context = context;
+                break;
+            case "event":
+                category_index = 8;
+                data = new ArrayList<>();
+                data.add("Еда");
+                data.add("Дети");
+                data.add("Спорт");
+                data.add("Город");
+                data.add("Театр");
+                data.add("Шоу");
+                data.add("Ярмарка");
+                data.add("Творчество");
+                data.add("Все");
+                this.context = context;
+                break;
+        }
+
+
+
     }
 
     public void setOnItemClickListener(OnItemCategoryClickListener listener) {

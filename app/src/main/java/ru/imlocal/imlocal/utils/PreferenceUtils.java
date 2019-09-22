@@ -6,9 +6,11 @@ import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 
+import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 
 import static ru.imlocal.imlocal.utils.Constants.REQUESTING_LOCATION_PERMISSON;
+import static ru.imlocal.imlocal.utils.Constants.SHOP;
 import static ru.imlocal.imlocal.utils.Constants.TAB;
 import static ru.imlocal.imlocal.utils.Constants.USER;
 
@@ -55,5 +57,21 @@ public class PreferenceUtils {
     public static boolean getRequestingLocationPermission(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(REQUESTING_LOCATION_PERMISSON, false);
+    }
+
+    public static void saveShop(Shop shop, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(shop);
+        prefsEditor.putString(SHOP, json);
+        prefsEditor.apply();
+    }
+
+    public static Shop getShop(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson = new Gson();
+        String json = prefs.getString(SHOP, "");
+        return gson.fromJson(json, Shop.class);
     }
 }
