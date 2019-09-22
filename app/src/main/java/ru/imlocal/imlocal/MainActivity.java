@@ -56,6 +56,7 @@ import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
+import ru.imlocal.imlocal.ui.FragmentBusiness;
 import ru.imlocal.imlocal.ui.FragmentFavorites;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
 import ru.imlocal.imlocal.ui.FragmentLogin;
@@ -278,6 +279,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
+    public void openBusiness() {
+        Fragment fragment = new FragmentBusiness();
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentBusiness")
+                .commit();
+    }
+
     public void openFavorites()
     {
         Fragment fragment = new FragmentFavorites();
@@ -379,7 +389,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openFeedback();
                 break;
             case R.id.nav_for_business:
-                Toast.makeText(this, "Раздел в разработке", Toast.LENGTH_SHORT).show();
+                if (user.isLogin()) {
+                    openBusiness();
+                }
                 break;
             case R.id.nav_favorites:
                 openFavorites();
