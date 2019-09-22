@@ -92,8 +92,7 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         rvPlaces = view.findViewById(R.id.rv_fragment_list_places);
         rvCategory = view.findViewById(R.id.rv_category);
         rvPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        rvPlaces.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        rvPlaces.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE)
@@ -107,7 +106,6 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                     fab.hide();
             }
         });
-
         mSwipeRefreshLayout = view.findViewById(R.id.refreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
