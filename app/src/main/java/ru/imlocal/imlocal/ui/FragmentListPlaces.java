@@ -47,6 +47,7 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.gps.MyLocation;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
@@ -86,6 +87,7 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                PreferenceUtils.saveShop(null, getActivity());
                 ((MainActivity) getActivity()).openMap();
             }
         });
