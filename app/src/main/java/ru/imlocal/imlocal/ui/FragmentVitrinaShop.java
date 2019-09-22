@@ -225,9 +225,11 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_estimate:
-                tvEstimate.setVisibility(View.INVISIBLE);
-                btnRating.setVisibility(View.INVISIBLE);
-                scaleRatingBar.setVisibility(View.VISIBLE);
+                if (user.isLogin()) {
+                    tvEstimate.setVisibility(View.INVISIBLE);
+                    btnRating.setVisibility(View.INVISIBLE);
+                    scaleRatingBar.setVisibility(View.VISIBLE);
+                }
                 break;
             case R.id.tv_adress:
                 String map = "http://maps.google.co.in/maps?q=" + tvAdress.getText();
