@@ -301,7 +301,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
         addPlaceMark(shop, 1.5f, 0.5f, 0.85f);
         PlacemarkMapObject placemarkMapObject = mapObjects.addPlacemark(new Point(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude()),
                 ImageProvider.fromResource(getActivity(), R.drawable.ic_marker));
-        placemarkMapObject.setIconStyle(new IconStyle().setScale(1.5f).setAnchor(new PointF(0.5f, 0.85f)));
+        placemarkMapObject.setIconStyle(new IconStyle().setScale(scale).setAnchor(new PointF(x, y)));
         placemarkMapObject.setUserData(shop);
         placemarkMapObject.addTapListener(mapObjectTapListener);
         selected = placemarkMapObject;
