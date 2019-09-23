@@ -41,6 +41,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
 
@@ -68,6 +69,7 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
 import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.ui.FragmentLogin.addFavoritesAndLogoutButtonsToNavigationDrawer;
 import static ru.imlocal.imlocal.ui.FragmentLogin.saveUser;
@@ -391,6 +393,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_for_business:
                 if (user.isLogin()) {
                     openBusiness();
+                } else {
+                    Snackbar.make(getWindow().getDecorView().findViewById(R.id.drawer_layout), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(this)).show();
                 }
                 break;
             case R.id.nav_favorites:
