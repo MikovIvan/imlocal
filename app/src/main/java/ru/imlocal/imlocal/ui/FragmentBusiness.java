@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsBusiness;
 import ru.imlocal.imlocal.entity.Action;
@@ -82,6 +83,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
             case R.id.btn_add_shop_business:
                 break;
             case R.id.btn_add_action_business:
+                ((MainActivity) getActivity()).openAddAction();
                 break;
             case R.id.btn_add_events_business:
                 break;
