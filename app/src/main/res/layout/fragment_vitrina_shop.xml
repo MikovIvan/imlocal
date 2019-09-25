@@ -247,6 +247,20 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_about"
             tools:text="Товарищи! консультация с широким активом требуют определения и уточнения системы обучения кадров, соответствует насущным потребностям. С другой стороны сложившаяся структура организации способствует подготовки и реализации систем массового участия. Идейные соображения высшего порядка, а также постоянный количественный рост и сфера нашей активности играет важную роль в формировании новых предложений. С другой стороны укрепление и развитие структуры требуют от нас анализа дальнейших направлений развития." />
 
+        <TextView
+            android:id="@+id/tv_events"
+            style="@style/HeaderTextStyle.Normal.Black"
+            android:text="@string/events"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_about_shop_text" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_fragment_vitrina_shop_list_events"
+            style="@style/RvMain.Shop"
+            android:paddingTop="@dimen/spacing_small_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_events"
+            tools:listitem="@layout/list_item_event" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

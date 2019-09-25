@@ -67,7 +67,7 @@ public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewA
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemEventClick(int position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -90,7 +90,7 @@ public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewA
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
+                            mListener.onItemEventClick(position);
                         }
                     }
                 }

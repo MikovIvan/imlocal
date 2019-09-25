@@ -171,7 +171,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public void onItemClick(int position) {
+    public void onItemEventClick(int position) {
         Event event = eventList.get(position);
         Bundle bundle = new Bundle();
         bundle.putSerializable("event", event);

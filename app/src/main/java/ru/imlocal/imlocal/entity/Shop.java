@@ -68,6 +68,9 @@ public class Shop implements Serializable {
     @SerializedName("events")
     @Expose
     private List<Action> shopActionArray;
+    @SerializedName("happenings")
+    @Expose
+    private List<Event> shopEventList;
     @SerializedName("shopAddress")
     @Expose
     private ShopAddress shopAddress;
@@ -78,7 +81,7 @@ public class Shop implements Serializable {
     public Shop() {
     }
 
-    public Shop(int shopId, String creatorId, String shopActive, String shopShortName, String shopFullName, int shopTypeId, String shopPhone, String shopWeb, String shopAddressId, String shopCostMin, String shopCostMax, String shopMiddleCost, String shopWorkTime, String shopAgregator, String shopStatusId, String shopShortDescription, String shopFullDescription, int shopRating, List<ShopPhoto> shopPhotoArray, List<Action> shopActionArray, ShopAddress shopAddress, double shopAvgRating) {
+    public Shop(int shopId, String creatorId, String shopActive, String shopShortName, String shopFullName, int shopTypeId, String shopPhone, String shopWeb, String shopAddressId, String shopCostMin, String shopCostMax, String shopMiddleCost, String shopWorkTime, String shopAgregator, String shopStatusId, String shopShortDescription, String shopFullDescription, int shopRating, List<ShopPhoto> shopPhotoArray, List<Action> shopActionArray, List<Event> shopEventList, ShopAddress shopAddress, double shopAvgRating) {
         this.shopId = shopId;
         this.creatorId = creatorId;
         this.shopActive = shopActive;
@@ -99,8 +102,17 @@ public class Shop implements Serializable {
         this.shopRating = shopRating;
         this.shopPhotoArray = shopPhotoArray;
         this.shopActionArray = shopActionArray;
+        this.shopEventList = shopEventList;
         this.shopAddress = shopAddress;
         this.shopAvgRating = shopAvgRating;
+    }
+
+    public List<Event> getShopEventList() {
+        return shopEventList;
+    }
+
+    public void setShopEventList(List<Event> shopEventList) {
+        this.shopEventList = shopEventList;
     }
 
     public ShopAddress getShopAddress() {
