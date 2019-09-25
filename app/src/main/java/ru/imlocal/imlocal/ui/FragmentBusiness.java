@@ -66,7 +66,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         btnAddEvent.setOnClickListener(this);
         btnAddAction.setOnClickListener(this);
 
-        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness, getActivity());
+        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness.subList(0, 2), getActivity());
         rvActions.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         rvActions.setAdapter(adapterActionBusiness);
         adapterActionBusiness.setOnItemClickListener(this);
