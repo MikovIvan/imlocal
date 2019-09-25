@@ -67,6 +67,7 @@
                 android:text="Добавить акцию"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
+                android:textAllCaps="false"
                 app:layout_constraintTop_toBottomOf="@+id/rv_actions_business" />
 
             <TextView
@@ -121,6 +122,7 @@
                 android:text="Добавить событие"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
+                android:textAllCaps="false"
                 app:layout_constraintTop_toBottomOf="@+id/rv_events_business" />
 
             <TextView
@@ -146,6 +148,7 @@
                 android:text="У вас еще нет мест"
                 android:textColor="@color/color_text"
                 android:textSize="14sp"
+                android:textAllCaps="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_shops_business" />
 
