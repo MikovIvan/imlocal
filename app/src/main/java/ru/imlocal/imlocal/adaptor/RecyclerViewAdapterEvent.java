@@ -56,7 +56,7 @@ public class RecyclerViewAdapterEvent extends RecyclerView.Adapter<RecyclerViewA
         if (event.getEventPhotoList().isEmpty()) {
             holder.ivEventImage.setImageResource(R.drawable.testimg);
         } else {
-            Picasso.with(context).load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
+            Picasso.get().load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
                     .into(holder.ivEventImage);
         }
     }

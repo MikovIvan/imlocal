@@ -75,7 +75,7 @@ public class FragmentVitrinaEvent extends Fragment {
         event = (Event) bundle.getSerializable("event");
 
         if (!event.getEventPhotoList().isEmpty()) {
-            Picasso.with(getContext())
+            Picasso.get()
                     .load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
                     .into(ivEventPhoto);
         } else {

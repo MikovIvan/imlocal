@@ -89,7 +89,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         }
 
         if (action.getShop() != null) {
-            Picasso.with(getContext())
+            Picasso.get()
                     .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                     .into(ivShopPhoto);
             tvShopName.setText(action.getShop().getShopShortName());
@@ -159,7 +159,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     private void flipperImages(String photo, boolean autostart) {
         ImageView imageView = new ImageView(getActivity());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Picasso.with(getContext())
+        Picasso.get()
                 .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + photo)
                 .into(imageView);
         viewFlipperAction.addView(imageView);

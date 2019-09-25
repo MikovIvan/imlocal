@@ -73,7 +73,7 @@ public class RecyclerViewAdapterShops extends RecyclerView.Adapter<RecyclerViewA
             }
         });
 
-        Picasso.with(context).load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
+        Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
                 .into(holder.ivShopIcon);
         holder.tvShopDescription.setText(shop.getShopShortDescription());
         holder.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
