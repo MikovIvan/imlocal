@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void closeLogin() {
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                .remove(getSupportFragmentManager().findFragmentById(R.id.frame_auth))
+                .remove(getSupportFragmentManager().findFragmentByTag("FragmentLogin"))
                 .commit();
     }
 
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = new FragmentLogin();
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.frame_auth, fragment)
+                .replace(R.id.frame_auth, fragment, "FragmentLogin")
                 .addToBackStack("FragmentLogin")
                 .commit();
     }
@@ -300,8 +300,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    public void openFavorites()
-    {
+    public void openFavorites() {
         Fragment fragment = new FragmentFavorites();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -457,7 +456,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        closeLogin();
+        if (!user.isLogin()) {
+            closeLogin();
+        }
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             fragment.onActivityResult(requestCode, resultCode, data);
         }
