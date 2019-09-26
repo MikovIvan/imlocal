@@ -23,12 +23,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import org.threeten.bp.LocalDate;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,42 +44,58 @@ import ru.imlocal.imlocal.BuildConfig;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
+import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.FileCompressor;
 
 import static android.app.Activity.RESULT_OK;
+import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
 
 public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, FragmentCalendarDialog.DatePickerDialogFragmentEvents {
 
     private RecyclerView rvCategory;
     private TextView tvDatePicker;
 
-    static final int REQUEST_GALLERY_PHOTO = 2;
-    static final int REQUEST_TAKE_PHOTO = 1;
-    RecyclerView rvPhotos;
-    RecyclerViewAdapterPhotos adapterPhotos;
-    List<String> photosPathList = new ArrayList<>();
-    File mPhotoFile;
-    FileCompressor mCompressor;
+    private static final int REQUEST_GALLERY_PHOTO = 2;
+    private static final int REQUEST_TAKE_PHOTO = 1;
+    private RecyclerView rvPhotos;
+    private RecyclerViewAdapterPhotos adapterPhotos;
+    private List<String> photosPathList = new ArrayList<>();
+    private File mPhotoFile;
+    private FileCompressor mCompressor;
+
+    private Action action = new Action();
+
+    private TextInputEditText etActionName;
+    private TextInputEditText etActionSubTitle;
+    private TextInputEditText etActionDescription;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_action, container, false);
         mCompressor = new FileCompressor(getActivity());
+
         initRvCategory(view);
         initSpinner(view);
+        initDatePicker(view);
 
-        tvDatePicker = view.findViewById(R.id.tv_add_action_select_date);
-        tvDatePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentCalendarDialog calendarDialogFragment = new FragmentCalendarDialog();
-                calendarDialogFragment.setDatePickerDialogFragmentEvents(FragmentAddAction.this::onDateSelected);
-                calendarDialogFragment.show(getActivity().getSupportFragmentManager(), "calendarDialog");
-            }
-        });
+        etActionName = view.findViewById(R.id.et_add_action_enter_name);
+        etActionSubTitle = view.findViewById(R.id.et_add_action_subtitle);
+        etActionDescription = view.findViewById(R.id.et_add_action_full_description);
+
+        if (!etActionName.getText().toString().equals("")) {
+            action.setTitle(String.valueOf(etActionName.getText()));
+        }
+        if (!etActionSubTitle.getText().toString().equals("")) {
+            action.setShortDesc(String.valueOf(etActionSubTitle.getText()));
+        }
+        if (!etActionDescription.getText().toString().equals("")) {
+            action.setShortDesc(String.valueOf(etActionDescription.getText()));
+        }
+
         photosPathList.add("add");
         rvPhotos = view.findViewById(R.id.rv_add_photo);
         adapterPhotos = new RecyclerViewAdapterPhotos(photosPathList, getActivity());
@@ -87,25 +106,39 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         return view;
     }
 
+    private void initDatePicker(View view) {
+        tvDatePicker = view.findViewById(R.id.tv_add_action_select_date);
+        tvDatePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentCalendarDialog calendarDialogFragment = new FragmentCalendarDialog();
+                calendarDialogFragment.setDatePickerDialogFragmentEvents(FragmentAddAction.this);
+                calendarDialogFragment.show(getActivity().getSupportFragmentManager(), "calendarDialog");
+            }
+        });
+    }
+
     private void initSpinner(View view) {
         //        это потом заменить на места юзера
-        List<String> shopName = new ArrayList<>();
+        List<Shop> userShops = new ArrayList<>();
         for (Shop shop : shopList) {
-            shopName.add(shop.getShopShortName());
+            if (shop.getCreatorId().equals(user.getId())) {
+                userShops.add(shop);
+            }
         }
         MaterialSpinner spinner = view.findViewById(R.id.spinner_add_action_choose_place);
-        spinner.setItems(shopName);
+        spinner.setItems();
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-
+                action.setActionOwnerId(userShops.get(position).getShopId());
             }
         });
     }
 
     @Override
     public void onItemClickCategory(int position) {
-
+        action.setActionTypeId(position + 1);
     }
 
     private void initRvCategory(View view) {
@@ -117,8 +150,10 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     }
 
     @Override
-    public void onDateSelected(String date) {
+    public void onDateSelected(String date, LocalDate start, LocalDate end) {
         tvDatePicker.setText(date);
+        action.setBegin(FORMATTER.format(start));
+        action.setEnd(FORMATTER.format(end));
     }
 
     @Override
@@ -272,8 +307,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         String mFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File mFile = File.createTempFile(mFileName, ".jpg", storageDir);
-        return mFile;
+        return File.createTempFile(mFileName, ".jpg", storageDir);
     }
 
 }
