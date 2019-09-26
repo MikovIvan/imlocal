@@ -384,4 +384,8 @@
     <style name="MyCounterText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textColor">@android:color/holo_red_light</item>
     </style>
+
+    <style name="AdressDialog">
+        <item name="android:windowBackground">@color/color_background</item>
+    </style>
 </resources>
