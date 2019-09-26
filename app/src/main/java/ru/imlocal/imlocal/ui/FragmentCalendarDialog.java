@@ -30,7 +30,7 @@ public class FragmentCalendarDialog extends AppCompatDialogFragment implements O
     private String dateRange;
     private DatePickerDialogFragmentEvents dpdfe;
 
-    public void setDatePickerDialogFragmentEvents(DatePickerDialogFragmentEvents dpdfe) {
+    void setDatePickerDialogFragmentEvents(DatePickerDialogFragmentEvents dpdfe) {
         this.dpdfe = dpdfe;
     }
 
@@ -65,7 +65,7 @@ public class FragmentCalendarDialog extends AppCompatDialogFragment implements O
             boolean selected) {
         localDateSingle = calendarDay.getDate();
         localDateEnd = null;
-        dpdfe.onDateSelected(FORMATTER.format(localDateSingle));
+        dpdfe.onDateSelected(FORMATTER.format(localDateSingle), localDateSingle, localDateSingle);
     }
 
     @Override
@@ -73,10 +73,10 @@ public class FragmentCalendarDialog extends AppCompatDialogFragment implements O
         localDateStart = list.get(0).getDate();
         localDateEnd = list.get(list.size() - 1).getDate();
         dateRange = "c " + FORMATTER.format(localDateStart) + " по " + FORMATTER.format(localDateEnd);
-        dpdfe.onDateSelected(dateRange);
+        dpdfe.onDateSelected(dateRange, localDateStart, localDateEnd);
     }
 
     public interface DatePickerDialogFragmentEvents {
-        void onDateSelected(String date);
+        void onDateSelected(String date, LocalDate start, LocalDate end);
     }
 }
