@@ -28,6 +28,7 @@ import com.yandex.runtime.Error;
 import com.yandex.runtime.network.NetworkError;
 import com.yandex.runtime.network.RemoteError;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,7 +116,11 @@ public class FragmentAddressDialog extends AppCompatDialogFragment implements Se
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 queryEdit.setText(suggestResult.get(i));
-                addAddressFragmentAddressDialog.onAddressSelected(suggestResult.get(i));
+                try {
+                    addAddressFragmentAddressDialog.onAddressSelected(suggestResult.get(i));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         queryEdit.addTextChangedListener(new TextWatcher() {
@@ -135,6 +140,6 @@ public class FragmentAddressDialog extends AppCompatDialogFragment implements Se
     }
 
     public interface AddAddressFragmentAddressDialog {
-        void onAddressSelected(String date);
+        void onAddressSelected(String address) throws IOException;
     }
 }

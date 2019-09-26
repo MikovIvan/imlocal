@@ -1,7 +1,10 @@
 package ru.imlocal.imlocal.ui;
 
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +22,18 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.entity.User;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
 
 
@@ -183,7 +195,43 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, F
     }
 
     @Override
-    public void onAddressSelected(String date) {
-        etAdress.setText(date);
+    public void onAddressSelected(String address) throws IOException {
+        etAdress.setText(address);
+
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+
+        List<Address> userAddress = geocoder.getFromLocationName(address, 1);
+
+        if (userAddress != null) {
+            Address returnedAddress = userAddress.get(0);
+            ru.imlocal.imlocal.entity.Address currentUserAdress = new ru.imlocal.imlocal.entity.Address();
+            currentUserAdress.setCity(returnedAddress.getLocality());
+            currentUserAdress.setStreet(returnedAddress.getThoroughfare());
+            currentUserAdress.setLatitude(String.valueOf(returnedAddress.getLatitude()));
+            currentUserAdress.setLongitude(String.valueOf(returnedAddress.getLongitude()));
+            currentUserAdress.setHouseNumber(returnedAddress.getSubThoroughfare());
+            user.setMiddleName(etMiddleName.getText().toString());
+            user.setUserAddress(currentUserAdress);
+            Call<User> call = api.updateUser(user.getId(), user);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    Log.d("ADDRESS", response.toString());
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+
+                }
+            });
+
+            Log.d("ADDRESS", returnedAddress.getLocality()
+                    + " " + returnedAddress.getThoroughfare()
+                    + " " + returnedAddress.getLatitude()
+                    + " " + returnedAddress.getLongitude()
+                    + " " + returnedAddress.getSubThoroughfare());
+
+        }
     }
 }

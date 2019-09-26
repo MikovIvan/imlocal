@@ -11,6 +11,8 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
@@ -51,4 +53,8 @@ public interface Api {
             @Field("user_id") String userId,
             @Field("delete") String delete
     );
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @PUT("users/{id}")
+    Call<User> updateUser(@Path("id") String id, @Body User user);
 }
