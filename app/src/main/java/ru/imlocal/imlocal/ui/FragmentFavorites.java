@@ -21,6 +21,8 @@ import retrofit2.Response;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
+import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavActions;
+import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavPlaces;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
@@ -32,9 +34,9 @@ import static ru.imlocal.imlocal.MainActivity.user;
 
 public class FragmentFavorites extends Fragment implements RecyclerViewAdapterActions.OnItemClickListener {
     private RecyclerView rvActions, rvEvents, rvShops;
-    private RecyclerViewAdapterActions actionsAdapter;
+    private RecyclerViewAdapterFavActions actionsAdapter;
     private RecyclerViewAdapterEvent eventsAdapter;
-    private RecyclerViewAdapterShops shopsAdapter;
+    private RecyclerViewAdapterFavPlaces shopsAdapter;
 
     public FragmentFavorites() {
         // Required empty public constructor
@@ -79,9 +81,9 @@ public class FragmentFavorites extends Fragment implements RecyclerViewAdapterAc
         assert actionList != null;
         assert eventList != null;
         assert shopsList != null;
-        actionsAdapter = new RecyclerViewAdapterActions(actionList, getContext());
-        eventsAdapter = new RecyclerViewAdapterEvent(eventList, getContext());
-        shopsAdapter = new RecyclerViewAdapterShops(shopsList, getContext());
+        actionsAdapter = new RecyclerViewAdapterFavActions(actionList.subList(0, 2), getContext());
+        eventsAdapter = new RecyclerViewAdapterEvent(eventList.subList(0,2), getContext());
+        shopsAdapter = new RecyclerViewAdapterFavPlaces(shopsList.subList(0, 2), getContext());
 
         rvActions.setAdapter(actionsAdapter);
         rvEvents.setAdapter(eventsAdapter);

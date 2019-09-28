@@ -371,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_login:
                 if (!user.isLogin()) {
                     openLogin();
+                    return false;
                 } else {
                     openProfile();
                 }
