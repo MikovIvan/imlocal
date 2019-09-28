@@ -43,6 +43,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:overScrollMode="never"
                 android:id="@+id/list_actions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,8 +55,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_youractions"
-                tools:listitem="@layout/list_item_action"
-                tools:showIn="@layout/list_item_action" />
+                tools:listitem="@layout/favorites_action"
+                tools:showIn="@layout/favorites_action" />
 
             <Button
                 android:id="@+id/btn_showallactions"
@@ -63,11 +64,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_round_main_color"
+                android:background="@drawable/btn_round_favorites"
+                android:textAllCaps="false"
                 android:text="Показать все мои акции"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@+id/list_actions" />
+                android:textColor="@color/color_main"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/list_actions"
+                style="?android:attr/borderlessButtonStyle" />
 
             <TextView
                 android:id="@+id/tv_yourevents"
@@ -88,6 +91,7 @@
                 android:layout_marginStart="@dimen/spacing_small_8"
                 android:layout_marginTop="@dimen/spacing_small_8"
                 android:layout_marginEnd="@dimen/spacing_small_8"
+                android:scrollbars="none"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -102,11 +106,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_round_main_color"
+                android:background="@drawable/btn_round_favorites"
                 android:text="Показать все мои события"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@+id/list_events" />
+                android:textAllCaps="false"
+                android:textColor="@color/color_main"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/list_events"
+                style="?android:attr/borderlessButtonStyle" />
 
             <TextView
                 android:id="@+id/tv_yourshops"
@@ -127,7 +133,8 @@
                 android:layout_marginStart="@dimen/spacing_small_8"
                 android:layout_marginTop="@dimen/spacing_small_8"
                 android:layout_marginEnd="@dimen/spacing_small_8"
-                android:orientation="vertical"
+                android:overScrollMode="never"
+                android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -141,11 +148,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/btn_round_main_color"
+                android:background="@drawable/btn_round_favorites"
                 android:text="Показать все мои места"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@+id/list_shops" />
+                android:textAllCaps="false"
+                android:textColor="@color/color_main"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/list_shops"
+                style="?android:attr/borderlessButtonStyle" />
 
             <View
                 app:layout_constraintTop_toBottomOf="@+id/btn_showallshops"
