@@ -42,10 +42,17 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     private TextView tvNoEvents;
     private TextView tvNoActions;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_business, container, false);
+        ((MainActivity) getActivity()).enableUpButtonViews(true);
 
 //        for test only
         actionListBusiness.addAll(actionList);
