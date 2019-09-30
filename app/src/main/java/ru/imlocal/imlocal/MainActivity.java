@@ -516,6 +516,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                    request.executeAsync();
                 } else {
                     enter.setTitle("Вход");
+                    navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(false);
+                    navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
                 }
             }
         };
