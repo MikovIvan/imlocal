@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
@@ -30,6 +36,7 @@ import ru.imlocal.imlocal.entity.ActionPhoto;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
@@ -51,6 +58,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     private ViewFlipper viewFlipperAction;
 
     private Action action;
+    Bundle bundle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,15 +85,22 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         ivShopPhoto.setOnClickListener(this);
         tvShopName.setOnClickListener(this);
 
-        Bundle bundle = getArguments();
+        bundle = getArguments();
         action = (Action) bundle.getSerializable("action");
 
-        if (action.getActionPhotos().size() > 1) {
+        if (bundle.getStringArrayList("photosPathList") != null) {
+            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
+            for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                flipperImages(photoPath, true, true);
+            }
+        } else if (!action.getActionPhotos().isEmpty()) {
+            viewFlipperAction.setVisibility(View.GONE);
+        } else if (action.getActionPhotos().size() > 1) {
             for (ActionPhoto actionPhoto : action.getActionPhotos())
-                flipperImages(actionPhoto.getActionPhoto(), true);
+                flipperImages(actionPhoto.getActionPhoto(), true, false);
         } else {
             for (ActionPhoto actionPhoto : action.getActionPhotos())
-                flipperImages(actionPhoto.getActionPhoto(), false);
+                flipperImages(actionPhoto.getActionPhoto(), false, false);
         }
 
         if (action.getShop() != null) {
@@ -94,19 +109,12 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                     .into(ivShopPhoto);
             tvShopName.setText(action.getShop().getShopShortName());
             tvShopAdress.setText(replaceString(action.getShop().getShopAddress().toString()));
-        } else {
-            tvShopName.setText("Неверный id");
-            ivShopPhoto.setImageResource(R.drawable.testimg);
-            tvShopAdress.setText("дб адрес");
         }
 
-        if (!action.getActionPhotos().isEmpty()) {
-            tvActionTitle.setText(action.getTitle());
-            tvActionDescription.setText(action.getFullDesc());
-            tvWhen.setText(action.getBegin() + " - " + action.getEnd());
-        } else {
-            viewFlipperAction.setVisibility(View.GONE);
-        }
+        tvActionTitle.setText(action.getTitle());
+        tvActionDescription.setText(action.getFullDesc());
+        tvWhen.setText(action.getBegin() + " - " + action.getEnd());
+
         return view;
     }
 
@@ -140,6 +148,24 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                     Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
                             .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
+                return true;
+            case R.id.publish:
+
+                Call<Action> call = api.createAction(user.getAccessToken(), action);
+                call.enqueue(new Callback<Action>() {
+                    @Override
+                    public void onResponse(Call<Action> call, Response<Action> response) {
+                        Log.d("ACTION", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Action> call, Throwable t) {
+                        Log.d("ACTION", t.getMessage());
+                        Log.d("ACTION", t.toString());
+                    }
+                });
+                Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -147,21 +173,31 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_vitrina, menu);
-        if (favoritesActions.containsKey(String.valueOf(action.getId()))) {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        if (bundle.getStringArrayList("photosPathList") != null) {
+            inflater.inflate(R.menu.menu_publish, menu);
         } else {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
+            inflater.inflate(R.menu.menu_vitrina, menu);
+            if (favoritesActions.containsKey(String.valueOf(action.getId()))) {
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+            } else {
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
+            }
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void flipperImages(String photo, boolean autostart) {
+    private void flipperImages(String photo, boolean autostart, boolean preview) {
         ImageView imageView = new ImageView(getActivity());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Picasso.get()
-                .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + photo)
-                .into(imageView);
+        if (preview) {
+            Picasso.get().load(photo).noPlaceholder().centerCrop().fit()
+                    .into(imageView);
+        } else {
+            Picasso.get()
+                    .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + photo)
+                    .into(imageView);
+        }
+
         viewFlipperAction.addView(imageView);
         viewFlipperAction.setFlipInterval(4000);
         viewFlipperAction.setAutoStart(autostart);

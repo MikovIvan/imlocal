@@ -9,6 +9,9 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,6 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.karumi.dexter.Dexter;
@@ -41,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 
 import ru.imlocal.imlocal.BuildConfig;
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
@@ -51,7 +56,7 @@ import ru.imlocal.imlocal.utils.FileCompressor;
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
-import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
 
 public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, FragmentCalendarDialog.DatePickerDialogFragmentEvents {
 
@@ -66,11 +71,17 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private File mPhotoFile;
     private FileCompressor mCompressor;
 
-    private Action action = new Action();
+    private Action action = new Action(0, 0, "1", "2", "3", "", "", 2, new Shop());
 
     private TextInputEditText etActionName;
     private TextInputEditText etActionSubTitle;
     private TextInputEditText etActionDescription;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -86,17 +97,9 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         etActionSubTitle = view.findViewById(R.id.et_add_action_subtitle);
         etActionDescription = view.findViewById(R.id.et_add_action_full_description);
 
-        if (!etActionName.getText().toString().equals("")) {
-            action.setTitle(String.valueOf(etActionName.getText()));
+        if (photosPathList.isEmpty()) {
+            photosPathList.add("add");
         }
-        if (!etActionSubTitle.getText().toString().equals("")) {
-            action.setShortDesc(String.valueOf(etActionSubTitle.getText()));
-        }
-        if (!etActionDescription.getText().toString().equals("")) {
-            action.setShortDesc(String.valueOf(etActionDescription.getText()));
-        }
-
-        photosPathList.add("add");
         rvPhotos = view.findViewById(R.id.rv_add_photo);
         adapterPhotos = new RecyclerViewAdapterPhotos(photosPathList, getActivity());
         rvPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
@@ -121,19 +124,65 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private void initSpinner(View view) {
         //        это потом заменить на места юзера
         List<Shop> userShops = new ArrayList<>();
+        List<String> shopsName = new ArrayList<>();
         for (Shop shop : shopList) {
             if (shop.getCreatorId().equals(user.getId())) {
                 userShops.add(shop);
+                shopsName.add(shop.getShopShortName());
             }
         }
+
         MaterialSpinner spinner = view.findViewById(R.id.spinner_add_action_choose_place);
-        spinner.setItems();
+        spinner.setItems(shopsName);
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 action.setActionOwnerId(userShops.get(position).getShopId());
+                action.setShop(userShops.get(position));
+                action.setCreatorId(Integer.parseInt(user.getId()));
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_business, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.go_to_preview) {
+            if (!etActionName.getText().toString().equals("") && etActionName.getText().length() <= 30) {
+                action.setTitle(String.valueOf(etActionName.getText()));
+            } else {
+                Snackbar.make(getView(), "Название неправильное", Snackbar.LENGTH_LONG).show();
+            }
+            if (!etActionSubTitle.getText().toString().equals("") && etActionSubTitle.getText().length() <= 40) {
+                action.setShortDesc(String.valueOf(etActionSubTitle.getText()));
+            } else {
+                Snackbar.make(getView(), "Подзаголовок неправильный", Snackbar.LENGTH_LONG).show();
+            }
+            if (!etActionDescription.getText().toString().equals("")) {
+                action.setFullDesc(String.valueOf(etActionDescription.getText()));
+            } else {
+                Snackbar.make(getView(), "Введите описание акции", Snackbar.LENGTH_LONG).show();
+            }
+            if (action.getActionTypeId() == 0) {
+                Snackbar.make(getView(), "Выберите категорию", Snackbar.LENGTH_LONG).show();
+            }
+            if (action.getBegin().equals("") || action.getEnd().equals("")) {
+                Snackbar.make(getView(), "Выберите даты акции", Snackbar.LENGTH_LONG).show();
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("action", action);
+                bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);
+                ((MainActivity) getActivity()).openVitrinaAction(bundle);
+            }
+
+            Toast.makeText(getActivity(), "Go to preview", Toast.LENGTH_LONG).show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -152,8 +201,8 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     @Override
     public void onDateSelected(String date, LocalDate start, LocalDate end) {
         tvDatePicker.setText(date);
-        action.setBegin(FORMATTER.format(start));
-        action.setEnd(FORMATTER.format(end));
+        action.setBegin(FORMATTER4.format(start));
+        action.setEnd(FORMATTER4.format(end));
     }
 
     @Override

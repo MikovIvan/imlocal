@@ -30,6 +30,7 @@ public class Constants {
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM");
     public static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateTimeFormatter FORMATTER3 = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+    public static final DateTimeFormatter FORMATTER4 = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public enum Kind {
         shop,

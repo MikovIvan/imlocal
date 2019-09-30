@@ -9,10 +9,12 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
@@ -21,7 +23,7 @@ import ru.imlocal.imlocal.entity.User;
 public interface Api {
 
     @GET("shops")
-    Observable<List<Shop>> getAllShops();
+    Call<List<Shop>> getShops(@Query("page") int page);
 
     @GET("events")
     Observable<List<Action>> getAllActions();
@@ -57,4 +59,7 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @PUT("users/{id}")
     Call<User> updateUser(@Path("id") String id, @Body User user);
+
+    @POST("shops")
+    Call<Action> createAction(@Header("Authorization") String credential, @Body Action action);
 }
