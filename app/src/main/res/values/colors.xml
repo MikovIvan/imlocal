@@ -15,4 +15,7 @@
     <color name="color_icon">#8F8F8F</color>
     <color name="color_hint">#C4C4C4</color>
 
+    <color name="placeholder_grey">#AAADC4</color>
+    <color name="placeholder_grey_20">#33AAADC4</color>
+
 </resources>
