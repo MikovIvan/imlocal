@@ -26,6 +26,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -151,7 +152,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 return true;
             case R.id.publish:
 
-                Call<Action> call = api.createAction(user.getAccessToken(), action);
+                Call<Action> call = api.createAction(Credentials.basic(user.getAccessToken(), ""), action);
                 call.enqueue(new Callback<Action>() {
                     @Override
                     public void onResponse(Call<Action> call, Response<Action> response) {

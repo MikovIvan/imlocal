@@ -61,5 +61,5 @@ public interface Api {
     Call<User> updateUser(@Path("id") String id, @Body User user);
 
     @POST("shops")
-    Call<Action> createAction(@Header("Authorization") String credential, @Body Action action);
+    Call<Action> createAction(@Header("Authorization") String credentials, @Body Action action);
 }
