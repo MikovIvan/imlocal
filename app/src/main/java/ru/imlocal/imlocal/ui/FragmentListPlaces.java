@@ -294,17 +294,14 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     private void getCurrentLocation(Context context) {
-//        Для Кати
-        latitude = 55.7796;
-        longitude = 37.4656;
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
                 @Override
                 public void gotLocation(Location location) {
-//                    latitude = location.getLatitude();
-//                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
 // когда будет готово апи получение магазинов будет тут
                     Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
                 }
