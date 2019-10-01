@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_background">
+
+            <TextView
+                android:id="@+id/tv_actions_business"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:fontFamily="sans-serif-medium"
+                android:text="Ваши акции"
+                android:textColor="@color/color_text"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_no_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif"
+                android:text="У вас еще нет акций"
+                android:textColor="@color/color_text"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_actions_business" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_actions_business"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_small_8"
+                android:layout_marginTop="@dimen/spacing_small_8"
+                android:layout_marginEnd="@dimen/spacing_small_8"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_no_actions"
+                app:spanCount="2"
+                tools:listitem="@layout/list_item_action_business"
+                tools:showIn="@layout/list_item_action" />
+
+            <Button
+                android:id="@+id/btn_add_action_business"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginEnd="@dimen/spacing_normal_16"
+                android:background="@drawable/btn_round_main_color"
+                android:fontFamily="sans-serif-medium"
+                android:text="Добавить акцию"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@+id/rv_actions_business" />
+
+            <TextView
+                android:id="@+id/tv_events_business"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginTop="@dimen/spacing_small_8"
+                android:fontFamily="sans-serif-medium"
+                android:text="Ваши события"
+                android:textColor="@color/color_text"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_add_action_business" />
+
+            <TextView
+                android:id="@+id/tv_no_events"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif"
+                android:text="У вас еще нет событий"
+                android:textColor="@color/color_text"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_events_business" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_events_business"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_small_8"
+                android:layout_marginTop="@dimen/spacing_small_8"
+                android:layout_marginEnd="@dimen/spacing_small_8"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_no_events"
+                tools:listitem="@layout/list_item_event"
+                tools:showIn="@layout/list_item_event" />
+
+            <Button
+                android:id="@+id/btn_add_events_business"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginEnd="@dimen/spacing_normal_16"
+                android:background="@drawable/btn_round_main_color"
+                android:fontFamily="sans-serif-medium"
+                android:text="Добавить событие"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@+id/rv_events_business" />
+
+            <TextView
+                android:id="@+id/tv_shops_business"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginTop="@dimen/spacing_small_8"
+                android:fontFamily="sans-serif-medium"
+                android:text="Ваши места"
+                android:textColor="@color/color_text"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_add_events_business" />
+
+            <TextView
+                android:id="@+id/tv_no_shops"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif"
+                android:text="У вас еще нет мест"
+                android:textColor="@color/color_text"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_shops_business" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_shops_business"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_small_8"
+                android:layout_marginTop="@dimen/spacing_small_8"
+                android:layout_marginEnd="@dimen/spacing_small_8"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_no_shops"
+                tools:listitem="@layout/list_item_shop"
+                tools:showIn="@layout/list_item_shop" />
+
+            <Button
+                android:id="@+id/btn_add_shop_business"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginEnd="@dimen/spacing_normal_16"
+                android:background="@drawable/btn_round_main_color"
+                android:fontFamily="sans-serif-medium"
+                android:text="Добавить место"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@+id/rv_shops_business" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_normal_16"
+                app:layout_constraintTop_toBottomOf="@+id/btn_add_shop_business" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

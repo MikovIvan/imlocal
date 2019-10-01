@@ -1,62 +1,44 @@
 package ru.imlocal.imlocal.ui;
 
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.yandex.mapkit.geometry.BoundingBox;
-import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.search.SearchFactory;
-import com.yandex.mapkit.search.SearchManager;
-import com.yandex.mapkit.search.SearchManagerType;
-import com.yandex.mapkit.search.SearchOptions;
-import com.yandex.mapkit.search.SearchType;
-import com.yandex.mapkit.search.SuggestItem;
-import com.yandex.runtime.Error;
-import com.yandex.runtime.network.NetworkError;
-import com.yandex.runtime.network.RemoteError;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.entity.User;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
-import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
 
 
-public class FragmentProfile extends Fragment implements View.OnClickListener, SearchManager.SuggestListener {
-    private final Point CENTER = new Point(55.75, 37.62);
-    private final double BOX_SIZE = 0.2;
-    private final BoundingBox BOUNDING_BOX = new BoundingBox(
-            new Point(CENTER.getLatitude() - BOX_SIZE, CENTER.getLongitude() - BOX_SIZE),
-            new Point(CENTER.getLatitude() + BOX_SIZE, CENTER.getLongitude() + BOX_SIZE));
-    private final SearchOptions SEARCH_OPTIONS = new SearchOptions().setSearchTypes(
-            SearchType.GEO.value |
-                    SearchType.BIZ.value |
-                    SearchType.TRANSIT.value);
+public class FragmentProfile extends Fragment implements View.OnClickListener, FragmentAddressDialog.AddAddressFragmentAddressDialog {
+
     private boolean isEditMode;
     private TextInputEditText etFamilyName;
     private TextInputEditText etName;
@@ -65,12 +47,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, S
     private ImageButton ibVK;
     private ImageButton ibFB;
     private ImageButton ibGoogle;
-    private SearchManager searchManager;
-    private ListView suggestResultView;
-    private ArrayAdapter resultAdapter;
-    private List<String> suggestResult;
-    private LinearLayout linearLayoutSearch;
-    private EditText queryEdit;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,7 +59,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, S
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, null);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
-        SearchFactory.initialize(getActivity());
+
         initViews(view);
         setEditable(false);
         setData();
@@ -105,10 +81,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, S
         ibVK = view.findViewById(R.id.btn_login_vk);
         ibFB = view.findViewById(R.id.btn_login_fb);
         ibGoogle = view.findViewById(R.id.btn_login_google);
-
-        linearLayoutSearch = view.findViewById(R.id.ll_search);
-        queryEdit = view.findViewById(R.id.suggest_query);
-        suggestResultView = view.findViewById(R.id.suggest_result);
     }
 
     private void setEditable(boolean isEditMode) {
@@ -135,6 +107,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, S
         ibVK.setOnClickListener(this);
         ibGoogle.setOnClickListener(this);
         etAdress.setOnClickListener(this);
+        etFamilyName.setOnClickListener(this);
+        etName.setOnClickListener(this);
+        etMiddleName.setOnClickListener(this);
     }
 
     @Override
@@ -166,83 +141,97 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, S
             case R.id.btn_login_fb:
                 if (isEditMode) {
                     Toast.makeText(getActivity(), "Ждем Апи", Toast.LENGTH_LONG).show();
+                } else {
+                    showSnackBar();
                 }
                 break;
             case R.id.btn_login_vk:
                 if (isEditMode) {
                     Toast.makeText(getActivity(), "Ждем Апи", Toast.LENGTH_LONG).show();
+                } else {
+                    showSnackBar();
                 }
                 break;
             case R.id.btn_login_google:
                 if (isEditMode) {
                     Toast.makeText(getActivity(), "Ждем Апи", Toast.LENGTH_LONG).show();
+                } else {
+                    showSnackBar();
                 }
                 break;
             case R.id.et_profile_adress:
-                setAddress();
+                if (isEditMode) {
+                    openAdressDialog();
+                } else {
+                    showSnackBar();
+                }
+                break;
+            case R.id.et_profile_family_name:
+                if (!isEditMode) {
+                    showSnackBar();
+                }
+                break;
+            case R.id.et_profile_middle_name:
+                if (!isEditMode) {
+                    showSnackBar();
+                }
+                break;
+            case R.id.et_profile_name:
+                if (!isEditMode) {
+                    showSnackBar();
+                }
+                break;
         }
     }
 
-    private void setAddress() {
-        if (isEditMode) {
-            linearLayoutSearch.setVisibility(View.VISIBLE);
-            searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.COMBINED);
+    private void openAdressDialog() {
+        FragmentAddressDialog fragmentAddressDialog = new FragmentAddressDialog();
+        fragmentAddressDialog.setAddAddressFragmentAddressDialog(FragmentProfile.this);
+        fragmentAddressDialog.show(getActivity().getSupportFragmentManager(), "addressDialog");
+    }
 
-            suggestResult = new ArrayList<>();
-            resultAdapter = new ArrayAdapter(getActivity(),
-                    android.R.layout.simple_list_item_2,
-                    android.R.id.text1,
-                    suggestResult);
-            suggestResultView.setAdapter(resultAdapter);
-
-            suggestResultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    etAdress.setText(suggestResult.get(i));
-                    linearLayoutSearch.setVisibility(View.GONE);
-                    hideKeyboardFrom(getActivity(), etAdress);
-                }
-            });
-            queryEdit.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    requestSuggest(editable.toString());
-                }
-            });
-        }
+    private void showSnackBar() {
+        Snackbar.make(getView(), getResources().getString(R.string.need_editable), Snackbar.LENGTH_LONG).show();
     }
 
     @Override
-    public void onSuggestResponse(@NonNull List<SuggestItem> list) {
-        suggestResult.clear();
-        for (int i = 0; i < Math.min(10, list.size()); i++) {
-            suggestResult.add(list.get(i).getDisplayText());
-        }
-        resultAdapter.notifyDataSetChanged();
-        suggestResultView.setVisibility(View.VISIBLE);
-    }
+    public void onAddressSelected(String address) throws IOException {
+        etAdress.setText(address);
 
-    @Override
-    public void onSuggestError(@NonNull Error error) {
-        String errorMessage = getString(R.string.unknown_error_message);
-        if (error instanceof RemoteError) {
-            errorMessage = getString(R.string.remote_error_message);
-        } else if (error instanceof NetworkError) {
-            errorMessage = getString(R.string.network_error_message);
-        }
-        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-    }
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
 
-    private void requestSuggest(String query) {
-        suggestResultView.setVisibility(View.INVISIBLE);
-        searchManager.suggest(query, BOUNDING_BOX, SEARCH_OPTIONS, this);
+
+        List<Address> userAddress = geocoder.getFromLocationName(address, 1);
+
+        if (userAddress != null) {
+            Address returnedAddress = userAddress.get(0);
+            ru.imlocal.imlocal.entity.Address currentUserAdress = new ru.imlocal.imlocal.entity.Address();
+            currentUserAdress.setCity(returnedAddress.getLocality());
+            currentUserAdress.setStreet(returnedAddress.getThoroughfare());
+            currentUserAdress.setLatitude(String.valueOf(returnedAddress.getLatitude()));
+            currentUserAdress.setLongitude(String.valueOf(returnedAddress.getLongitude()));
+            currentUserAdress.setHouseNumber(returnedAddress.getSubThoroughfare());
+            user.setMiddleName(etMiddleName.getText().toString());
+            user.setUserAddress(currentUserAdress);
+            Call<User> call = api.updateUser(user.getId(), user);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    Log.d("ADDRESS", response.toString());
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+
+                }
+            });
+
+            Log.d("ADDRESS", returnedAddress.getLocality()
+                    + " " + returnedAddress.getThoroughfare()
+                    + " " + returnedAddress.getLatitude()
+                    + " " + returnedAddress.getLongitude()
+                    + " " + returnedAddress.getSubThoroughfare());
+
+        }
     }
 }

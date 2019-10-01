@@ -23,6 +23,12 @@ public class User implements Serializable {
     @SerializedName("lastName")
     @Expose
     private String lastName;
+    @SerializedName("middleName")
+    @Expose
+    private String middleName;
+    @SerializedName("userAddress")
+    @Expose
+    private Address userAddress;
     @SerializedName("accessToken")
     @Expose
     private String accessToken;
@@ -60,6 +66,22 @@ public class User implements Serializable {
         this.email = email;
         this.accessToken = accessToken;
         this.username = username;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public Address getUserAddress() {
+        return userAddress;
+    }
+
+    public void setUserAddress(Address userAddress) {
+        this.userAddress = userAddress;
     }
 
     public String getId() {

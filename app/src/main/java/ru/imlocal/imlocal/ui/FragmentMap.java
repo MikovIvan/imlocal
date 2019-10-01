@@ -160,7 +160,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
 
     private void setDataToView(PlacemarkMapObject shopObject, Shop shop) {
         tvShopTitle.setText(shop.getShopShortName());
-        Picasso.with(getActivity()).load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
+        Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
                 .into(ivShopIcon);
         tvShopDescription.setText(shop.getShopShortDescription());
         tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));

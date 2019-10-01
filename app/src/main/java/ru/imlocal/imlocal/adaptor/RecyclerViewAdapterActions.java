@@ -61,7 +61,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
         if (action.getShop() != null) {
             if (action.getShop().getShopShortName() != null) {
                 holder.tvShopTitle.setText(action.getShop().getShopShortName());
-                Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
+                Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                         .into(holder.ivIcon);
                 holder.tvShopRating.setText(String.valueOf(action.getShop().getShopAvgRating()));
             }
@@ -76,7 +76,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
             holder.tvEventAdress.setText(Utils.replaceString(action.getShop().getShopAddress().toString()));
             holder.tvActionDescription.setText(action.getFullDesc());
             holder.tvDate.setText(action.getBegin() + "-" + action.getEnd());
-            Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
+            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
                     .into(holder.ivActionIcon);
         } else {
             holder.ivActionIcon.setVisibility(View.GONE);

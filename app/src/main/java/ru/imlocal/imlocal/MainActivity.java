@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,8 +29,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -41,11 +38,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +51,8 @@ import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
+import ru.imlocal.imlocal.ui.FragmentAddAction;
+import ru.imlocal.imlocal.ui.FragmentBusiness;
 import ru.imlocal.imlocal.ui.FragmentFavorites;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
 import ru.imlocal.imlocal.ui.FragmentLogin;
@@ -67,9 +64,8 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
 import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
+import ru.imlocal.imlocal.utils.Utils;
 
-import static ru.imlocal.imlocal.ui.FragmentLogin.addFavoritesAndLogoutButtonsToNavigationDrawer;
-import static ru.imlocal.imlocal.ui.FragmentLogin.saveUser;
 import static ru.imlocal.imlocal.utils.Constants.MAPKIT_API_KEY;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -118,14 +114,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initYandexMaps();
         setContentView(R.layout.activity_main);
 
-        api = RetrofitClient.getInstance().getApi();
+        api = RetrofitClient.getInstance(this).getApi();
 
         initView();
         initToolbar();
         initNavigationDrawer();
 
         enableUpButtonViews(false);
-        showLoadingIndicator(false);
+//        showLoadingIndicator(false);
 
         configFbAuth();
         configGoogleAuth();
@@ -215,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void closeLogin() {
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                .remove(getSupportFragmentManager().findFragmentById(R.id.frame_auth))
+                .remove(getSupportFragmentManager().findFragmentByTag("FragmentLogin"))
                 .commit();
     }
 
@@ -273,13 +269,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = new FragmentLogin();
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.frame_auth, fragment)
+                .replace(R.id.frame_auth, fragment, "FragmentLogin")
                 .addToBackStack("FragmentLogin")
                 .commit();
     }
 
-    public void openFavorites()
-    {
+    public void openBusiness() {
+        Fragment fragment = new FragmentBusiness();
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentBusiness")
+                .commit();
+    }
+
+    public void openAddAction() {
+        Fragment fragment = new FragmentAddAction();
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentAddAction")
+                .commit();
+    }
+
+    public void openFavorites() {
         Fragment fragment = new FragmentFavorites();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -380,7 +393,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 openFeedback();
                 break;
             case R.id.nav_for_business:
-                Toast.makeText(this, "Раздел в разработке", Toast.LENGTH_SHORT).show();
+                if (user.isLogin()) {
+                    openBusiness();
+                } else {
+                    Snackbar.make(getWindow().getDecorView().findViewById(R.id.drawer_layout), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(this)).show();
+                }
                 break;
             case R.id.nav_favorites:
                 openFavorites();
@@ -431,7 +449,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        closeLogin();
+        if (!user.isLogin()) {
+            closeLogin();
+        }
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             fragment.onActivityResult(requestCode, resultCode, data);
         }
@@ -469,33 +489,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // This method is invoked everytime access token changes
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                if (currentAccessToken != null) {
-                    GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-                        @Override
-                        public void onCompleted(JSONObject object, GraphResponse response) {
-                            try {
-                                String firstName = object.getString("first_name");
-                                String lastName = object.getString("last_name");
-                                String email = object.getString("email");
-                                String id = object.getString("id");
-                                Toast.makeText(MainActivity.this, "успешно facebook", Toast.LENGTH_LONG).show();
-                                saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken(), MainActivity.this);
-                                addFavoritesAndLogoutButtonsToNavigationDrawer();
-                                Log.d("TAG", user.toString());
-                                enter.setTitle(firstName + " " + lastName);
-                                Log.d("TAG", firstName + " " + lastName + " " + email + " " + id);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-
-                    Bundle parameters = new Bundle();
-                    parameters.putString("fields", "first_name,last_name,email,id");
-                    request.setParameters(parameters);
-                    request.executeAsync();
+                if (oldAccessToken == currentAccessToken) {
+                    enter.setTitle(user.getUsername());
+//                    GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+//                        @Override
+//                        public void onCompleted(JSONObject object, GraphResponse response) {
+//                            try {
+//                                String firstName = object.getString("first_name");
+//                                String lastName = object.getString("last_name");
+//                                String email = object.getString("email");
+//                                String id = object.getString("id");
+//                                Toast.makeText(MainActivity.this, "успешно facebook", Toast.LENGTH_LONG).show();
+//                                saveUser(id, email, firstName, lastName, "facebook", accessToken.getToken(), MainActivity.this);
+//                                addFavoritesAndLogoutButtonsToNavigationDrawer();
+//                                Log.d("TAG", user.toString());
+//                                enter.setTitle(firstName + " " + lastName);
+//                                Log.d("TAG", firstName + " " + lastName + " " + email + " " + id);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//
+//                    Bundle parameters = new Bundle();
+//                    parameters.putString("fields", "first_name,last_name,email,id");
+//                    request.setParameters(parameters);
+//                    request.executeAsync();
                 } else {
                     enter.setTitle("Вход");
+                    navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(false);
+                    navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
                 }
             }
         };

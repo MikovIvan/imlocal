@@ -47,6 +47,22 @@ public class Action implements Serializable {
     @Expose
     private Shop shop;
 
+    public Action(int actionTypeId) {
+        this.actionTypeId = actionTypeId;
+    }
+
+    public Action(int actionOwnerId, int actionTypeId, String title, String shortDesc, String fullDesc, String begin, String end, int creatorId, Shop shop) {
+        this.actionOwnerId = actionOwnerId;
+        this.actionTypeId = actionTypeId;
+        this.title = title;
+        this.shortDesc = shortDesc;
+        this.fullDesc = fullDesc;
+        this.begin = begin;
+        this.end = end;
+        this.creatorId = creatorId;
+        this.shop = shop;
+    }
+
     public Action(String id, String active, String isActionTop, int actionOwnerId, int actionTypeId, String title, String shortDesc, String fullDesc, String begin, String end, int creatorId, List<ActionPhoto> actionPhotos, Shop shop) {
         this.id = id;
         this.active = active;

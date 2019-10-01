@@ -1,14 +1,13 @@
 package ru.imlocal.imlocal.ui;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,44 +27,55 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.materialspinner.MaterialSpinner;
-import com.yandex.mapkit.geometry.Geo;
-import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.adaptor.PaginationAdapter;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.gps.MyLocation;
+import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
+import ru.imlocal.imlocal.utils.PaginationScrollListener;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.latitude;
 import static ru.imlocal.imlocal.MainActivity.longitude;
-import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 
-public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
+public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     public static List<Shop> shopList = new ArrayList<>();
     private List<Shop> copyList = new ArrayList<>();
 
     private RecyclerView rvPlaces, rvCategory;
-    private RecyclerViewAdapterShops adapter;
-    FloatingActionButton fab;
+    private static final int PAGE_START = 1;
+    private static int CATEGORY = 0;
+    private static int TOTAL_PAGES = 2;
+    private FloatingActionButton fab;
+    private PaginationAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
+    private ProgressBar progressBar;
+    private LinearLayout errorLayout;
+    private Button btnRetry;
+    private TextView txtError;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int currentPage = PAGE_START;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -76,11 +90,9 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_list_places, container, false);
-        showLoadingIndicator(true);
         appBarLayout.setVisibility(View.VISIBLE);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
-        getAllShops();
         getCurrentLocation(getActivity());
 
         fab = view.findViewById(R.id.fab);
@@ -91,9 +103,19 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                 ((MainActivity) getActivity()).openMap();
             }
         });
+
         rvPlaces = view.findViewById(R.id.rv_fragment_list_places);
         rvCategory = view.findViewById(R.id.rv_category);
-        rvPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        progressBar = view.findViewById(R.id.main_progress);
+        errorLayout = view.findViewById(R.id.error_layout);
+        btnRetry = view.findViewById(R.id.error_btn_retry);
+        txtError = view.findViewById(R.id.error_txt_cause);
+
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        rvPlaces.setLayoutManager(linearLayoutManager);
+        rvPlaces.setItemAnimator(new DefaultItemAnimator());
+
         rvPlaces.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -133,20 +155,57 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 
+        rvPlaces.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage += 1;
+                loadNextPage();
+            }
+
+            @Override
+            public int getTotalPageCount() {
+                return TOTAL_PAGES;
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
+
+        loadFirstPage();
+        btnRetry.setOnClickListener(view1 -> loadFirstPage());
         return view;
     }
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentLocation(getActivity());
-                Log.d("GPS2", "Swipe gps: " + longitude + " " + latitude);
-                mSwipeRefreshLayout.setRefreshing(false);
-                adapter.notifyDataSetChanged();
-            }
-        }, 4000);
+        mSwipeRefreshLayout.setRefreshing(true);
+        progressBar.setVisibility(View.VISIBLE);
+        if (callAllShops().isExecuted())
+            callAllShops().cancel();
+
+        adapter.getShops().clear();
+        adapter.notifyDataSetChanged();
+        isLastPage = false;
+        loadFirstPage();
+        mSwipeRefreshLayout.setRefreshing(false);
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                getCurrentLocation(getActivity());
+//                Log.d("GPS2", "Swipe gps: " + longitude + " " + latitude);
+//                mSwipeRefreshLayout.setRefreshing(false);
+//                adapter.notifyDataSetChanged();
+//            }
+//        }, 4000);
     }
 
     @Override
@@ -172,25 +231,30 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
 
     @Override
     public void onItemClickCategory(int position) {
-        List<Shop> filterList = new ArrayList<>();
         switch (position) {
             case 0:
-                filter(filterList, 1);
+                CATEGORY = 1;
+                filter(copyList, 1);
                 break;
             case 1:
-                filter(filterList, 2);
+                CATEGORY = 2;
+                filter(copyList, 2);
                 break;
             case 2:
-                filter(filterList, 3);
+                CATEGORY = 3;
+                filter(copyList, 3);
                 break;
             case 3:
-                filter(filterList, 4);
+                CATEGORY = 4;
+                filter(copyList, 4);
                 break;
             case 4:
-                filter(filterList, 5);
+                CATEGORY = 5;
+                filter(copyList, 5);
                 break;
             case 5:
-                filter(filterList, 0);
+                CATEGORY = 0;
+                filter(copyList, 0);
                 break;
         }
     }
@@ -217,72 +281,16 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
         return true;
     }
 
-    @SuppressLint("CheckResult")
-    private void getAllShops() {
-        api.getAllShops()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Shop>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d("TAG", "onsub");
-                    }
-
-                    @Override
-                    public void onNext(List<Shop> shops) {
-                        Log.d("TAG", "onnext");
-                        shopList.clear();
-                        copyList.clear();
-                        shopList.addAll(shops);
-                        copyList.addAll(shops);
-                        displayData(shopList);
-                        Log.d("GPS2", "LIST shopList: " + shopList);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("TAG", "onsub");
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("TAG", "oncomplete");
-                        showLoadingIndicator(false);
-                    }
-                });
-    }
-
-    private void displayData(List<Shop> shops) {
-        adapter = new RecyclerViewAdapterShops(shops, getContext());
-        rvPlaces.setAdapter(adapter);
-        adapter.setOnItemClickListener(this);
-    }
-
     private void sortByRating() {
-        Collections.sort(shopList, (s1, s2) -> Double.compare(s1.getShopAvgRating(), s2.getShopAvgRating()));
-        Collections.reverse(shopList);
+        adapter.sortByRating();
     }
 
     private void sortByDistance() {
-        Collections.sort(shopList, (s1, s2) ->
-                Double.compare(Geo.distance(new Point(s1.getShopAddress().getLatitude(), s1.getShopAddress().getLongitude()), new Point(latitude, longitude)),
-                        Geo.distance(new Point(s2.getShopAddress().getLatitude(), s2.getShopAddress().getLongitude()), new Point(latitude, longitude))));
+        adapter.sortByDistance();
     }
 
     private void filter(List<Shop> filterList, int i) {
-        shopList.clear();
-        shopList.addAll(copyList);
-        if (i != 0) {
-            for (Shop shop : shopList) {
-                if (shop.getShopTypeId() == i) {
-                    filterList.add(shop);
-                }
-            }
-            shopList.clear();
-            shopList.addAll(filterList);
-        }
-        adapter.notifyDataSetChanged();
+        adapter.filter(filterList, i);
     }
 
     private void getCurrentLocation(Context context) {
@@ -295,12 +303,118 @@ public class FragmentListPlaces extends Fragment implements SwipeRefreshLayout.O
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
 // когда будет готово апи получение магазинов будет тут
-//                    getAllShops();
                     Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
                 }
             };
             MyLocation myLocation = new MyLocation();
             myLocation.getLocation(context, locationResult);
         }
+    }
+
+    @Override
+    public void retryPageLoad() {
+        loadNextPage();
+    }
+
+    private void loadNextPage() {
+        Log.d("loadNextPage", "loadNextPage: " + currentPage);
+        callAllShops().enqueue(new Callback<List<Shop>>() {
+            @Override
+            public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
+
+                adapter.removeLoadingFooter();
+                isLoading = false;
+
+                List<Shop> results = fetchResults(response);
+                shopList.addAll(results);
+                copyList.addAll(results);
+                filter(copyList, CATEGORY);
+
+                if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+            @Override
+            public void onFailure(Call<List<Shop>> call, Throwable t) {
+                t.printStackTrace();
+                adapter.showRetry(true, fetchErrorMessage(t));
+            }
+        });
+    }
+
+    private Call<List<Shop>> callAllShops() {
+        return api.getShops(currentPage);
+    }
+
+    private void showErrorView(Throwable throwable) {
+        if (errorLayout.getVisibility() == View.GONE) {
+            errorLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            txtError.setText(fetchErrorMessage(throwable));
+        }
+    }
+
+    private String fetchErrorMessage(Throwable throwable) {
+        String errorMsg = getResources().getString(R.string.error_msg_unknown);
+        if (!isNetworkConnected()) {
+            errorMsg = getResources().getString(R.string.error_msg_no_internet);
+        } else if (throwable instanceof TimeoutException) {
+            errorMsg = getResources().getString(R.string.error_msg_timeout);
+        }
+        return errorMsg;
+    }
+
+    private void hideErrorView() {
+        if (errorLayout.getVisibility() == View.VISIBLE) {
+            errorLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    private void loadFirstPage() {
+
+        hideErrorView();
+        currentPage = PAGE_START;
+        callAllShops().enqueue(new Callback<List<Shop>>() {
+            @Override
+            public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
+                hideErrorView();
+
+                TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
+                List<Shop> results = fetchResults(response);
+                shopList.clear();
+                copyList.clear();
+                shopList.addAll(results);
+                copyList.addAll(results);
+                progressBar.setVisibility(View.GONE);
+                displayData(shopList);
+
+                isLastPage = false;
+                if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+
+            @Override
+            public void onFailure(Call<List<Shop>> call, Throwable t) {
+                t.printStackTrace();
+                showErrorView(t);
+            }
+        });
+    }
+
+    private void displayData(List<Shop> shops) {
+        adapter = new PaginationAdapter(shops, getActivity(), FragmentListPlaces.this);
+        rvPlaces.setAdapter(adapter);
+        adapter.setOnItemClickListener(this);
+    }
+
+    private List<Shop> fetchResults(Response<List<Shop>> response) {
+        return response.body();
     }
 }

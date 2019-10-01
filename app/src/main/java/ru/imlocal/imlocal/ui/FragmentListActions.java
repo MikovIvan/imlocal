@@ -56,7 +56,10 @@ import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentListActions extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
-    private List<Action> actionList = new ArrayList<>();
+    //раскомитить когда будет апи для бизнеса
+    //    private List<Action> actionList = new ArrayList<>();
+//    удалить когда будет апи для бизнеса
+    public static List<Action> actionList = new ArrayList<>();
     private List<Action> copyList = new ArrayList<>();
 
     private RecyclerView rvActions, rvCategory;
@@ -92,7 +95,6 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-                Snackbar.make(view, "Clicked " + item, Snackbar.LENGTH_LONG).show();
                 if (position == 0) {
                     sortByRating();
                 } else {
