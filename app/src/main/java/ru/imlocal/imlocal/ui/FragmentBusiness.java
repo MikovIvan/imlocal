@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,15 +21,20 @@ import java.util.List;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsBusiness;
+import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEventsBusiness;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.Event;
 
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
+import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
 
-public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener {
+public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener {
 
     private List<Action> actionListBusiness = new ArrayList<>();
+    private List<Event> eventListBusiness = new ArrayList<>();
 
     private RecyclerViewAdapterActionsBusiness adapterActionBusiness;
+    private RecyclerViewAdapterEventsBusiness adapterEventsBusiness;
 
     private RecyclerView rvShops;
     private RecyclerView rvActions;
@@ -56,6 +62,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
 //        for test only
         actionListBusiness.addAll(actionList);
+        eventListBusiness.addAll(eventList);
 
         rvShops = view.findViewById(R.id.rv_shops_business);
         rvActions = view.findViewById(R.id.rv_actions_business);
@@ -78,8 +85,16 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         rvActions.setAdapter(adapterActionBusiness);
         adapterActionBusiness.setOnItemClickListener(this);
 
+        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness.subList(0, 2), getActivity());
+        rvEvents.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+        rvEvents.setAdapter(adapterEventsBusiness);
+        adapterEventsBusiness.setOnItemClickListener(this);
+
         if (!actionListBusiness.isEmpty()) {
             tvNoActions.setVisibility(View.GONE);
+        }
+        if (!eventListBusiness.isEmpty()) {
+            tvNoEvents.setVisibility(View.GONE);
         }
         return view;
     }
@@ -104,6 +119,16 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onDeleteClick(int position) {
+        Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onEditEventClick(int position) {
+        Toast.makeText(getActivity(), "edit " + position, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onDeleteEventClick(int position) {
         Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
     }
 }
