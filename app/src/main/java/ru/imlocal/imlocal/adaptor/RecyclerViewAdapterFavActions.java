@@ -14,15 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
-import ru.imlocal.imlocal.utils.Utils;
 
-import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 
@@ -66,7 +63,7 @@ public class RecyclerViewAdapterFavActions extends RecyclerView.Adapter<Recycler
         if (!action.getActionPhotos().isEmpty()) {
             holder.tvEventTitle.setText(action.getTitle());
             holder.tvActionDescription.setText(action.getFullDesc());
-            Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
+            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
                     .into(holder.ivActionIcon);
         } else {
             holder.ivActionIcon.setVisibility(View.GONE);

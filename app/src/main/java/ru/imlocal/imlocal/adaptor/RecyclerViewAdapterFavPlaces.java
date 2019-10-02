@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,11 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.Utils;
 
@@ -61,7 +57,7 @@ public class RecyclerViewAdapterFavPlaces extends RecyclerView.Adapter<RecyclerV
         holder.tvDistance.setText(distancestr);
 
         if (!place.getShopPhotoArray().isEmpty()) {
-            Picasso.with(context).load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + place.getShopPhotoArray().get(0).getShopPhoto()).into(holder.ivPlaceIcon);
+            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + place.getShopPhotoArray().get(0).getShopPhoto()).into(holder.ivPlaceIcon);
         } else {
             holder.ivPlaceIcon.setVisibility(View.GONE);
         }
