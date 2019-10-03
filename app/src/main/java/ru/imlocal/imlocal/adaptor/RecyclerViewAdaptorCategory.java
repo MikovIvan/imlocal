@@ -68,6 +68,19 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                 data.add("Покупки");
                 this.context = context;
                 break;
+            case "add_event":
+                category_index = -1;
+                data = new ArrayList<>();
+                data.add("Еда");
+                data.add("Дети");
+                data.add("Спорт");
+                data.add("Город");
+                data.add("Театр");
+                data.add("Шоу");
+                data.add("Ярмарка");
+                data.add("Творчество");
+                this.context = context;
+                break;
         }
 
 

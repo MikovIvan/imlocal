@@ -108,6 +108,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 ((MainActivity) getActivity()).openAddAction();
                 break;
             case R.id.btn_add_events_business:
+                ((MainActivity) getActivity()).openAddEvent();
                 break;
         }
     }
