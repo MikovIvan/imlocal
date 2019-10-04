@@ -33,16 +33,17 @@
             android:textColor="@color/color_text"
             android:textSize="@dimen/font_small_14" />
 
-        <TextView
-            android:id="@+id/tv_add_event_name"
-            android:layout_width="wrap_content"
+        <com.jaredrummler.materialspinner.MaterialSpinner
+            android:id="@+id/spinner_add_event_choose_place"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_normal_16"
             android:layout_marginTop="@dimen/spacing_small_8"
-            android:fontFamily="sans-serif"
-            android:text="Название"
-            android:textColor="@color/color_text"
-            android:textSize="@dimen/font_small_14" />
+            android:layout_marginEnd="@dimen/spacing_normal_16"
+            app:ms_arrow_tint="@color/color_main"
+            app:ms_hint="- Не выбрано -"
+            app:ms_hintTextSize="@dimen/font_small_14"
+            app:ms_text_color="@color/color_main" />
 
         <TextView
             android:id="@+id/tv_add_event_address"
@@ -93,16 +94,16 @@
             android:textColor="@color/color_text"
             android:textSize="@dimen/font_small_14" />
 
-        <TextView
-            android:id="@+id/tv_add_event_description"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_category"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_normal_16"
             android:layout_marginTop="@dimen/spacing_small_8"
-            android:fontFamily="sans-serif"
-            android:text="Описание"
-            android:textColor="@color/color_text"
-            android:textSize="@dimen/font_small_14" />
+            android:layout_marginEnd="@dimen/spacing_normal_16"
+            android:orientation="horizontal"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/list_item_category" />
 
         <TextView
             android:id="@+id/tv_add_event_image"
@@ -117,15 +118,15 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_category"
+            android:id="@+id/rv_add_photo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_normal_16"
-            android:layout_marginTop="@dimen/spacing_small_8"
-            android:layout_marginEnd="@dimen/spacing_normal_16"
-            android:orientation="horizontal"
-            app:layoutManager="LinearLayoutManager"
-            tools:listitem="@layout/list_item_category" />
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/list_item_photos"
+            tools:showIn="@layout/list_item_photos">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
         <!--        <TextView-->
         <!--            android:id="@+id/tv_add_action_image_attach"-->
@@ -285,16 +286,16 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_add_event_press_free" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_add_photo"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_add_event_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="2"
-            tools:listitem="@layout/list_item_photos"
-            tools:showIn="@layout/list_item_photos">
-
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_marginStart="@dimen/spacing_normal_16"
+            android:layout_marginTop="@dimen/spacing_small_8"
+            android:fontFamily="sans-serif"
+            android:text="Название"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/font_small_14" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout2"
@@ -328,17 +329,16 @@
                 android:textSize="@dimen/font_small_14" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.jaredrummler.materialspinner.MaterialSpinner
-            android:id="@+id/spinner_add_event_choose_place"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_add_event_description"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_normal_16"
             android:layout_marginTop="@dimen/spacing_small_8"
-            android:layout_marginEnd="@dimen/spacing_normal_16"
-            app:ms_arrow_tint="@color/color_main"
-            app:ms_hint="- Не выбрано -"
-            app:ms_hintTextSize="@dimen/font_small_14"
-            app:ms_text_color="@color/color_main" />
+            android:fontFamily="sans-serif"
+            android:text="Описание"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/font_small_14" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout4"
