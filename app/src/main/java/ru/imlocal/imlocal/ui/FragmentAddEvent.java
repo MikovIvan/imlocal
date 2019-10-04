@@ -31,6 +31,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -49,6 +51,7 @@ import java.util.Date;
 import java.util.List;
 
 import ru.imlocal.imlocal.BuildConfig;
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
@@ -60,7 +63,8 @@ import ru.imlocal.imlocal.utils.FileCompressor;
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
-import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER5;
+import static ru.imlocal.imlocal.utils.Constants.KEY_RUB;
 import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
 
 public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, View.OnClickListener, FragmentAddressDialog.AddAddressFragmentAddressDialog, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, FragmentCalendarDialog.DatePickerDialogFragmentEvents {
@@ -79,7 +83,10 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     private File mPhotoFile;
     private FileCompressor mCompressor;
 
-    private Event event = new Event();
+    private Event event = new Event(-1, -1, "", "", "", -1, "", -1);
+
+    private TextInputEditText etEventName;
+    private TextInputEditText etEventDescription;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +98,9 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_event, container, false);
+        mCompressor = new FileCompressor(getActivity());
+
+        event.setCreatorId(Integer.parseInt(user.getId()));
 
         initRvCategory(view);
         initSpinner(view);
@@ -98,6 +108,9 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         initTimePicker(view);
 
         initSetPrice(view);
+
+        etEventName = view.findViewById(R.id.et_add_event_enter_name);
+        etEventDescription = view.findViewById(R.id.et_add_event_full_description);
 
         if (photosPathList.isEmpty()) {
             photosPathList.add("add");
@@ -128,8 +141,15 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    String s = etAddPrice.getText().toString().concat(Constants.KEY_RUB);
-                    etAddPrice.setText(s);
+                    if(!etAddPrice.getText().toString().equals("")) {
+                        event.setPrice(Integer.parseInt(etAddPrice.getText().toString()));
+                        String s = etAddPrice.getText().toString().concat(KEY_RUB);
+                        etAddPrice.setText(s);
+                    } else {
+                        etAddPrice.setHint("1000" + KEY_RUB);
+                        etAddPrice.setBackground(getActivity().getResources().getDrawable(R.drawable.btn_round_white));
+                        etAddPrice.setTextColor(getResources().getColor(R.color.color_text));
+                    }
                     hideKeyboardFrom(getActivity(), textView);
                     return true;
                 }
@@ -164,12 +184,16 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         }
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_add_event_choose_place);
-        spinner.setItems(shopsName);
+        if(!shopsName.isEmpty()){
+            spinner.setItems(shopsName);
+        } else {
+            spinner.setHint("У Вас нет мест");
+        }
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 event.setShopId(userShops.get(position).getShopId());
-                event.setCreatorId(Integer.parseInt(user.getId()));
+                event.setAddress(userShops.get(position).getShopAddress().toString());
             }
         });
     }
@@ -197,8 +221,11 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
                 TimePickerDialog timePicker = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        tvTimePicker.setText(selectedHour + ":" + selectedMinute);
+                        tvTimePicker.setText(checkDigit(selectedHour) + ":" + checkDigit(selectedMinute));
                         tvTimePicker.setTextColor(getResources().getColor(R.color.color_text));
+                        StringBuilder sb = new StringBuilder(event.getBegin());
+                        sb.append(" ").append(selectedHour).append(":").append(selectedMinute).append(":00");
+                        event.setBegin(sb.toString());
                     }
                 }, hour, minute, true);
                 timePicker.show();
@@ -215,7 +242,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     public void onDateSelected(String date, LocalDate start, LocalDate end) {
         tvDatePicker.setText(date);
         tvDatePicker.setTextColor(getResources().getColor(R.color.color_text));
-        event.setBegin(FORMATTER4.format(start));
+        event.setBegin(FORMATTER5.format(start));
 //        event.setEnd(FORMATTER4.format(end));
     }
 
@@ -232,6 +259,8 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
                 etAddPrice.setBackground(getActivity().getResources().getDrawable(R.drawable.btn_round_white));
                 etAddPrice.setTextColor(getResources().getColor(R.color.color_text));
                 etAddPrice.setText("");
+
+                event.setPrice(0);
                 break;
             case R.id.et_add_event_add_price:
                 etAddPrice.setBackground(getActivity().getResources().getDrawable(R.drawable.btn_round_main_color));
@@ -252,6 +281,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public void onAddressSelected(String address) throws IOException {
         tvAddAddress.setText(address);
+        event.setAddress(address);
     }
 
     @Override
@@ -263,34 +293,42 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.go_to_preview) {
-//            if (!etActionName.getText().toString().equals("") && etActionName.getText().length() <= 30) {
-//                action.setTitle(String.valueOf(etActionName.getText()));
-//            } else {
-//                Snackbar.make(getView(), "Название неправильное", Snackbar.LENGTH_LONG).show();
-//            }
-//            if (!etActionSubTitle.getText().toString().equals("") && etActionSubTitle.getText().length() <= 40) {
-//                action.setShortDesc(String.valueOf(etActionSubTitle.getText()));
-//            } else {
-//                Snackbar.make(getView(), "Подзаголовок неправильный", Snackbar.LENGTH_LONG).show();
-//            }
-//            if (!etActionDescription.getText().toString().equals("")) {
-//                action.setFullDesc(String.valueOf(etActionDescription.getText()));
-//            } else {
-//                Snackbar.make(getView(), "Введите описание акции", Snackbar.LENGTH_LONG).show();
-//            }
-//            if (action.getActionTypeId() == 0) {
-//                Snackbar.make(getView(), "Выберите категорию", Snackbar.LENGTH_LONG).show();
-//            }
-//            if (action.getBegin().equals("") || action.getEnd().equals("")) {
-//                Snackbar.make(getView(), "Выберите даты акции", Snackbar.LENGTH_LONG).show();
-//            } else {
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("action", action);
-//                bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);
-//                ((MainActivity) getActivity()).openVitrinaAction(bundle);
-//            }
-
-            Toast.makeText(getActivity(), "Go to preview", Toast.LENGTH_LONG).show();
+            if (!etEventName.getText().toString().equals("") && etEventName.getText().length() <= 30) {
+                event.setTitle(String.valueOf(etEventName.getText()));
+            } else {
+                Snackbar.make(getView(), "Название неправильное", Snackbar.LENGTH_LONG).show();
+            }
+            if (!etEventDescription.getText().toString().equals("")) {
+                event.setDescription(String.valueOf(etEventDescription.getText()));
+            } else {
+                Snackbar.make(getView(), "Введите описание события", Snackbar.LENGTH_LONG).show();
+            }
+            if (event.getEventTypeId() == -1) {
+                Snackbar.make(getView(), "Выберите категорию", Snackbar.LENGTH_LONG).show();
+            }
+            if (event.getAddress().equals("")) {
+                Snackbar.make(getView(), "Укажите адрес", Snackbar.LENGTH_LONG).show();
+            }
+            if (event.getBegin().equals("")) {
+                Snackbar.make(getView(), "Выберите дату события", Snackbar.LENGTH_LONG).show();
+            }
+            if (!event.getBegin().endsWith(":00")) {
+                Snackbar.make(getView(), "Укажите время", Snackbar.LENGTH_LONG).show();
+            }
+            if (event.getPrice() == -1) {
+                Snackbar.make(getView(), "Выберите стоимость события", Snackbar.LENGTH_LONG).show();
+            }
+            if (photosPathList.get(0).equals("add")) {
+                Snackbar.make(getView(), "Прикрепите фотографию", Snackbar.LENGTH_LONG).show();
+            }
+            if (event.getCreatorId() != -1 && !event.getTitle().equals("") && !event.getDescription().equals("") && !event.getAddress().equals("")
+                    && event.getPrice() != -1 && !event.getBegin().equals("") && event.getBegin().endsWith(":00") && event.getEventTypeId() != -1
+                    && !photosPathList.isEmpty() && !photosPathList.get(0).equals("add")) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("event", event);
+                bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);
+                ((MainActivity) getActivity()).openVitrinaEvent(bundle);
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -449,4 +487,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         return File.createTempFile(mFileName, ".jpg", storageDir);
     }
 
+    public String checkDigit(int number) {
+        return number <= 9 ? "0" + number : String.valueOf(number);
+    }
 }

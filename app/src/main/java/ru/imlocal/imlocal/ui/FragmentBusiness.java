@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +26,12 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsBusiness;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEventsBusiness;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.Shop;
 
+import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
 import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
+import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 
 public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener {
 
@@ -105,6 +110,21 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
             case R.id.btn_add_shop_business:
                 break;
             case R.id.btn_add_action_business:
+//                //        это потом заменить на места юзера
+//                List<Shop> userShops = new ArrayList<>();
+//                List<String> shopsName = new ArrayList<>();
+//                for (Shop shop : shopList) {
+//                    if (shop.getCreatorId().equals(user.getId())) {
+//                        userShops.add(shop);
+//                        shopsName.add(shop.getShopShortName());
+//                    }
+//                }
+//
+//                if(userShops.isEmpty()){
+//                    Snackbar.make(getView(),"У Вас нет мест,чтобы добавить их акции",Snackbar.LENGTH_LONG).show();
+//                } else {
+//                    ((MainActivity) getActivity()).openAddAction();
+//                }
                 ((MainActivity) getActivity()).openAddAction();
                 break;
             case R.id.btn_add_events_business:
