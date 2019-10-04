@@ -115,6 +115,7 @@
             android:textColor="@color/color_text"
             android:textSize="@dimen/font_small_14" />
 
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_category"
             android:layout_width="match_parent"
