@@ -116,7 +116,6 @@
             android:textColor="@color/color_text"
             android:textSize="@dimen/font_small_14" />
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_add_photo"
             android:layout_width="match_parent"
@@ -124,9 +123,7 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2"
             tools:listitem="@layout/list_item_photos"
-            tools:showIn="@layout/list_item_photos">
-
-        </androidx.recyclerview.widget.RecyclerView>
+            tools:showIn="@layout/list_item_photos"/>
 
         <!--        <TextView-->
         <!--            android:id="@+id/tv_add_action_image_attach"-->
