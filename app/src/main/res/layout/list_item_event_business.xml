@@ -14,6 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/iv_event_image_business"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/image_gradient"
+            android:scaleType="centerCrop"
+            android:src="@drawable/testimg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintCircleRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageButton
             android:id="@+id/ib_edit_business"
             android:layout_width="wrap_content"
@@ -32,19 +45,6 @@
             android:padding="@dimen/spacing_small_8"
             android:src="@drawable/ic_delete_business"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_event_image_business"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:foreground="@drawable/image_gradient"
-            android:scaleType="centerCrop"
-            android:src="@drawable/testimg"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintCircleRadius="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
