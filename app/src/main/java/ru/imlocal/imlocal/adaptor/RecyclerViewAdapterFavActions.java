@@ -29,12 +29,19 @@ public class RecyclerViewAdapterFavActions extends RecyclerView.Adapter<Recycler
     private List<Action> dataActionsFiltered;
     private Context context;
     private OnItemClickListener mListener;
-
+    public boolean full_show;
 
     public RecyclerViewAdapterFavActions(List<Action> dataActions, Context context) {
         this.dataActions = dataActions;
         this.dataActionsFiltered = dataActions;
         this.context = context;
+        full_show = false;
+    }
+
+    public void setFullShow(boolean fact)
+    {
+        full_show = fact;
+        notifyDataSetChanged();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -72,13 +79,11 @@ public class RecyclerViewAdapterFavActions extends RecyclerView.Adapter<Recycler
 
     @Override
     public int getItemCount() {
-        return dataActionsFiltered.size();
+        if (full_show) return dataActionsFiltered.size(); else return Math.min(dataActionsFiltered.size(), 2);
     }
 
     public interface OnItemClickListener {
         void onItemClick(int position);
-
-        void onItemShare(int position);
 
         void onItemAddToFavorites(int position, ImageButton imageButton);
     }
