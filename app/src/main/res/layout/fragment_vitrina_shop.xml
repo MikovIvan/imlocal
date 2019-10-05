@@ -46,31 +46,6 @@
             app:layout_constraintTop_toTopOf="@+id/tv_estimate"
             tools:text="4.5" />
 
-        <com.willy.ratingbar.ScaleRatingBar
-            android:id="@+id/simpleRatingBar"
-            android:layout_width="100dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="@dimen/spacing_normal_16"
-            android:layout_marginBottom="26dp"
-            android:background="@drawable/btn_round_transparent"
-            android:gravity="center"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/flipper_vitrina_shop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srb_clearRatingEnabled="true"
-            app:srb_clickable="true"
-            app:srb_drawableEmpty="@drawable/ic_star_empty"
-            app:srb_drawableFilled="@drawable/ic_star_filled"
-            app:srb_isIndicator="false"
-            app:srb_minimumStars="1"
-            app:srb_numStars="5"
-            app:srb_rating="0"
-            app:srb_scrollable="true"
-            app:srb_starHeight="20dp"
-            app:srb_starPadding="0dp"
-            app:srb_starWidth="20dp"
-            app:srb_stepSize="0.5" />
-
         <TextView
             android:id="@+id/tv_vitrina_name_of_place"
             app:layout_constraintBottom_toTopOf="@id/tv_event_type"
