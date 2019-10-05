@@ -9,40 +9,51 @@ import java.util.List;
 public class Event implements Serializable {
     @SerializedName("id")
     @Expose
-    int id;
+    private int id;
     @SerializedName("shopId")
     @Expose
-    int shopId;
+    private int shopId;
     @SerializedName("creatorId")
     @Expose
-    int creatorId;
+    private int creatorId;
     @SerializedName("title")
     @Expose
-    String title;
+    private String title;
     @SerializedName("description")
     @Expose
-    String description;
+    private String description;
     @SerializedName("address")
     @Expose
-    String address;
+    private String address;
     @SerializedName("price")
     @Expose
-    int price;
+    private int price;
     @SerializedName("begin")
     @Expose
-    String begin;
+    private String begin;
     @SerializedName("createdOn")
     @Expose
-    String createdOn;
+    private String createdOn;
     @SerializedName("updatedOn")
     @Expose
-    String updatedOn;
+    private String updatedOn;
     @SerializedName("happeningTypeId")
     @Expose
-    int eventTypeId;
+    private int eventTypeId;
     @SerializedName("happeningPhotos")
     @Expose
-    List<EventPhoto> eventPhotoList;
+    private List<EventPhoto> eventPhotoList;
+
+    public Event(int shopId, int creatorId, String title, String description, String address, int price, String begin, int eventTypeId) {
+        this.shopId = shopId;
+        this.creatorId = creatorId;
+        this.title = title;
+        this.description = description;
+        this.address = address;
+        this.price = price;
+        this.begin = begin;
+        this.eventTypeId = eventTypeId;
+    }
 
     public Event(int id, int shopId, int creatorId, String title, String description, String address, int price, String begin, String createdOn, String updatedOn, int eventTypeId, List<EventPhoto> eventPhotoList) {
         this.id = id;

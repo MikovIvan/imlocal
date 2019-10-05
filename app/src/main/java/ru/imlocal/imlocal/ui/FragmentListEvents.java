@@ -57,7 +57,8 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
     private RecyclerViewAdapterEvent adapter;
     private SwitchButton sbFreeEvents;
     private TextView tvDatePicker;
-    private List<Event> eventList = new ArrayList<>();
+    //    пока не будет апи
+    public static List<Event> eventList = new ArrayList<>();
     private List<Event> copyList = new ArrayList<>();
     private boolean isShowFree;
     private int category = 0;

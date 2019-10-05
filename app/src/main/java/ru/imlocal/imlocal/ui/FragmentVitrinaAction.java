@@ -91,10 +91,16 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
         if (bundle.getStringArrayList("photosPathList") != null) {
             List<String> photosPathList = bundle.getStringArrayList("photosPathList");
-            for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
-                flipperImages(photoPath, true, true);
+            if (photosPathList.size() == 2) {
+                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                    flipperImages(photoPath, false, true);
+                }
+            } else if (photosPathList.size() > 2) {
+                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                    flipperImages(photoPath, true, true);
+                }
             }
-        } else if (!action.getActionPhotos().isEmpty()) {
+        } else if (action.getActionPhotos().isEmpty()) {
             viewFlipperAction.setVisibility(View.GONE);
         } else if (action.getActionPhotos().size() > 1) {
             for (ActionPhoto actionPhoto : action.getActionPhotos())
@@ -166,6 +172,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                     }
                 });
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

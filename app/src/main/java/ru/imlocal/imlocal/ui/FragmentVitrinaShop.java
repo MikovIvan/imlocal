@@ -1,5 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,11 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -26,8 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
-import com.willy.ratingbar.BaseRatingBar;
-import com.willy.ratingbar.ScaleRatingBar;
 
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
@@ -68,7 +69,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private Button btnRating;
     private RecyclerView rvListPlaces;
     private RecyclerView rvListEvents;
-    private ScaleRatingBar scaleRatingBar;
     private Shop shop;
 
 
@@ -99,17 +99,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         rvListEvents = view.findViewById(R.id.rv_fragment_vitrina_shop_list_events);
         btnRating = view.findViewById(R.id.btn_rating);
         tvEstimate = view.findViewById(R.id.tv_estimate);
-        scaleRatingBar = view.findViewById(R.id.simpleRatingBar);
         viewFlipperShop = view.findViewById(R.id.flipper_vitrina_shop);
-
-        scaleRatingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
-            @Override
-            public void onRatingChange(BaseRatingBar ratingBar, float rating, boolean fromUser) {
-                tvEstimate.setVisibility(View.VISIBLE);
-                btnRating.setVisibility(View.VISIBLE);
-                scaleRatingBar.setVisibility(View.INVISIBLE);
-            }
-        });
 
         btnRating.setOnClickListener(this);
         tvEstimate.setOnClickListener(this);
@@ -164,7 +154,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 getActivity().onBackPressed();
@@ -234,9 +223,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         switch (v.getId()) {
             case R.id.tv_estimate:
                 if (user.isLogin()) {
-                    tvEstimate.setVisibility(View.INVISIBLE);
-                    btnRating.setVisibility(View.INVISIBLE);
-                    scaleRatingBar.setVisibility(View.VISIBLE);
+                    showRatingDialog();
                 }
                 break;
             case R.id.tv_adress:
@@ -253,6 +240,36 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 startActivity(openPhone);
                 break;
         }
+    }
+
+    private void showRatingDialog() {
+
+        final AlertDialog.Builder ratingdialog = new AlertDialog.Builder(getActivity());
+
+        ratingdialog.setTitle("Оцените это место!");
+
+        View linearlayout = getLayoutInflater().inflate(R.layout.dialog_rating, null);
+        ratingdialog.setView(linearlayout);
+
+        final RatingBar rating = linearlayout.findViewById(R.id.ratingbar);
+
+        ratingdialog.setPositiveButton("Готово",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Snackbar.make(getView(), "ждем апи, рейтинг: " + rating.getRating(), Snackbar.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    }
+                })
+
+                .setNegativeButton("Отмена",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        ratingdialog.create();
+        ratingdialog.show();
     }
 
     @Override

@@ -71,7 +71,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private File mPhotoFile;
     private FileCompressor mCompressor;
 
-    private Action action = new Action(0, 0, "1", "2", "3", "", "", 2, new Shop());
+    private Action action = new Action(-1, -1, "", "", "", "", "", -1, null);
 
     private TextInputEditText etActionName;
     private TextInputEditText etActionSubTitle;
@@ -133,7 +133,11 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         }
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_add_action_choose_place);
-        spinner.setItems(shopsName);
+        if(!shopsName.isEmpty()){
+            spinner.setItems(shopsName);
+        } else {
+            spinner.setHint("У Вас нет мест");
+        }
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
@@ -168,19 +172,27 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
             } else {
                 Snackbar.make(getView(), "Введите описание акции", Snackbar.LENGTH_LONG).show();
             }
-            if (action.getActionTypeId() == 0) {
+            if (action.getActionTypeId() == -1) {
                 Snackbar.make(getView(), "Выберите категорию", Snackbar.LENGTH_LONG).show();
             }
-            if (action.getBegin().equals("") || action.getEnd().equals("")) {
+            if (action.getBegin().equals("")) {
                 Snackbar.make(getView(), "Выберите даты акции", Snackbar.LENGTH_LONG).show();
-            } else {
+            }
+            if (action.getShop() == null) {
+                Snackbar.make(getView(), "Выберите место", Snackbar.LENGTH_LONG).show();
+            }
+            if (photosPathList.size() == 1) {
+                Snackbar.make(getView(), "Прикрепите фотографию", Snackbar.LENGTH_LONG).show();
+            }
+
+            if (action.getActionOwnerId() != -1 && action.getActionTypeId() != -1 && action.getTitle().length() > 0 && action.getShortDesc().length() > 0
+                    && action.getFullDesc().length() > 0 && action.getCreatorId() != -1 && action.getShop() != null && photosPathList.size() >= 2
+                    && !action.getBegin().equals("")) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("action", action);
                 bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);
                 ((MainActivity) getActivity()).openVitrinaAction(bundle);
             }
-
-            Toast.makeText(getActivity(), "Go to preview", Toast.LENGTH_LONG).show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -201,6 +213,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     @Override
     public void onDateSelected(String date, LocalDate start, LocalDate end) {
         tvDatePicker.setText(date);
+        tvDatePicker.setTextColor(getResources().getColor(R.color.color_text));
         action.setBegin(FORMATTER4.format(start));
         action.setEnd(FORMATTER4.format(end));
     }

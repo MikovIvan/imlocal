@@ -22,6 +22,8 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
@@ -47,6 +49,7 @@ public class FragmentVitrinaEvent extends Fragment {
     private TextView tvEventDiscription;
 
     private Event event;
+    private Bundle bundle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,10 +74,15 @@ public class FragmentVitrinaEvent extends Fragment {
         tvEventDate = view.findViewById(R.id.tv_when);
         tvEventDiscription = view.findViewById(R.id.tv_about_event_text);
 
-        Bundle bundle = getArguments();
+        bundle = getArguments();
         event = (Event) bundle.getSerializable("event");
 
-        if (!event.getEventPhotoList().isEmpty()) {
+        if (bundle.getStringArrayList("photosPathList") != null) {
+            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
+            Picasso.get()
+                    .load(photosPathList.get(0))
+                    .into(ivEventPhoto);
+        } else if (!event.getEventPhotoList().isEmpty()) {
             Picasso.get()
                     .load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
                     .into(ivEventPhoto);
@@ -126,6 +134,10 @@ public class FragmentVitrinaEvent extends Fragment {
                     Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
                             .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
+            case R.id.publish:
+                Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -133,11 +145,15 @@ public class FragmentVitrinaEvent extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_vitrina, menu);
-        if (favoritesEvents.containsKey(String.valueOf(event.getId()))) {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        if (bundle.getStringArrayList("photosPathList") != null) {
+            inflater.inflate(R.menu.menu_publish, menu);
         } else {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
+            inflater.inflate(R.menu.menu_vitrina, menu);
+            if (favoritesEvents.containsKey(String.valueOf(event.getId()))) {
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+            } else {
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
+            }
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

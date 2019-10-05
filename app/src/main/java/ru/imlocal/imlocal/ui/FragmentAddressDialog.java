@@ -42,9 +42,11 @@ public class FragmentAddressDialog extends AppCompatDialogFragment implements Se
             new Point(CENTER.getLatitude() - BOX_SIZE, CENTER.getLongitude() - BOX_SIZE),
             new Point(CENTER.getLatitude() + BOX_SIZE, CENTER.getLongitude() + BOX_SIZE));
     private final SearchOptions SEARCH_OPTIONS = new SearchOptions().setSearchTypes(
-            SearchType.GEO.value |
-                    SearchType.BIZ.value |
-                    SearchType.TRANSIT.value);
+            SearchType.GEO.value
+//                    |
+//                    SearchType.BIZ.value |
+//                    SearchType.TRANSIT.value
+    );
 
     private SearchManager searchManager;
     private ListView suggestResultView;
