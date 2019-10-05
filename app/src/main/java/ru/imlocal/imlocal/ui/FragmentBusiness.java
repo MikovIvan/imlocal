@@ -24,19 +24,24 @@ import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsBusiness;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEventsBusiness;
+import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShopsBusiness;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.Shop;
 
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
 import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
+import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 
-public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener {
+public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener {
 
     private List<Action> actionListBusiness = new ArrayList<>();
     private List<Event> eventListBusiness = new ArrayList<>();
+    private List<Shop> shopListBusiness = new ArrayList<>();
 
     private RecyclerViewAdapterActionsBusiness adapterActionBusiness;
     private RecyclerViewAdapterEventsBusiness adapterEventsBusiness;
+    private RecyclerViewAdapterShopsBusiness adapterShopsBusiness;
 
     private RecyclerView rvShops;
     private RecyclerView rvActions;
@@ -67,6 +72,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 //        for test only
         actionListBusiness.addAll(actionList);
         eventListBusiness.addAll(eventList);
+        shopListBusiness.addAll(shopList);
 
         rvShops = view.findViewById(R.id.rv_shops_business);
         rvActions = view.findViewById(R.id.rv_actions_business);
@@ -94,11 +100,19 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         rvEvents.setAdapter(adapterEventsBusiness);
         adapterEventsBusiness.setOnItemClickListener(this);
 
+        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness.subList(0, 2), getActivity());
+        rvShops.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
+        rvShops.setAdapter(adapterShopsBusiness);
+        adapterShopsBusiness.setOnItemClickListener(this);
+
         if (!actionListBusiness.isEmpty()) {
             tvNoActions.setVisibility(View.GONE);
         }
         if (!eventListBusiness.isEmpty()) {
             tvNoEvents.setVisibility(View.GONE);
+        }
+        if (!shopListBusiness.isEmpty()) {
+            tvNoShops.setVisibility(View.GONE);
         }
         return view;
     }
@@ -107,6 +121,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_add_shop_business:
+                ((MainActivity) getActivity()).openAddShop();
                 break;
             case R.id.btn_add_action_business:
 //                //        это потом заменить на места юзера
@@ -149,6 +164,16 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onDeleteEventClick(int position) {
+        Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onEditShopClick(int position) {
+        Toast.makeText(getActivity(), "edit " + position, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onDeleteShopClick(int position) {
         Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
     }
 }

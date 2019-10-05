@@ -54,6 +54,7 @@ import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentAddAction;
 import ru.imlocal.imlocal.ui.FragmentAddEvent;
+import ru.imlocal.imlocal.ui.FragmentAddShop;
 import ru.imlocal.imlocal.ui.FragmentBusiness;
 import ru.imlocal.imlocal.ui.FragmentFavorites;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
@@ -319,6 +320,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.frame, fragment)
                 .addToBackStack("FragmentAddEvent")
+                .commit();
+    }
+
+    public void openAddShop() {
+        Fragment fragment = new FragmentAddShop();
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentAddShop")
                 .commit();
     }
 
