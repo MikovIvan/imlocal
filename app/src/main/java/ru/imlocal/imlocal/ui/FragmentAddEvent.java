@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -253,6 +254,13 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
 
     @Override
     public void onDateSelected(String date, LocalDate start, LocalDate end) {
+        if(date.length()>8){
+            setHorizontalWeight(tvDatePicker,2.0f);
+            setHorizontalWeight(tvTimePicker,1.0f);
+        } else {
+            setHorizontalWeight(tvDatePicker,1.0f);
+            setHorizontalWeight(tvTimePicker,1.0f);
+        }
         tvDatePicker.setText(date);
         tvDatePicker.setTextColor(getResources().getColor(R.color.color_text));
         eventDate = FORMATTER5.format(start);
@@ -395,6 +403,12 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         if (photosPathList.get(0).equals("add") && position == 0) {
             selectImage();
         }
+    }
+
+    private void setHorizontalWeight(View view, float weight) {
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) view.getLayoutParams();
+        params.horizontalWeight = weight;
+        view.setLayoutParams(params);
     }
 
     private void dispatchGalleryIntent() {
