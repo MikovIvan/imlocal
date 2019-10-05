@@ -15,24 +15,21 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.utils.Utils;
+import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.utils.Constants;
 
-import static ru.imlocal.imlocal.MainActivity.latitude;
-import static ru.imlocal.imlocal.MainActivity.longitude;
-import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 
-
-public class RecyclerViewAdapterFavPlaces extends RecyclerView.Adapter<RecyclerViewAdapterFavPlaces.ViewHolder> {
-    private List<Shop> dataPlaces;
+public class RecyclerViewAdapterFavEvents extends RecyclerView.Adapter<RecyclerViewAdapterFavEvents.ViewHolder> {
+    private List<Event> dataEvents;
     private Context context;
     private OnItemClickListener mListener;
     public boolean full_show;
 
-
-    public RecyclerViewAdapterFavPlaces(List<Shop> dataPlaces, Context context) {
-        this.dataPlaces = dataPlaces;
+    public RecyclerViewAdapterFavEvents(List<Event> dataEvents, Context context) {
+        this.dataEvents = dataEvents;
         this.context = context;
         full_show = false;
     }
@@ -48,53 +45,56 @@ public class RecyclerViewAdapterFavPlaces extends RecyclerView.Adapter<RecyclerV
     }
 
     @Override
-    public RecyclerViewAdapterFavPlaces.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorites_place, parent, false);
+    public RecyclerViewAdapterFavEvents.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorites_event, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapterFavPlaces.ViewHolder holder, int position) {
-        Shop place = dataPlaces.get(position);
-        holder.ibAddToFavorites.setImageResource(R.drawable.ic_heart_pressed);
+    public void onBindViewHolder(RecyclerViewAdapterFavEvents.ViewHolder holder, int position) {
+        Event event = dataEvents.get(position);
 
-        if (place.getShopShortName() != null) {
-            holder.tvPlaceTitle.setText(place.getShopShortName());
-        }
-        String distancestr = Utils.getDistanceInList(place.getShopAddress().getLatitude(), place.getShopAddress().getLongitude(), latitude, longitude);
-        holder.tvDistance.setText(distancestr);
-
-        if (!place.getShopPhotoArray().isEmpty()) {
-            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + place.getShopPhotoArray().get(0).getShopPhoto()).into(holder.ivPlaceIcon);
+        if (event.getPrice() == 0) {
+            holder.tvEventPrice.setText(R.string.event_price_free);
         } else {
-            holder.ivPlaceIcon.setVisibility(View.GONE);
+            holder.tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
+        }
+        holder.tvEventDate.setText(newDateFormat(event.getBegin()));
+        holder.tvEventTitle.setText(event.getTitle());
+        if (event.getEventPhotoList().isEmpty()) {
+            holder.ivEventImage.setImageResource(R.drawable.testimg);
+        } else {
+            Picasso.get().load(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + event.getEventPhotoList().get(0).getEventPhoto())
+                    .into(holder.ivEventImage);
         }
     }
 
     @Override
     public int getItemCount() {
-        if (full_show) return dataPlaces.size(); else return Math.min(dataPlaces.size(), 2);
+        if (full_show) return dataEvents.size(); else return Math.min(dataEvents.size(), 2);
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemEventClick(int position);
 
         void onItemAddToFavorites(int position, ImageButton imageButton);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPlaceTitle;
-        ImageView ivPlaceIcon;
-        TextView tvDistance;
-        ImageButton ibAddToFavorites;
 
+        ImageView ivEventImage;
+        TextView tvEventPrice;
+        TextView tvEventTitle;
+        TextView tvEventDate;
+        ImageButton ibAddToFavorites;
 
         ViewHolder(View v) {
             super(v);
-            tvPlaceTitle = v.findViewById(R.id.tv_place_title);
-            tvDistance = v.findViewById(R.id.distance_text);
+            ivEventImage = v.findViewById(R.id.iv_event_image);
+            tvEventPrice = v.findViewById(R.id.tv_event_price);
+            tvEventTitle = v.findViewById(R.id.tv_event_title);
+            tvEventDate = v.findViewById(R.id.tv_event_date);
             ibAddToFavorites = v.findViewById(R.id.ib_add_to_favorites);
-            ivPlaceIcon = v.findViewById(R.id.iv_place_icon);
 
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,7 +102,7 @@ public class RecyclerViewAdapterFavPlaces extends RecyclerView.Adapter<RecyclerV
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
+                            mListener.onItemEventClick(position);
                         }
                     }
                 }

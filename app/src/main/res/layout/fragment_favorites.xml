@@ -97,8 +97,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_yourevents"
-                tools:listitem="@layout/list_item_event"
-                tools:showIn="@layout/list_item_event" />
+                tools:listitem="@layout/favorites_event"
+                tools:showIn="@layout/favorites_event" />
 
             <Button
                 android:id="@+id/btn_showallevents"
