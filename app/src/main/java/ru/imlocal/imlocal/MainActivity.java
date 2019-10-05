@@ -43,6 +43,7 @@ import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ru.imlocal.imlocal.api.Api;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private AccessTokenTracker accessTokenTracker;
+    private String currentFragment;
 
     public static void showLoadingIndicator(boolean show) {
         isLoading = show;
@@ -122,12 +124,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initNavigationDrawer();
 
         enableUpButtonViews(false);
-//        showLoadingIndicator(false);
 
         configFbAuth();
         configGoogleAuth();
         configAccessTokenTrakerFB();
-
 
         TextView footer_policy_link = findViewById(R.id.footer_policy_link);
         footer_policy_link.setOnClickListener(new View.OnClickListener() {
@@ -143,9 +143,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             checkLocationPermission();
         } else if (savedInstanceState == null) {
             openViewPager();
+            currentFragment = "FragmentViewPager";
         }
 
-
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                List<Fragment> f = getSupportFragmentManager().getFragments();
+                Fragment frag = f.get(1);
+                currentFragment = frag.getClass().getSimpleName();
+            }
+        });
     }
 
     public void openPolicy() {
@@ -157,23 +165,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        if (currentFragment != null) {
+            switch (currentFragment) {
+                case "FragmentBusiness":
+                    Fragment fragment = getSupportFragmentManager().findFragmentByTag("FragmentBusiness");
+                    if (fragment != null) {
+                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                    }
+                    openViewPager();
+                    return;
+                case "FragmentViewPager":
+                    Fragment fragmentViewPager = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
+                    if (fragmentViewPager != null && fragmentViewPager.isVisible()) {
+                        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                            backToast.cancel();
+                            super.onBackPressed();
+                            return;
+                        } else {
+                            backToast = Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT);
+                            backToast.show();
+                        }
+                        backPressedTime = System.currentTimeMillis();
+                    }
+                    return;
+                default:
+                    getSupportFragmentManager().popBackStack();
+            }
+        }
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-        }
-        Fragment fragmentViewPager = getSupportFragmentManager().findFragmentByTag("FragmentViewPager");
-        if (fragmentViewPager != null && fragmentViewPager.isVisible()) {
-            if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                backToast.cancel();
-                super.onBackPressed();
-                return;
-            } else {
-                backToast = Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT);
-                backToast.show();
-            }
-            backPressedTime = System.currentTimeMillis();
         }
     }
 
@@ -279,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = new FragmentBusiness();
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.frame, fragment)
+                .replace(R.id.frame, fragment, "FragmentBusiness")
                 .addToBackStack("FragmentBusiness")
                 .commit();
     }

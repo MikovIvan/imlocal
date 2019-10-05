@@ -136,6 +136,7 @@ public class FragmentVitrinaEvent extends Fragment {
                 }
             case R.id.publish:
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
