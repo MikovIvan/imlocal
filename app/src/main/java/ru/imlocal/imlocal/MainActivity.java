@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                 .remove(getSupportFragmentManager().findFragmentByTag("FragmentLogin"))
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void openViewPager() {
