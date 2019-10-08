@@ -18,6 +18,7 @@ import retrofit2.http.Query;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.entity.User;
 
 public interface Api {
@@ -60,6 +61,19 @@ public interface Api {
     @PUT("users/{id}")
     Call<User> updateUser(@Path("id") String id, @Body User user);
 
-    @POST("shops")
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @POST("events")
     Call<Action> createAction(@Header("Authorization") String credentials, @Body Action action);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @POST("shopaddresses")
+    Call<ShopAddress> createShopAddress(@Header("Authorization") String credentials, @Body ShopAddress shopAddress);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @POST("shops")
+    Call<Shop> createShop(@Header("Authorization") String credentials, @Body Shop shop);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @POST("happenings")
+    Call<Event> createEvent(@Header("Authorization") String credentials, @Body Event event);
 }

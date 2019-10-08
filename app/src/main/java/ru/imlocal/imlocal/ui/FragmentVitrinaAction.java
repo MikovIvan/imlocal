@@ -157,7 +157,6 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 }
                 return true;
             case R.id.publish:
-
                 Call<Action> call = api.createAction(Credentials.basic(user.getAccessToken(), ""), action);
                 call.enqueue(new Callback<Action>() {
                     @Override

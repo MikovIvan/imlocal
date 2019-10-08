@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,12 +25,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
@@ -135,6 +142,19 @@ public class FragmentVitrinaEvent extends Fragment {
                             .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
             case R.id.publish:
+                Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""), event);
+                call.enqueue(new Callback<Event>() {
+                    @Override
+                    public void onResponse(Call<Event> call, Response<Event> response) {
+                        Log.d("ACTION", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Event> call, Throwable t) {
+                        Log.d("ACTION", t.getMessage());
+                        Log.d("ACTION", t.toString());
+                    }
+                });
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
                 ((MainActivity) getActivity()).openBusiness();
                 return true;
