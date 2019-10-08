@@ -81,30 +81,18 @@ public class Shop implements Serializable {
     public Shop() {
     }
 
-    public Shop(int shopId, String creatorId, String shopActive, String shopShortName, String shopFullName, int shopTypeId, String shopPhone, String shopWeb, String shopAddressId, String shopCostMin, String shopCostMax, String shopMiddleCost, String shopWorkTime, String shopAgregator, String shopStatusId, String shopShortDescription, String shopFullDescription, int shopRating, List<ShopPhoto> shopPhotoArray, List<Action> shopActionArray, List<Event> shopEventList, ShopAddress shopAddress, double shopAvgRating) {
-        this.shopId = shopId;
+    public Shop(String creatorId, String shopShortName, int shopTypeId, String shopPhone, String shopWeb, String shopCostMin, String shopCostMax, String shopWorkTime, String shopShortDescription, String shopFullDescription, ShopAddress shopAddress) {
         this.creatorId = creatorId;
-        this.shopActive = shopActive;
         this.shopShortName = shopShortName;
-        this.shopFullName = shopFullName;
         this.shopTypeId = shopTypeId;
         this.shopPhone = shopPhone;
         this.shopWeb = shopWeb;
-        this.shopAddressId = shopAddressId;
         this.shopCostMin = shopCostMin;
         this.shopCostMax = shopCostMax;
-        this.shopMiddleCost = shopMiddleCost;
         this.shopWorkTime = shopWorkTime;
-        this.shopAgregator = shopAgregator;
-        this.shopStatusId = shopStatusId;
         this.shopShortDescription = shopShortDescription;
         this.shopFullDescription = shopFullDescription;
-        this.shopRating = shopRating;
-        this.shopPhotoArray = shopPhotoArray;
-        this.shopActionArray = shopActionArray;
-        this.shopEventList = shopEventList;
         this.shopAddress = shopAddress;
-        this.shopAvgRating = shopAvgRating;
     }
 
     public List<Event> getShopEventList() {
