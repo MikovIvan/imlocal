@@ -81,10 +81,17 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                 data.add("Творчество");
                 this.context = context;
                 break;
+            case "add_shop":
+                category_index = -1;
+                data = new ArrayList<>();
+                data.add("Еда");
+                data.add("Дети");
+                data.add("Фитнес");
+                data.add("Красота");
+                data.add("Покупки");
+                this.context = context;
+                break;
         }
-
-
-
     }
 
     public void setOnItemClickListener(OnItemCategoryClickListener listener) {
