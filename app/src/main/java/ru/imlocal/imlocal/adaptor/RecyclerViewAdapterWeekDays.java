@@ -9,34 +9,19 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Category;
 
 public class RecyclerViewAdapterWeekDays extends RecyclerView.Adapter<RecyclerViewAdapterWeekDays.ViewHolder> {
-    private int category_index;
     private List<Category> data;
     private Context context;
     private RecyclerViewAdapterWeekDays.OnItemCategoryClickListener mListener;
 
-    public RecyclerViewAdapterWeekDays(Context context, String category) {
-        switch (category) {
-            case "week_days":
-                category_index = -1;
-                data = new ArrayList<>();
-                data.add(new Category("Пн"));
-                data.add(new Category("Вт"));
-                data.add(new Category("Ср"));
-                data.add(new Category("Чт"));
-                data.add(new Category("Пт"));
-                data.add(new Category("Сб"));
-                data.add(new Category("Вс"));
-                this.context = context;
-                break;
-        }
-
+    public RecyclerViewAdapterWeekDays(Context context, List<Category> data) {
+        this.data = data;
+        this.context = context;
     }
 
     public void setOnItemClickListener(RecyclerViewAdapterWeekDays.OnItemCategoryClickListener listener) {

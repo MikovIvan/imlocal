@@ -2,10 +2,20 @@ package ru.imlocal.imlocal.entity;
 
 public class Category {
     private String name;
+    private int dayOfWeek;
     private boolean isSelected;
 
-    public Category(String name) {
+    public Category(String name, int dayOfWeek) {
         this.name = name;
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public int getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public String getName() {
