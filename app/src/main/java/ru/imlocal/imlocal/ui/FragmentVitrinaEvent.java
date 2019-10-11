@@ -155,6 +155,7 @@ public class FragmentVitrinaEvent extends Fragment {
                     Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
                             .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
+                return true;
             case R.id.publish:
                 Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""), event);
                 call.enqueue(new Callback<Event>() {
