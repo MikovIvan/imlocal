@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
@@ -112,12 +114,16 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         rvListEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
-        RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
-        RecyclerViewAdapterEvent adapterEvent = new RecyclerViewAdapterEvent(shop.getShopEventList(), getContext());
-        rvListEvents.setAdapter(adapterEvent);
-        rvListPlaces.setAdapter(adapter);
-        adapterEvent.setOnItemClickListener(this);
-        adapter.setOnItemClickListener(this);
+        if(shop.getShopActionArray()!=null){
+            RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
+            rvListPlaces.setAdapter(adapter);
+            adapter.setOnItemClickListener(this);
+        }
+        if(shop.getShopEventList()!=null){
+            RecyclerViewAdapterEvent adapterEvent = new RecyclerViewAdapterEvent(shop.getShopEventList(), getContext());
+            rvListEvents.setAdapter(adapterEvent);
+            adapterEvent.setOnItemClickListener(this);
+        }
         setShopType(shop);
         tvVitrinaNameOfPlace.setText(shop.getShopShortName());
         tvAdress.setText(shop.getShopAddress().toString());
@@ -127,7 +133,18 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAboutShop.setText(shop.getShopFullDescription());
         btnRating.setText(String.valueOf(shop.getShopAvgRating()));
 
-        if (shop.getShopPhotoArray().size() > 1) {
+        if (bundle.getStringArrayList("photosPathList") != null) {
+            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
+            if (photosPathList.size() == 2) {
+                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                    flipperImages(photoPath,  true);
+                }
+            } else if (photosPathList.size() > 2) {
+                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                    flipperImages(photoPath,  true);
+                }
+            }
+        } else if (shop.getShopPhotoArray().size() > 1) {
             for (ShopPhoto shopPhoto : shop.getShopPhotoArray())
                 flipperImages(shopPhoto.getShopPhoto(), true);
         } else {
