@@ -41,9 +41,12 @@ import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
+import static ru.imlocal.imlocal.utils.Utils.newDateFormat2;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentVitrinaEvent extends Fragment {
@@ -105,7 +108,9 @@ public class FragmentVitrinaEvent extends Fragment {
         } else {
             tvEventPrice.setText("Бесплатно");
         }
-        tvEventDate.setText(newDateFormat(event.getBegin()));
+        StringBuilder sb = new StringBuilder(newDateFormat(event.getBegin()));
+        sb.append(" - ").append(newDateFormat2(event.getEnd()));
+        tvEventDate.setText(sb);
         tvEventDiscription.setText(event.getDescription());
 
         return view;

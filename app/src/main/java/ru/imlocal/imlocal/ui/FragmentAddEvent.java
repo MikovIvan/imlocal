@@ -58,7 +58,6 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.FileCompressor;
 
 import static android.app.Activity.RESULT_OK;
@@ -84,7 +83,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     private File mPhotoFile;
     private FileCompressor mCompressor;
 
-    String eventDate,time;
+    private String beginDate, endDate, time, defaultTime = " 00:00:00";
 
     private Event event = new Event(-1, -1, "", "", "", -1, "", -1);
 
@@ -144,19 +143,18 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(!etAddPrice.getText().toString().equals("")) {
+                    if (!etAddPrice.getText().toString().equals("")) {
                         String s = "";
-                        if(etAddPrice.getText().toString().endsWith(KEY_RUB)){
-                            event.setPrice(Integer.parseInt(etAddPrice.getText().toString().substring(0,etAddPrice.getText().length()-1)));
+                        if (etAddPrice.getText().toString().endsWith(KEY_RUB)) {
+                            event.setPrice(Integer.parseInt(etAddPrice.getText().toString().substring(0, etAddPrice.getText().length() - 1)));
                             s = etAddPrice.getText().toString();
-                        } else if(etAddPrice.getText().toString().contains(KEY_RUB) && !etAddPrice.getText().toString().endsWith(KEY_RUB)){
+                        } else if (etAddPrice.getText().toString().contains(KEY_RUB) && !etAddPrice.getText().toString().endsWith(KEY_RUB)) {
                             event.setPrice(-1);
-                            Snackbar.make(getView(),"Неверно указана цена", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getView(), "Неверно указана цена", Snackbar.LENGTH_LONG).show();
                             s = etAddPrice.getText().toString();
-                        }
-                        else {
+                        } else {
                             event.setPrice(Integer.parseInt(etAddPrice.getText().toString()));
-                             s = etAddPrice.getText().toString().concat(KEY_RUB);
+                            s = etAddPrice.getText().toString().concat(KEY_RUB);
                         }
                         etAddPrice.setText(s);
                     } else {
@@ -198,7 +196,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         }
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_add_event_choose_place);
-        if(!shopsName.isEmpty()){
+        if (!shopsName.isEmpty()) {
             spinner.setItems(shopsName);
         } else {
             spinner.setHint("У Вас нет мест");
@@ -254,16 +252,17 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
 
     @Override
     public void onDateSelected(String date, LocalDate start, LocalDate end) {
-        if(date.length()>8){
-            setHorizontalWeight(tvDatePicker,2.0f);
-            setHorizontalWeight(tvTimePicker,1.0f);
+        if (date.length() > 8) {
+            setHorizontalWeight(tvDatePicker, 2.0f);
+            setHorizontalWeight(tvTimePicker, 1.0f);
         } else {
-            setHorizontalWeight(tvDatePicker,1.0f);
-            setHorizontalWeight(tvTimePicker,1.0f);
+            setHorizontalWeight(tvDatePicker, 1.0f);
+            setHorizontalWeight(tvTimePicker, 1.0f);
         }
         tvDatePicker.setText(date);
         tvDatePicker.setTextColor(getResources().getColor(R.color.color_text));
-        eventDate = FORMATTER5.format(start);
+        beginDate = FORMATTER5.format(start);
+        endDate = FORMATTER5.format(end);
 //        event.setBegin(FORMATTER5.format(start));
 //        event.setEnd(FORMATTER4.format(end));
     }
@@ -301,7 +300,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     }
 
     @Override
-    public void onAddressSelected(String address) throws IOException {
+    public void onAddressSelected(String address) {
         tvAddAddress.setText(address);
         event.setAddress(address);
     }
@@ -331,10 +330,10 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             if (event.getAddress().equals("")) {
                 Snackbar.make(getView(), "Укажите адрес", Snackbar.LENGTH_LONG).show();
             }
-            if (eventDate==null) {
+            if (beginDate == null) {
                 Snackbar.make(getView(), "Выберите дату события", Snackbar.LENGTH_LONG).show();
             }
-            if (time==null) {
+            if (time == null) {
                 Snackbar.make(getView(), "Укажите время", Snackbar.LENGTH_LONG).show();
             }
             if (event.getPrice() == -1) {
@@ -343,16 +342,15 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             if (photosPathList.get(0).equals("add")) {
                 Snackbar.make(getView(), "Прикрепите фотографию", Snackbar.LENGTH_LONG).show();
             }
-            if(etAddPrice.getText().toString().contains(KEY_RUB) && !etAddPrice.getText().toString().endsWith(KEY_RUB)){
-                Snackbar.make(getView(),"Неверно указана цена", Snackbar.LENGTH_LONG).show();
+            if (etAddPrice.getText().toString().contains(KEY_RUB) && !etAddPrice.getText().toString().endsWith(KEY_RUB)) {
+                Snackbar.make(getView(), "Неверно указана цена", Snackbar.LENGTH_LONG).show();
             }
             if (event.getCreatorId() != -1 && !event.getTitle().equals("") && !event.getDescription().equals("") && !event.getAddress().equals("")
-                    && event.getPrice() != -1 && event.getEventTypeId() != -1 && time!=null && eventDate!=null
+                    && event.getPrice() != -1 && event.getEventTypeId() != -1 && time != null && beginDate != null
                     && !photosPathList.isEmpty() && !photosPathList.get(0).equals("add")) {
-                StringBuilder sb = new StringBuilder(eventDate);
-                sb.append(time);
-                event.setBegin(sb.toString());
-                if(!event.getBegin().equals("") && event.getBegin().endsWith(":00")){
+                event.setBegin(beginDate + time);
+                event.setEnd(endDate + defaultTime);
+                if (!event.getBegin().equals("") && event.getBegin().endsWith(":00")) {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("event", event);
                     bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);
