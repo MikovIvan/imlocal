@@ -31,7 +31,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
@@ -40,10 +39,16 @@ import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
+import static ru.imlocal.imlocal.utils.Constants.CITY;
+import static ru.imlocal.imlocal.utils.Constants.CREATION;
 import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
-import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
-import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
+import static ru.imlocal.imlocal.utils.Constants.FAIR;
+import static ru.imlocal.imlocal.utils.Constants.FOOD;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
+import static ru.imlocal.imlocal.utils.Constants.SHOW;
+import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.THEATRE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat2;
@@ -102,15 +107,19 @@ public class FragmentVitrinaEvent extends Fragment {
 
         tvEventName.setText(event.getTitle());
         tvEventAdress.setText(event.getAddress().substring(0, event.getAddress().length() - 8));
-        tvEventType.setText(String.valueOf(event.getEventTypeId()));
+        setEventType(event);
         if (event.getPrice() > 0) {
             tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
         } else {
             tvEventPrice.setText("Бесплатно");
         }
-        StringBuilder sb = new StringBuilder(newDateFormat(event.getBegin()));
-        sb.append(" - ").append(newDateFormat2(event.getEnd()));
-        tvEventDate.setText(sb);
+        if (event.getEnd() != null && !event.getEnd().substring(0, 11).equals(event.getBegin().substring(0, 11))) {
+            StringBuilder sb = new StringBuilder(newDateFormat(event.getBegin()));
+            sb.append(" - ").append(newDateFormat2(event.getEnd()));
+            tvEventDate.setText(sb);
+        } else {
+            tvEventDate.setText(newDateFormat(event.getBegin()));
+        }
         tvEventDiscription.setText(event.getDescription());
 
         return view;
@@ -182,6 +191,34 @@ public class FragmentVitrinaEvent extends Fragment {
             }
         }
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void setEventType(Event event) {
+        switch (event.getEventTypeId()) {
+            case 1:
+                tvEventType.setText(FOOD);
+                break;
+            case 2:
+                tvEventType.setText(CHILDREN);
+                break;
+            case 3:
+                tvEventType.setText(SPORT);
+                break;
+            case 4:
+                tvEventType.setText(CITY);
+                break;
+            case 5:
+                tvEventType.setText(FAIR);
+            case 6:
+                tvEventType.setText(CREATION);
+                break;
+            case 7:
+                tvEventType.setText(THEATRE);
+                break;
+            case 8:
+                tvEventType.setText(SHOW);
+                break;
+        }
     }
 }
 

@@ -18,6 +18,11 @@ public class Constants {
     public static final String SPORT = "Фитнес";
     public static final String BEAUTY = "Красота";
     public static final String PURCHASES = "Покупки";
+    public static final String FAIR = "Ярмарка";
+    public static final String CREATION = "Творчество";
+    public static final String THEATRE = "Театр";
+    public static final String SHOW = "Шоу";
+    public static final String CITY = "Город";
 
     public static final String SHOP = "shop";
     public static final String USER = "user";
