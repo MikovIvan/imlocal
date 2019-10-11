@@ -29,6 +29,7 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 
+import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
 import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
@@ -73,6 +74,22 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 //        actionListBusiness.addAll(actionList);
 //        eventListBusiness.addAll(eventList);
 //        shopListBusiness.addAll(shopList);
+
+        for (Event event : eventList) {
+            if (event.getCreatorId() == Integer.parseInt(user.getId())) {
+                eventListBusiness.add(event);
+            }
+        }
+        for (Action action : actionList) {
+            if (action.getCreatorId() == Integer.parseInt(user.getId())) {
+                actionListBusiness.add(action);
+            }
+        }
+        for (Shop shop : shopList) {
+            if (shop.getCreatorId().equals(user.getId())) {
+                shopListBusiness.add(shop);
+            }
+        }
 
         rvShops = view.findViewById(R.id.rv_shops_business);
         rvActions = view.findViewById(R.id.rv_actions_business);

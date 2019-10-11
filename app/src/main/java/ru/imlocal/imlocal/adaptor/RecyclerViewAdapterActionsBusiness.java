@@ -43,8 +43,10 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     @Override
     public void onBindViewHolder(RecyclerViewAdapterActionsBusiness.ViewHolder holder, int position) {
         Action action = dataActions.get(position);
-        Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
-                .into(holder.ivActionIcon);
+        if (action.getActionPhotos() != null && !action.getActionPhotos().isEmpty()) {
+            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
+                    .into(holder.ivActionIcon);
+        }
         holder.tvEventTitle.setText(action.getTitle());
         holder.tvActionDescription.setText(action.getFullDesc());
     }
