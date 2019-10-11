@@ -70,9 +70,9 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         View view = inflater.inflate(R.layout.fragment_business, container, false);
 
 //        for test only
-        actionListBusiness.addAll(actionList);
-        eventListBusiness.addAll(eventList);
-        shopListBusiness.addAll(shopList);
+//        actionListBusiness.addAll(actionList);
+//        eventListBusiness.addAll(eventList);
+//        shopListBusiness.addAll(shopList);
 
         rvShops = view.findViewById(R.id.rv_shops_business);
         rvActions = view.findViewById(R.id.rv_actions_business);
@@ -90,17 +90,20 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         btnAddEvent.setOnClickListener(this);
         btnAddAction.setOnClickListener(this);
 
-        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness.subList(0, 2), getActivity());
+//        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness.subList(0, 2), getActivity());
+        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness, getActivity());
         rvActions.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         rvActions.setAdapter(adapterActionBusiness);
         adapterActionBusiness.setOnItemClickListener(this);
 
-        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness.subList(0, 2), getActivity());
+//        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness.subList(0, 2), getActivity());
+        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness, getActivity());
         rvEvents.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
         rvEvents.setAdapter(adapterEventsBusiness);
         adapterEventsBusiness.setOnItemClickListener(this);
 
-        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness.subList(0, 2), getActivity());
+//        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness.subList(0, 2), getActivity());
+        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness, getActivity());
         rvShops.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         rvShops.setAdapter(adapterShopsBusiness);
         adapterShopsBusiness.setOnItemClickListener(this);
