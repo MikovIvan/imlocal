@@ -147,6 +147,7 @@ public class FragmentVitrinaEvent extends Fragment {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
                         Log.d("ACTION", response.toString());
+                        Log.d("ACTION", String.valueOf(response.code()));
                     }
 
                     @Override
@@ -178,3 +179,4 @@ public class FragmentVitrinaEvent extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 }
+
