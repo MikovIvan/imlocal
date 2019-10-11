@@ -45,11 +45,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:overScrollMode="never"
                 android:id="@+id/list_actions"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_small_8"
-                android:layout_marginTop="@dimen/spacing_small_8"
-                android:layout_marginEnd="@dimen/spacing_small_8"
+                android:padding="6dp"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintStart_toStartOf="parent"
@@ -127,11 +125,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_shops"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_small_8"
-                android:layout_marginTop="@dimen/spacing_small_8"
-                android:layout_marginEnd="@dimen/spacing_small_8"
+                android:padding="6dp"
                 android:overScrollMode="never"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
