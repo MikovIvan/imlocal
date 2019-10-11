@@ -294,88 +294,114 @@
             android:textColor="@color/color_text"
             android:textSize="@dimen/font_small_14" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_timetable"
+        <EditText
+            android:id="@+id/et_add_shop_work_time"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_normal_16"
-            android:layout_marginTop="@dimen/spacing_small_8"
-            android:layout_marginEnd="@dimen/spacing_normal_16"
-            android:orientation="horizontal"
-            app:layoutManager="LinearLayoutManager"
-            tools:listitem="@layout/list_item_category" />
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/btn_round_white"
+            android:inputType="textWebEmailAddress"
+            android:hint="Пн-пт 16:00-21:00. Сб-вс 10:00-20:00"
+            android:textColorHint="@color/color_hint"
+            android:padding="@dimen/spacing_small_8"
+            android:textAlignment="textStart"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/font_small_14" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/spacing_small_8">
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/rv_timetable"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/spacing_normal_16"-->
+<!--            android:layout_marginTop="@dimen/spacing_small_8"-->
+<!--            android:layout_marginEnd="@dimen/spacing_normal_16"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layoutManager="LinearLayoutManager"-->
+<!--            tools:listitem="@layout/list_item_category" />-->
 
-            <TextView
-                android:id="@+id/tv_add_shop_work_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_small_8"
-                android:fontFamily="sans-serif"
-                android:text="Время работы"
-                android:textColor="@color/color_text"
-                android:textSize="@dimen/font_small_14"
-                app:layout_constraintStart_toStartOf="@id/et_add_shop_select_work_time"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="@dimen/spacing_small_8">-->
 
-            <EditText
-                android:id="@+id/et_add_shop_select_work_time"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/btn_round_white"
-                android:padding="@dimen/spacing_small_8"
-                android:inputType="time"
-                android:maxLength="11"
-                android:hint="00:00 - 00:00"
-                android:textColorHint="@color/color_hint"
-                android:textAlignment="center"
-                android:textColor="@color/color_text"
-                android:textSize="@dimen/font_small_14"
-                app:layout_constraintEnd_toStartOf="@+id/et_add_shop_select_dinner_time"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_add_shop_work_time" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_add_shop_work_time"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/spacing_small_8"-->
+<!--                android:fontFamily="sans-serif"-->
+<!--                android:text="Время работы"-->
+<!--                android:textColor="@color/color_text"-->
+<!--                android:textSize="@dimen/font_small_14"-->
+<!--                app:layout_constraintStart_toStartOf="@id/et_add_shop_select_work_time"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:id="@+id/tv_add_shop_dinner_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_small_8"
-                android:fontFamily="sans-serif"
-                android:text="Обед — опционально"
-                android:textColor="@color/color_text"
-                android:textSize="@dimen/font_small_14"
-                app:layout_constraintStart_toStartOf="@+id/et_add_shop_select_dinner_time"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <EditText-->
+<!--                android:id="@+id/et_add_shop_select_work_time"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                android:background="@drawable/btn_round_white"-->
+<!--                android:padding="@dimen/spacing_small_8"-->
+<!--                android:inputType="time"-->
+<!--                android:maxLength="11"-->
+<!--                android:hint="00:00 - 00:00"-->
+<!--                android:textColorHint="@color/color_hint"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textColor="@color/color_text"-->
+<!--                android:textSize="@dimen/font_small_14"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/et_add_shop_select_dinner_time"-->
+<!--                app:layout_constraintHorizontal_bias="0.5"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/tv_add_shop_work_time" />-->
 
-            <EditText
-                android:id="@+id/et_add_shop_select_dinner_time"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/btn_round_white"
-                android:padding="@dimen/spacing_small_8"
-                android:hint="00:00 - 00:00"
-                android:maxLength="11"
-                android:inputType="time"
-                android:textColorHint="@color/color_hint"
-                android:textAlignment="center"
-                android:textColor="@color/color_text"
-                android:textSize="@dimen/font_small_14"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/et_add_shop_select_work_time"
-                app:layout_constraintTop_toBottomOf="@id/tv_add_shop_dinner_time" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <TextView-->
+<!--                android:id="@+id/tv_add_shop_dinner_time"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/spacing_small_8"-->
+<!--                android:fontFamily="sans-serif"-->
+<!--                android:text="Обед — опционально"-->
+<!--                android:textColor="@color/color_text"-->
+<!--                android:textSize="@dimen/font_small_14"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/et_add_shop_select_dinner_time"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/et_add_shop_select_dinner_time"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                android:background="@drawable/btn_round_white"-->
+<!--                android:padding="@dimen/spacing_small_8"-->
+<!--                android:hint="00:00 - 00:00"-->
+<!--                android:maxLength="11"-->
+<!--                android:inputType="time"-->
+<!--                android:textColorHint="@color/color_hint"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textColor="@color/color_text"-->
+<!--                android:textSize="@dimen/font_small_14"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintHorizontal_bias="0.5"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/et_add_shop_select_work_time"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/tv_add_shop_dinner_time" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tv_result"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/spacing_normal_16"-->
+<!--            android:layout_marginTop="@dimen/spacing_small_8"-->
+<!--            android:fontFamily="sans-serif"-->
+<!--            android:textColor="@color/color_text"-->
+<!--            android:textSize="@dimen/font_small_14" />-->
 
         <TextView
             android:id="@+id/tv_add_shop_price"
