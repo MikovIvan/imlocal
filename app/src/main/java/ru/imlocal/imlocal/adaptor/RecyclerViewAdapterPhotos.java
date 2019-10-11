@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +43,13 @@ public class RecyclerViewAdapterPhotos extends RecyclerView.Adapter<RecyclerView
             holder.ivPhoto.setBackgroundColor(context.getResources().getColor(R.color.color_background));
             Picasso.get().load(imagePath).noPlaceholder().centerCrop().fit()
                     .into(holder.ivPhoto);
+            if(position==1 && !photosPath.get(0).equals("add")) {
+                holder.tvAvatar.setVisibility(View.GONE);
+            }else if(position==1 && photosPath.get(0).equals("add")){
+                holder.tvAvatar.setVisibility(View.VISIBLE);
+            } else if(position == 0 &&!photosPath.get(0).equals("add")){
+                holder.tvAvatar.setVisibility(View.VISIBLE);
+            }
         } else {
             holder.ivPhoto.setBackgroundColor(context.getResources().getColor(R.color.color_background));
             Picasso.get().load(R.drawable.ic_add_a_photo_black_24dp).placeholder(R.drawable.ic_add_a_photo_black_24dp)
@@ -63,11 +71,13 @@ public class RecyclerViewAdapterPhotos extends RecyclerView.Adapter<RecyclerView
     class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
         ImageButton ibDelete;
+        TextView tvAvatar;
 
         ViewHolder(View v) {
             super(v);
             ivPhoto = v.findViewById(R.id.iv_photos_icon);
             ibDelete = v.findViewById(R.id.ib_delete_photos);
+            tvAvatar = v.findViewById(R.id.tv_avatar);
 
             ibDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
