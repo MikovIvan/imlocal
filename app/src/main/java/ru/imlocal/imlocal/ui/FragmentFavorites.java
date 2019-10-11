@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,12 +19,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavEvents;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavPlaces;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
@@ -142,6 +140,10 @@ public class FragmentFavorites extends Fragment {
         eventsAdapter = new RecyclerViewAdapterFavEvents(eventList, getContext());
         shopsAdapter = new RecyclerViewAdapterFavPlaces(shopsList, getContext());
 
+        rvActions.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
+        rvEvents.setNestedScrollingEnabled(false);
+        rvShops.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
+
         rvActions.setAdapter(actionsAdapter);
         rvEvents.setAdapter(eventsAdapter);
         rvShops.setAdapter(shopsAdapter);
@@ -201,7 +203,7 @@ public class FragmentFavorites extends Fragment {
         });
     }
 }
-// Обработчики onItem...
-// Кнопки показать все ...
 // У вас нет избранных ... (когда список пуст)
-// Для каждого из трех setOnItemClickListener (см. коммент выше)
+// Показать все (только 2)
+// Открытие вниз
+// Align with the screen
