@@ -64,7 +64,6 @@ public class FragmentAddressDialog extends AppCompatDialogFragment implements Se
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        SearchFactory.initialize(getActivity());
         View view = inflater.inflate(R.layout.dialog_add_address, null);
 
 

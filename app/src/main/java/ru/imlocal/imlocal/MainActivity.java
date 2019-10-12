@@ -41,6 +41,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
+import com.yandex.mapkit.search.SearchFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -522,6 +523,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initYandexMaps() {
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
+        SearchFactory.initialize(this);
     }
 
     private void configAccessTokenTrakerFB() {
