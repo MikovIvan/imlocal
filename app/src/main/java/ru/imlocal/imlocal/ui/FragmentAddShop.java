@@ -210,6 +210,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             } else {
                 Snackbar.make(getView(), "Введите адрес сайт", Snackbar.LENGTH_LONG).show();
             }
+
             if (!etMinPrice.getText().toString().endsWith(KEY_RUB) && !etMinPrice.getText().toString().equals("")) {
                 shop.setShopCostMin(etMinPrice.getText().toString());
             }
@@ -234,8 +235,10 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 if (etWorkTime.getText().toString().matches(regex)) {
                     shop.setShopWorkTime(etWorkTime.getText().toString());
                 } else {
-                    Snackbar.make(getView(), "Неверный формат ", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(getView(), "Неверный формат. Пн-пт 16:00-21:00 Сб-вс 10:00-20:00 или Пн-пт 16:00-21:00 ", Snackbar.LENGTH_LONG).show();
                 }
+            } else {
+                Snackbar.make(getView(), "Укажите время работы", Snackbar.LENGTH_LONG).show();
             }
 
             if (photosPathList.size() == 1) {

@@ -303,7 +303,7 @@
             android:layout_marginEnd="16dp"
             android:background="@drawable/btn_round_white"
             android:inputType="textWebEmailAddress"
-            android:hint="Пн-пт 16:00-21:00. Сб-вс 10:00-20:00"
+            android:hint="Пн-пт 16:00-21:00 Сб-вс 10:00-20:00"
             android:textColorHint="@color/color_hint"
             android:padding="@dimen/spacing_small_8"
             android:textAlignment="textStart"
