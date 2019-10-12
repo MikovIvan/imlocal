@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ru.imlocal.imlocal.BuildConfig;
 import ru.imlocal.imlocal.MainActivity;
@@ -192,7 +194,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 Snackbar.make(getView(), "Выберите категорию", Snackbar.LENGTH_LONG).show();
             }
             if (!etPhoneNumber.getText().toString().equals("")) {
-                String regex = "^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$";
+                String regex = "^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{10}$";
                 if (etPhoneNumber.getText().toString().matches(regex)) {
                     shop.setShopPhone(etPhoneNumber.getText().toString());
                 } else {
@@ -232,10 +234,12 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             }
             if(!etWorkTime.getText().toString().equals("")){
                 String regex = "^((Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]))|((Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]))\\s(Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])$";
-                if (etWorkTime.getText().toString().matches(regex)) {
+                Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+                Matcher matcher = pattern.matcher(etWorkTime.getText().toString());
+                if (matcher.find()) {
                     shop.setShopWorkTime(etWorkTime.getText().toString());
                 } else {
-                    Snackbar.make(getView(), "Неверный формат. Пн-пт 16:00-21:00 Сб-вс 10:00-20:00 или Пн-пт 16:00-21:00 ", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(getView(), "Неверный формат. Пн-Пт 16:00-21:00 Сб-Вс 10:00-20:00 или Пн-Пт 16:00-21:00 ", Snackbar.LENGTH_LONG).show();
                 }
             } else {
                 Snackbar.make(getView(), "Укажите время работы", Snackbar.LENGTH_LONG).show();
@@ -398,16 +402,16 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                     etPhoneNumber.setSelection(etPhoneNumber.getText().length());
                 }
                 if (s.length() == 6 && len < s.length()) {
-                    s += ")";
+                    s += ") ";
                     etPhoneNumber.setText(s);
                     etPhoneNumber.setSelection(s.length());
                 }
-                if (s.length() == 10 && len < s.length()) {
+                if (s.length() == 11 && len < s.length()) {
                     s += " ";
                     etPhoneNumber.setText(s);
                     etPhoneNumber.setSelection(s.length());
                 }
-                if (s.length() == 13 && len < s.length()) {
+                if (s.length() == 14 && len < s.length()) {
                     s += " ";
                     etPhoneNumber.setText(s);
                     etPhoneNumber.setSelection(s.length());
