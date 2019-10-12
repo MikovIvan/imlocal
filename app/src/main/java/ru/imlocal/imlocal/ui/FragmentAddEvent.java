@@ -314,6 +314,9 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.go_to_preview) {
+            if (!etAddPrice.getText().toString().endsWith(KEY_RUB) && !etAddPrice.getText().toString().equals("") && event.getPrice() != 0) {
+                event.setPrice(Integer.parseInt(etAddPrice.getText().toString()));
+            }
             if (!etEventName.getText().toString().equals("") && etEventName.getText().length() <= 30) {
                 event.setTitle(String.valueOf(etEventName.getText()));
             } else {

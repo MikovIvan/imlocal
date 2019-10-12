@@ -46,21 +46,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.Credentials;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import ru.imlocal.imlocal.BuildConfig;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterWeekDays;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Category;
 import ru.imlocal.imlocal.entity.Shop;
@@ -68,7 +61,6 @@ import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.utils.FileCompressor;
 
 import static android.app.Activity.RESULT_OK;
-import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.KEY_RUB;
 import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
@@ -217,6 +209,12 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 }
             } else {
                 Snackbar.make(getView(), "Введите адрес сайт", Snackbar.LENGTH_LONG).show();
+            }
+            if (!etMinPrice.getText().toString().endsWith(KEY_RUB) && !etMinPrice.getText().toString().equals("")) {
+                shop.setShopCostMin(etMinPrice.getText().toString());
+            }
+            if (!etMaxPrice.getText().toString().endsWith(KEY_RUB) && !etMaxPrice.getText().toString().equals("")) {
+                shop.setShopCostMax(etMaxPrice.getText().toString());
             }
             if (etMinPrice.getText().toString().equals("")) {
                 Snackbar.make(getView(), "Введите минимальную стоимость", Snackbar.LENGTH_LONG).show();
