@@ -57,10 +57,10 @@ import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
-import ru.imlocal.imlocal.entity.Category;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.utils.FileCompressor;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
@@ -69,16 +69,11 @@ import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
 
 public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, FragmentAddressDialog.AddAddressFragmentAddressDialog {
 
-    private TextView result;
     private ShopAddress shopAddress;
-    private List<Category> weekDays = new ArrayList<>();
-    private List<Category> selectedWeekDays = new ArrayList<>();
 
     private RecyclerView rvCategory;
-    private RecyclerView rvWeekDays;
 
     private EditText etWorkTime;
-    private EditText etDinnerTime;
     private EditText etWebsite;
     private EditText etPhoneNumber;
     private EditText etMinPrice;
@@ -112,11 +107,13 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         View view = inflater.inflate(R.layout.fragment_add_shop, container, false);
         mCompressor = new FileCompressor(getActivity());
 
+        if(PreferenceUtils.getShop(getContext())!=null){
+            shop = PreferenceUtils.getShop(getContext());
+            Log.d("SHOP", "shop: " + shop);
+        }
         if (photosPathList.isEmpty()) {
             photosPathList.add("add");
         }
-//        result = view.findViewById(R.id.tv_result);
-//        initWeekDays();
 
         rvPhotos = view.findViewById(R.id.rv_shop_photo);
         adapterPhotos = new RecyclerViewAdapterPhotos(photosPathList, getActivity());
@@ -144,25 +141,17 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         });
 
         initMinMaxPrice(view);
-
-//        initWorkTimePicker(view);
-//        initDinnerTimePicker(view);
-
         initPhone();
         initRvCategory(view);
-//        initRvWeekDays(view);
         return view;
     }
 
-//    private void initWeekDays() {
-//        weekDays.add(new Category("Пн", 1));
-//        weekDays.add(new Category("Вт", 2));
-//        weekDays.add(new Category("Ср", 3));
-//        weekDays.add(new Category("Чт", 4));
-//        weekDays.add(new Category("Пт", 5));
-//        weekDays.add(new Category("Сб", 6));
-//        weekDays.add(new Category("Вс", 7));
-//    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceUtils.saveShop(shop, getContext());
+        Log.d("SHOP", "shop: " + shop);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -173,8 +162,6 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.go_to_preview) {
-//            calculateTimeTable();
-
             if (!etShopName.getText().toString().equals("") && etShopName.getText().length() <= 38) {
                 shop.setShopShortName(String.valueOf(etShopName.getText()));
             } else {
@@ -257,60 +244,10 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 bundle.putSerializable("shop", shop);
                 bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);
                 ((MainActivity) getActivity()).openVitrinaShop(bundle);
-//                Call<ShopAddress> call = api.createShopAddress(Credentials.basic(user.getAccessToken(), ""), shopAddress);
-//                call.enqueue(new Callback<ShopAddress>() {
-//                    @Override
-//                    public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
-//                        Log.d("Adres", "Id:" + response.body().getId());
-//                        shop.setShopAddressId(String.valueOf(response.body().getId()));
-//
-//                        Call<Shop> call1 = api.createShop(Credentials.basic(user.getAccessToken(), ""), shop);
-//                        call1.enqueue(new Callback<Shop>() {
-//                            @Override
-//                            public void onResponse(Call<Shop> call, Response<Shop> response) {
-//                                Log.d("Adres", "Id:" + response.body());
-//                            }
-//
-//                            @Override
-//                            public void onFailure(Call<Shop> call, Throwable t) {
-//
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<ShopAddress> call, Throwable t) {
-//
-//                    }
-//                });
             }
-
         }
         return super.onOptionsItemSelected(item);
     }
-
-//    private void calculateTimeTable() {
-//        for (Category category : weekDays) {
-//            if (category.isSelected()) {
-//                selectedWeekDays.add(category);
-//            }
-//        }
-//        Collections.sort(selectedWeekDays, new Comparator<Category>() {
-//            @Override
-//            public int compare(Category c1, Category c2) {
-//                return c1.getDayOfWeek() - c2.getDayOfWeek();
-//            }
-//        });
-//
-//        for (Category category : selectedWeekDays) {
-//            Log.d("SELECTED", String.valueOf(category.getDayOfWeek()));
-//        }
-//        String timetable = "";
-//        String workTime =  etWorkTime.getText().toString();
-//        timetable = selectedWeekDays.get(0).getName() + "-" + selectedWeekDays.get(selectedWeekDays.size()-1).getName() + " " + workTime;
-//
-//        result.setText(timetable);
-//    }
 
     private void openAdressDialog() {
         FragmentAddressDialog fragmentAddressDialog = new FragmentAddressDialog();
@@ -425,66 +362,6 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     private boolean isValidUrl(String url) {
         return Patterns.WEB_URL.matcher(url.toLowerCase()).matches();
     }
-
-//    private void initDinnerTimePicker(View view) {
-//        etDinnerTime = view.findViewById(R.id.et_add_shop_select_dinner_time);
-//        initTextCahngeListener(etDinnerTime);
-//    }
-//
-//    private void initWorkTimePicker(View view) {
-//        etWorkTime = view.findViewById(R.id.et_add_shop_select_work_time);
-//        initTextCahngeListener(etWorkTime);
-//    }
-
-    private void initTextCahngeListener(EditText etWorkTime) {
-        etWorkTime.addTextChangedListener(new TextWatcher() {
-            int len = 0;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String str = etWorkTime.getText().toString();
-                len = str.length();
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String s = etWorkTime.getText().toString();
-                if (s.length() == 2 && len < s.length()) {
-                    s += ":";
-                    etWorkTime.setText(s);
-                    etWorkTime.setSelection(s.length());
-                }
-                if (s.length() == 5 && len < s.length()) {
-                    s += "-";
-                    etWorkTime.setText(s);
-                    etWorkTime.setSelection(s.length());
-                }
-                if (s.length() == 8 && len < s.length()) {
-                    s += ":";
-                    etWorkTime.setText(s);
-                    etWorkTime.setSelection(s.length());
-                }
-            }
-        });
-    }
-
-//    private void initRvWeekDays(View view) {
-//        rvWeekDays = view.findViewById(R.id.rv_timetable);
-//        rvWeekDays.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-//        RecyclerViewAdapterWeekDays adaptorCategory = new RecyclerViewAdapterWeekDays(getContext(), weekDays);
-//        rvWeekDays.setAdapter(adaptorCategory);
-//        adaptorCategory.setOnItemClickListener(new RecyclerViewAdapterWeekDays.OnItemCategoryClickListener() {
-//            @Override
-//            public void onItemClickCategory(int position) {
-//
-//            }
-//        });
-//    }
 
     private void initRvCategory(View view) {
         rvCategory = view.findViewById(R.id.rv_category);
