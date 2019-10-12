@@ -11,8 +11,8 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import ru.imlocal.imlocal.entity.Action;
@@ -61,8 +61,8 @@ public interface Api {
     );
 
     @Headers("Content-Type: application/json; charset=utf-8")
-    @PUT("users/{id}")
-    Call<User> updateUser(@Path("id") String id, @Body User user);
+    @PATCH("users/{id}")
+    Call<User> updateUser(@Header("Authorization") String credentials, @Path("id") String id, @Body User user);
 
     @Headers("Content-Type: application/json; charset=utf-8")
     @POST("events")

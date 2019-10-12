@@ -130,6 +130,9 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                     Log.d("AUTH", "user getEventsFavoritesList: " + response.body().getEventsFavoritesList());
                     Log.d("AUTH", "user getShopsFavoritesList: " + response.body().getShopsFavoritesList());
                     Toast.makeText(context, response.body().getId(), Toast.LENGTH_LONG).show();
+                    if (response.body().getMiddleName() != null) {
+                        user.setMiddleName(response.body().getMiddleName());
+                    }
                     user.setId(response.body().getId());
                     PreferenceUtils.saveUser(user, context);
 ////                    сервер не возвращает эти данные

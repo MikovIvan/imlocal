@@ -191,20 +191,20 @@
             android:layout_width="@dimen/social_icons_40"
             android:layout_height="@dimen/social_icons_40"
             android:layout_margin="@dimen/spacing_normal_16"
-            android:src="@drawable/ic_vk" />
+            android:src="@drawable/ic_vk_logout" />
 
         <ImageButton
             android:id="@+id/btn_login_fb"
             android:layout_width="@dimen/social_icons_40"
             android:layout_height="@dimen/social_icons_40"
             android:layout_margin="@dimen/spacing_normal_16"
-            android:src="@drawable/ic_fb" />
+            android:src="@drawable/ic_fb_logout" />
 
         <ImageButton
             android:id="@+id/btn_login_google"
             android:layout_width="@dimen/social_icons_40"
             android:layout_height="@dimen/social_icons_40"
             android:layout_margin="@dimen/spacing_normal_16"
-            android:src="@drawable/ic_google" />
+            android:src="@drawable/ic_google_logout" />
     </LinearLayout>
 </LinearLayout>

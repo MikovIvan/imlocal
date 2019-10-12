@@ -26,12 +26,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.User;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
@@ -71,6 +73,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, F
     private void setData() {
         etFamilyName.setText(user.getLastName());
         etName.setText(user.getFirstName());
+        etMiddleName.setText(user.getMiddleName());
     }
 
     private void initViews(View view) {
@@ -81,6 +84,16 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, F
         ibVK = view.findViewById(R.id.btn_login_vk);
         ibFB = view.findViewById(R.id.btn_login_fb);
         ibGoogle = view.findViewById(R.id.btn_login_google);
+
+        if (user.getSource().equals("vkontakte")) {
+            ibVK.setImageDrawable(getResources().getDrawable(R.drawable.ic_vk));
+        }
+        if (user.getSource().equals("facebook")) {
+            ibFB.setImageDrawable(getResources().getDrawable(R.drawable.ic_fb));
+        }
+        if (user.getSource().equals("google")) {
+            ibGoogle.setImageDrawable(getResources().getDrawable(R.drawable.ic_google));
+        }
     }
 
     private void setEditable(boolean isEditMode) {
@@ -129,6 +142,23 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, F
                 setEditable(false);
                 item.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_edit));
                 isEditMode = false;
+
+                if (!etMiddleName.getText().toString().equals("")) {
+                    user.setMiddleName(etMiddleName.getText().toString());
+                    PreferenceUtils.saveUser(user, getActivity());
+                }
+                Call<User> call = api.updateUser(Credentials.basic(user.getAccessToken(), ""), user.getId(), user);
+                call.enqueue(new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        Log.d("ADDRESS", response.body().toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+
+                    }
+                });
             }
             return true;
         }
@@ -211,20 +241,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, F
             currentUserAdress.setLatitude(String.valueOf(returnedAddress.getLatitude()));
             currentUserAdress.setLongitude(String.valueOf(returnedAddress.getLongitude()));
             currentUserAdress.setHouseNumber(returnedAddress.getSubThoroughfare());
-            user.setMiddleName(etMiddleName.getText().toString());
             user.setUserAddress(currentUserAdress);
-            Call<User> call = api.updateUser(user.getId(), user);
-            call.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    Log.d("ADDRESS", response.toString());
-                }
-
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-
-                }
-            });
 
             Log.d("ADDRESS", returnedAddress.getLocality()
                     + " " + returnedAddress.getThoroughfare()
