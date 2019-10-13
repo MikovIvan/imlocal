@@ -4,6 +4,8 @@ import android.text.Html;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.text.SimpleDateFormat;
+
 public class Constants {
     //    ключ для яндекс карт
     public static final String MAPKIT_API_KEY = "98816d8a-89ae-4d74-84c8-db5263756c22";
@@ -26,6 +28,8 @@ public class Constants {
     public static final String CITY = "Город";
 
     public static final String SHOP = "shop";
+    public static final String EVENT = "event";
+    public static final String ACTION = "action";
     public static final String USER = "user";
 
     public static final String TAB = "tab";
@@ -38,6 +42,9 @@ public class Constants {
     public static final DateTimeFormatter FORMATTER3 = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
     public static final DateTimeFormatter FORMATTER4 = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     public static final DateTimeFormatter FORMATTER5 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_TO = new SimpleDateFormat("dd.MM.yy");
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_FROM = new SimpleDateFormat("yyyy-MM-dd");
 
     public enum Kind {
         shop,
