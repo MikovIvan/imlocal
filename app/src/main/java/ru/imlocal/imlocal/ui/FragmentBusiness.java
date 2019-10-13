@@ -28,6 +28,7 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShopsBusiness;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
@@ -70,6 +71,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_business, container, false);
 
+        clearPreferences();
 //        for test only
 //        actionListBusiness.addAll(actionList);
 //        eventListBusiness.addAll(eventList);
@@ -195,5 +197,13 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     @Override
     public void onDeleteShopClick(int position) {
         Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
+    }
+
+    private void clearPreferences() {
+        PreferenceUtils.saveShop(null, getActivity());
+        PreferenceUtils.saveAction(null,getActivity());
+        PreferenceUtils.saveEvent(null,getActivity());
+        List<String> photoPathList = new ArrayList<>();
+        PreferenceUtils.savePhotoPathList(photoPathList,getActivity());
     }
 }
