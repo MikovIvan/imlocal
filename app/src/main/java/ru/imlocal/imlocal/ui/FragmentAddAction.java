@@ -2,6 +2,7 @@ package ru.imlocal.imlocal.ui;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -39,6 +41,7 @@ import org.threeten.bp.LocalDate;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +55,7 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.FileCompressor;
+import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
@@ -67,6 +71,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private static final int REQUEST_TAKE_PHOTO = 1;
     private RecyclerView rvPhotos;
     private RecyclerViewAdapterPhotos adapterPhotos;
+    private RecyclerViewAdaptorCategory adaptorCategory;
     private List<String> photosPathList = new ArrayList<>();
     private File mPhotoFile;
     private FileCompressor mCompressor;
@@ -76,6 +81,12 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private TextInputEditText etActionName;
     private TextInputEditText etActionSubTitle;
     private TextInputEditText etActionDescription;
+
+    private  MaterialSpinner spinner;
+
+    //        это потом заменить на места юзера
+    private List<Shop> userShops = new ArrayList<>();
+    private List<String> shopsName = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,6 +99,16 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_action, container, false);
         mCompressor = new FileCompressor(getActivity());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
+
+        if (!PreferenceUtils.getPhotoPathList(getActivity()).isEmpty()) {
+            photosPathList.clear();
+            photosPathList.addAll(PreferenceUtils.getPhotoPathList(getActivity()));
+        }
+
+        action.setCreatorId(Integer.parseInt(user.getId()));
 
         initRvCategory(view);
         initSpinner(view);
@@ -109,6 +130,27 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (PreferenceUtils.getAction(getActivity()) != null) {
+            action = PreferenceUtils.getAction(getContext());
+            try {
+                loadActionData(action);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveActionData(action);
+        PreferenceUtils.saveAction(action, getActivity());
+        PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+    }
+
     private void initDatePicker(View view) {
         tvDatePicker = view.findViewById(R.id.tv_add_action_select_date);
         tvDatePicker.setOnClickListener(new View.OnClickListener() {
@@ -123,16 +165,15 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
 
     private void initSpinner(View view) {
         //        это потом заменить на места юзера
-        List<Shop> userShops = new ArrayList<>();
-        List<String> shopsName = new ArrayList<>();
+
         for (Shop shop : shopList) {
-            if (shop.getCreatorId().equals(user.getId())) {
+//            if (shop.getCreatorId().equals(user.getId())) {
                 userShops.add(shop);
                 shopsName.add(shop.getShopShortName());
-            }
+//            }
         }
 
-        MaterialSpinner spinner = view.findViewById(R.id.spinner_add_action_choose_place);
+         spinner = view.findViewById(R.id.spinner_add_action_choose_place);
         if(!shopsName.isEmpty()){
             spinner.setItems(shopsName);
         } else {
@@ -143,7 +184,6 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 action.setActionOwnerId(userShops.get(position).getShopId());
                 action.setShop(userShops.get(position));
-                action.setCreatorId(Integer.parseInt(user.getId()));
             }
         });
     }
@@ -205,7 +245,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private void initRvCategory(View view) {
         rvCategory = view.findViewById(R.id.rv_category);
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "add_action");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "add_action");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
     }
@@ -257,6 +297,57 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     public void onItemClick(int position) {
         if (photosPathList.get(0).equals("add") && position == 0) {
             selectImage();
+        }
+    }
+
+    private void loadActionData(Action action) throws ParseException {
+        if (action.getShop().getShopId() != -1) {
+            String name = "";
+            for (Shop shop : userShops) {
+                if (shop.getShopId() == action.getShop().getShopId()) {
+                    name = shop.getShopShortName();
+                }
+            }
+            for (int i = 0; i < shopsName.size(); i++) {
+                if (shopsName.get(i).contains(name)) {
+                    spinner.setSelectedIndex(i);
+                }
+            }
+        }
+        if(!action.getBegin().equals("") ){
+            if(action.getBegin().equals(action.getEnd())){
+                tvDatePicker.setText(action.getBegin());
+            } else {
+                tvDatePicker.setText("c " + action.getBegin() + " по " + action.getEnd());
+            }
+            tvDatePicker.setTextColor(getResources().getColor(R.color.color_text));
+        }
+        if(!action.getTitle().equals("")){
+            etActionName.setText(action.getTitle());
+        }
+        if(!action.getShortDesc().equals("")){
+            etActionSubTitle.setText(action.getShortDesc());
+        }
+        if(!action.getFullDesc().equals("")){
+            etActionDescription.setText(action.getFullDesc());
+        }
+        if (action.getActionTypeId() != 0) {
+            adaptorCategory.setCategory_index(action.getActionTypeId() - 1);
+        }
+    }
+
+    private void saveActionData(Action action) {
+        if(!etActionName.getText().toString().equals("")){
+            action.setTitle(etActionName.getText().toString());
+        }
+        if(!etActionSubTitle.getText().toString().equals("")){
+            action.setShortDesc(etActionSubTitle.getText().toString());
+        }
+        if(!etActionDescription.getText().toString().equals("")){
+            action.setFullDesc(etActionDescription.getText().toString());
+        }
+        if (photosPathList.size() > 1) {
+            PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
         }
     }
 
