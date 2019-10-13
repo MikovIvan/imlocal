@@ -2,6 +2,7 @@ package ru.imlocal.imlocal.ui;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -83,6 +85,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     private static final int REQUEST_TAKE_PHOTO = 1;
     private RecyclerView rvPhotos;
     private RecyclerViewAdapterPhotos adapterPhotos;
+    private RecyclerViewAdaptorCategory adaptorCategory;
     private List<String> photosPathList = new ArrayList<>();
     private File mPhotoFile;
     private FileCompressor mCompressor;
@@ -106,11 +109,15 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_shop, container, false);
         mCompressor = new FileCompressor(getActivity());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
 
-        if(PreferenceUtils.getShop(getContext())!=null){
-            shop = PreferenceUtils.getShop(getContext());
-            Log.d("SHOP", "shop: " + shop);
+        if(!PreferenceUtils.getPhotoPathList(getActivity()).isEmpty()){
+            photosPathList.clear();
+            photosPathList.addAll(PreferenceUtils.getPhotoPathList(getActivity()));
         }
+
         if (photosPathList.isEmpty()) {
             photosPathList.add("add");
         }
@@ -147,10 +154,20 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (PreferenceUtils.getShop(getActivity()) != null) {
+            shop = PreferenceUtils.getShop(getContext());
+            loadShopData(shop);
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        PreferenceUtils.saveShop(shop, getContext());
-        Log.d("SHOP", "shop: " + shop);
+        saveShopData(shop);
+        PreferenceUtils.saveShop(shop, getActivity());
+        PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
     }
 
     @Override
@@ -219,7 +236,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             if (tvAddAddress.getText().equals("")) {
                 Snackbar.make(getView(), "Укажите адрес", Snackbar.LENGTH_LONG).show();
             }
-            if(!etWorkTime.getText().toString().equals("")){
+            if (!etWorkTime.getText().toString().equals("")) {
                 String regex = "^((Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]))|((Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]))\\s(Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])$";
                 Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(etWorkTime.getText().toString());
@@ -366,7 +383,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     private void initRvCategory(View view) {
         rvCategory = view.findViewById(R.id.rv_category);
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "add_shop");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "add_shop");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(new RecyclerViewAdaptorCategory.OnItemCategoryClickListener() {
             @Override
@@ -443,6 +460,73 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             selectImage();
         }
     }
+
+    private void loadShopData(Shop shop){
+        if(!shop.getShopShortName().equals("")){
+            etShopName.setText(shop.getShopShortName());
+        }
+        if(!shop.getShopShortDescription().equals("")){
+            etShopShortDescription.setText(shop.getShopShortDescription());
+        }
+        if(!shop.getShopFullDescription().equals("")){
+            etShopFullDescription.setText(shop.getShopFullDescription());
+        }
+        if(!shop.getShopPhone().equals("")){
+            etPhoneNumber.setText(shop.getShopPhone());
+        }
+        if(!shop.getShopWeb().equals("")){
+            etWebsite.setText(shop.getShopWeb());
+        }
+        if(!shop.getShopCostMin().equals("")){
+            etMinPrice.setText(shop.getShopCostMin());
+        }
+        if(!shop.getShopCostMax().equals("")){
+            etMaxPrice.setText(shop.getShopCostMax());
+        }
+        if(shop.getShopAddress()!=null){
+            tvAddAddress.setText(shop.getShopAddress().toString());
+        }
+        if(!shop.getShopWorkTime().equals("")){
+            etWorkTime.setText(shop.getShopWorkTime());
+        }
+        if (shop.getShopTypeId() != 0) {
+            adaptorCategory.setCategory_index(shop.getShopTypeId() - 1);
+        }
+    }
+
+    private void saveShopData(Shop shop) {
+        if (!etShopName.getText().toString().equals("")) {
+            shop.setShopShortName(String.valueOf(etShopName.getText()));
+        }
+        if (!etShopShortDescription.getText().toString().equals("")) {
+            shop.setShopShortDescription(String.valueOf(etShopShortDescription.getText()));
+        }
+        if (!etShopFullDescription.getText().toString().equals("")) {
+            shop.setShopFullDescription(String.valueOf(etShopFullDescription.getText()));
+        }
+        if (!etPhoneNumber.getText().toString().equals("")) {
+            shop.setShopPhone(etPhoneNumber.getText().toString());
+        }
+        if (!etWebsite.getText().toString().equals("")) {
+            shop.setShopWeb(etWebsite.getText().toString());
+        }
+        if (!etMinPrice.getText().toString().equals("")) {
+            shop.setShopCostMin(etMinPrice.getText().toString());
+        }
+        if (!etMaxPrice.getText().toString().equals("")) {
+            shop.setShopCostMax(etMaxPrice.getText().toString());
+        }
+//        if (!tvAddAddress.getText().equals("")) {
+//            shop.setShopAddress(shopAddress);
+//        }
+        if (!etWorkTime.getText().toString().equals("")) {
+            shop.setShopWorkTime(etWorkTime.getText().toString());
+        }
+        if(photosPathList.size()>1){
+            PreferenceUtils.savePhotoPathList(photosPathList,getActivity());
+        }
+    }
+
 
     private void dispatchGalleryIntent() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
