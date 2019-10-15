@@ -146,7 +146,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_add_shop_business:
-                ((MainActivity) getActivity()).openAddShop();
+                ((MainActivity) getActivity()).openAddShop(null);
                 break;
             case R.id.btn_add_action_business:
 //                //        это потом заменить на места юзера
@@ -202,7 +202,11 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onEditShopClick(int position) {
-        Toast.makeText(getActivity(), "edit " + position, Toast.LENGTH_LONG).show();
+        Shop shop = shopListBusiness.get(position);
+        Bundle bundle = new Bundle();
+        status = STATUS_UPDATE;
+        bundle.putSerializable("shop", shop);
+        ((MainActivity) getActivity()).openAddShop(bundle);
     }
 
     @Override

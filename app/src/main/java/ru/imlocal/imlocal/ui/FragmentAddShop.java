@@ -61,12 +61,17 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
+import ru.imlocal.imlocal.entity.ShopPhoto;
 import ru.imlocal.imlocal.utils.FileCompressor;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.KEY_RUB;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
 
 public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, FragmentAddressDialog.AddAddressFragmentAddressDialog {
@@ -98,6 +103,8 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
 
     private Shop shop = new Shop("", "", -1, "", "", "", "", "", "", "", null);
 
+    private Bundle bundle;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +120,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
 
-        if(!PreferenceUtils.getPhotoPathList(getActivity()).isEmpty()){
+        if (!PreferenceUtils.getPhotoPathList(getActivity()).isEmpty()) {
             photosPathList.clear();
             photosPathList.addAll(PreferenceUtils.getPhotoPathList(getActivity()));
         }
@@ -121,6 +128,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         if (photosPathList.isEmpty()) {
             photosPathList.add("add");
         }
+
 
         rvPhotos = view.findViewById(R.id.rv_shop_photo);
         adapterPhotos = new RecyclerViewAdapterPhotos(photosPathList, getActivity());
@@ -150,6 +158,17 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         initMinMaxPrice(view);
         initPhone();
         initRvCategory(view);
+
+        bundle = getArguments();
+        if (bundle != null) {
+            shop = (Shop) bundle.getSerializable("shop");
+            loadShopData(shop);
+            List<String> photos = new ArrayList<>();
+            for (ShopPhoto shopPhoto : shop.getShopPhotoArray()) {
+                photos.add(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + shopPhoto.getShopPhoto());
+            }
+            photosPathList.addAll(photos);
+        }
         return view;
     }
 
@@ -165,9 +184,11 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     @Override
     public void onPause() {
         super.onPause();
-        saveShopData(shop);
-        PreferenceUtils.saveShop(shop, getActivity());
-        PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+        if (!status.equals(STATUS_UPDATE)) {
+            saveShopData(shop);
+            PreferenceUtils.saveShop(shop, getActivity());
+            PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+        }
     }
 
     @Override
@@ -235,6 +256,12 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             }
             if (tvAddAddress.getText().equals("")) {
                 Snackbar.make(getView(), "Укажите адрес", Snackbar.LENGTH_LONG).show();
+            } else if (status.equals(STATUS_UPDATE)) {
+                try {
+                    setShopAddress(tvAddAddress.getText().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             if (!etWorkTime.getText().toString().equals("")) {
                 String regex = "^((Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]))|((Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]))\\s(Пн|Вт|Ср|Чт|Пт|Сб|Вс)-(Пн|Вт|Ср|Чт|Пт|Сб|Вс)\\s((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])-((0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9])$";
@@ -396,7 +423,10 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     @Override
     public void onAddressSelected(String address) throws IOException {
         tvAddAddress.setText(address);
+        setShopAddress(address);
+    }
 
+    private void setShopAddress(String address) throws IOException {
         Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
         List<Address> userAddress = geocoder.getFromLocationName(address, 1);
 
@@ -461,32 +491,32 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         }
     }
 
-    private void loadShopData(Shop shop){
-        if(!shop.getShopShortName().equals("")){
+    private void loadShopData(Shop shop) {
+        if (!shop.getShopShortName().equals("")) {
             etShopName.setText(shop.getShopShortName());
         }
-        if(!shop.getShopShortDescription().equals("")){
+        if (!shop.getShopShortDescription().equals("")) {
             etShopShortDescription.setText(shop.getShopShortDescription());
         }
-        if(!shop.getShopFullDescription().equals("")){
+        if (!shop.getShopFullDescription().equals("")) {
             etShopFullDescription.setText(shop.getShopFullDescription());
         }
-        if(!shop.getShopPhone().equals("")){
+        if (!shop.getShopPhone().equals("")) {
             etPhoneNumber.setText(shop.getShopPhone());
         }
-        if(!shop.getShopWeb().equals("")){
+        if (!shop.getShopWeb().equals("")) {
             etWebsite.setText(shop.getShopWeb());
         }
-        if(!shop.getShopCostMin().equals("")){
+        if (!shop.getShopCostMin().equals("")) {
             etMinPrice.setText(shop.getShopCostMin());
         }
-        if(!shop.getShopCostMax().equals("")){
+        if (!shop.getShopCostMax().equals("")) {
             etMaxPrice.setText(shop.getShopCostMax());
         }
-        if(shop.getShopAddress()!=null){
+        if (shop.getShopAddress() != null) {
             tvAddAddress.setText(shop.getShopAddress().toString());
         }
-        if(!shop.getShopWorkTime().equals("")){
+        if (!shop.getShopWorkTime().equals("")) {
             etWorkTime.setText(shop.getShopWorkTime());
         }
         if (shop.getShopTypeId() != 0) {
@@ -522,8 +552,8 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         if (!etWorkTime.getText().toString().equals("")) {
             shop.setShopWorkTime(etWorkTime.getText().toString());
         }
-        if(photosPathList.size()>1){
-            PreferenceUtils.savePhotoPathList(photosPathList,getActivity());
+        if (photosPathList.size() > 1) {
+            PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
         }
     }
 

@@ -51,6 +51,7 @@ import ru.imlocal.imlocal.utils.Utils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
@@ -59,6 +60,7 @@ import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.PURCHASES;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
@@ -214,21 +216,21 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                     @Override
                     public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
                         shop.setShopAddressId(String.valueOf(response.body().getId()));
-                        Log.d("ACTION", response.toString());
-                        Log.d("ACTION", "AdressId " + response.body().getId());
+                        Log.d("SHOP", response.toString());
+                        Log.d("SHOP", "AdressId " + response.body().getId());
                         Call<Shop> call2 = api.createShop(Credentials.basic(user.getAccessToken(), ""), shop);
                         call2.enqueue(new Callback<Shop>() {
                             @Override
                             public void onResponse(Call<Shop> call, Response<Shop> response) {
-                                Log.d("ACTION", response.toString());
-                                Log.d("ACTION", String.valueOf(response.code()));
-                                Log.d("ACTION", String.valueOf(response.body().getShopId()));
+                                Log.d("SHOP", response.toString());
+                                Log.d("SHOP", String.valueOf(response.code()));
+                                Log.d("SHOP", String.valueOf(response.body().getShopId()));
                             }
 
                             @Override
                             public void onFailure(Call<Shop> call, Throwable t) {
-                                Log.d("ACTION", t.getMessage());
-                                Log.d("ACTION", t.toString());
+                                Log.d("SHOP", t.getMessage());
+                                Log.d("SHOP", t.toString());
                             }
                         });
                     }
@@ -242,6 +244,35 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
                 ((MainActivity) getActivity()).openBusiness();
                 return true;
+            case R.id.update:
+                Call<ShopAddress> call1 = api.updateShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddress(), shop.getShopAddressId());
+                call1.enqueue(new Callback<ShopAddress>() {
+                    @Override
+                    public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
+                        Log.d("SHOP", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<ShopAddress> call, Throwable t) {
+
+                    }
+                });
+
+                Call<Shop> call2 = api.updateShop(Credentials.basic(user.getAccessToken(), ""), shop, shop.getShopId());
+                call2.enqueue(new Callback<Shop>() {
+                    @Override
+                    public void onResponse(Call<Shop> call, Response<Shop> response) {
+                        Log.d("SHOP", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Shop> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -249,7 +280,9 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (bundle.getStringArrayList("photosPathList") != null) {
+        if (status.equals(STATUS_UPDATE)) {
+            inflater.inflate(R.menu.menu_update, menu);
+        } else if (bundle.getStringArrayList("photosPathList") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);

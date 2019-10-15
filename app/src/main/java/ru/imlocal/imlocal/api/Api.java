@@ -27,7 +27,7 @@ public interface Api {
     Call<List<Shop>> getShops(@Query("page") int page);
 
     @GET("shop")
-    Call<List<Shop>> getAllShops(@Query("userPoint") String point,@Query("range") int range);
+    Call<List<Shop>> getAllShops(@Query("userPoint") String point, @Query("range") int range);
 
     @GET("events")
     Observable<List<Action>> getAllActions();
@@ -73,6 +73,10 @@ public interface Api {
     Call<ShopAddress> createShopAddress(@Header("Authorization") String credentials, @Body ShopAddress shopAddress);
 
     @Headers("Content-Type: application/json; charset=utf-8")
+    @PATCH("shopaddresses/{id}")
+    Call<ShopAddress> updateShopAddress(@Header("Authorization") String credentials, @Body ShopAddress shopAddress, @Path("id") String id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("shops")
     Call<Shop> createShop(@Header("Authorization") String credentials, @Body Shop shop);
 
@@ -87,4 +91,8 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @PATCH("events/{id}")
     Call<Action> updateAction(@Header("Authorization") String credentials, @Body Action action, @Path("id") String id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @PATCH("events/{id}")
+    Call<Shop> updateShop(@Header("Authorization") String credentials, @Body Shop shop, @Path("id") int id);
 }

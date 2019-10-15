@@ -326,8 +326,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    public void openAddShop() {
+    public void openAddShop(Bundle bundle) {
         Fragment fragment = new FragmentAddShop();
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.frame, fragment)
