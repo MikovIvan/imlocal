@@ -61,8 +61,8 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
+import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
-import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
 
 public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, FragmentCalendarDialog.DatePickerDialogFragmentEvents {
@@ -134,7 +134,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
                 loadActionData(action);
                 List<String> photos = new ArrayList<>();
                 for (ActionPhoto actionPhoto : action.getActionPhotos()) {
-                    photos.add(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + actionPhoto.getActionPhoto());
+                    photos.add(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + actionPhoto.getActionPhoto());
                 }
                 photosPathList.addAll(photos);
             } catch (ParseException e) {
