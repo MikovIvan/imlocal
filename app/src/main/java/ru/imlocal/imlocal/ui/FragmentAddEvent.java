@@ -60,6 +60,7 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.FileCompressor;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
@@ -67,6 +68,8 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER5;
 import static ru.imlocal.imlocal.utils.Constants.KEY_RUB;
 import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
@@ -101,6 +104,8 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     private List<Shop> userShops = new ArrayList<>();
     private List<String> shopsName = new ArrayList<>();
 
+    private Bundle bundle;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +139,22 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
 
         if (photosPathList.isEmpty()) {
             photosPathList.add("add");
+        }
+
+        bundle = getArguments();
+        if (bundle != null) {
+            event = (Event) bundle.getSerializable("event");
+            try {
+                loadEventData(event);
+                List<String> photos = new ArrayList<>();
+                for (EventPhoto eventPhoto : event.getEventPhotoList()) {
+                    photos.add(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + eventPhoto.getEventPhoto());
+                }
+                photosPathList.clear();
+                photosPathList.addAll(photos);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         rvPhotos = view.findViewById(R.id.rv_add_photo);
         adapterPhotos = new RecyclerViewAdapterPhotos(photosPathList, getActivity());

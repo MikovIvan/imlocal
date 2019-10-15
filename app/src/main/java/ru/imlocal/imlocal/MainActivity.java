@@ -315,8 +315,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    public void openAddEvent() {
+    public void openAddEvent(Bundle bundle) {
         Fragment fragment = new FragmentAddEvent();
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.frame, fragment)
@@ -559,6 +560,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                    request.executeAsync();
                 } else {
                     enter.setTitle("Вход");
+                    user.setLogin(false);
                     navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(false);
                     navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
                 }

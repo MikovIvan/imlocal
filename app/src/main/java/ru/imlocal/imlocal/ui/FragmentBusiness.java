@@ -34,6 +34,7 @@ import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
 import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 
 public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener {
 
@@ -56,6 +57,8 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     private TextView tvNoShops;
     private TextView tvNoEvents;
     private TextView tvNoActions;
+
+    public static String status = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -164,7 +167,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 ((MainActivity) getActivity()).openAddAction();
                 break;
             case R.id.btn_add_events_business:
-                ((MainActivity) getActivity()).openAddEvent();
+                ((MainActivity) getActivity()).openAddEvent(null);
                 break;
         }
     }
@@ -181,7 +184,11 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onEditEventClick(int position) {
-        Toast.makeText(getActivity(), "edit " + position, Toast.LENGTH_LONG).show();
+        Event event = eventListBusiness.get(position);
+        Bundle bundle = new Bundle();
+        status = STATUS_UPDATE;
+        bundle.putSerializable("event", event);
+        ((MainActivity) getActivity()).openAddEvent(bundle);
     }
 
     @Override

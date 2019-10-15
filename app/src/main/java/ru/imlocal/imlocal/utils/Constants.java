@@ -31,6 +31,7 @@ public class Constants {
     public static final String EVENT = "event";
     public static final String ACTION = "action";
     public static final String USER = "user";
+    public static final String STATUS_UPDATE = "update";
 
     public static final String TAB = "tab";
     public static final String REQUESTING_LOCATION_PERMISSON = "requestingLocationPermission";

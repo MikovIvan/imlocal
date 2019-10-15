@@ -38,6 +38,7 @@ import ru.imlocal.imlocal.utils.Utils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
 import static ru.imlocal.imlocal.utils.Constants.CITY;
@@ -48,6 +49,7 @@ import static ru.imlocal.imlocal.utils.Constants.FOOD;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.SHOW;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Constants.THEATRE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
@@ -157,21 +159,37 @@ public class FragmentVitrinaEvent extends Fragment {
                 }
                 return true;
             case R.id.publish:
-                Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""), event);
-                call.enqueue(new Callback<Event>() {
+                    Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""), event);
+                    call.enqueue(new Callback<Event>() {
+                        @Override
+                        public void onResponse(Call<Event> call, Response<Event> response) {
+                            Log.d("EVENT", response.toString());
+                            Log.d("EVENT", String.valueOf(response.code()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<Event> call, Throwable t) {
+                            Log.d("EVENT", t.getMessage());
+                            Log.d("EVENT", t.toString());
+                        }
+                    });
+                    Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
+            case R.id.update:
+                Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(),""),event,event.getId());
+                call1.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
-                        Log.d("ACTION", response.toString());
-                        Log.d("ACTION", String.valueOf(response.code()));
+                        Log.d("EVENT", response.toString());
                     }
 
                     @Override
                     public void onFailure(Call<Event> call, Throwable t) {
-                        Log.d("ACTION", t.getMessage());
-                        Log.d("ACTION", t.toString());
+
                     }
                 });
-                Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
                 ((MainActivity) getActivity()).openBusiness();
                 return true;
             default:
@@ -183,6 +201,8 @@ public class FragmentVitrinaEvent extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (bundle.getStringArrayList("photosPathList") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
+        }   else if(status.equals(STATUS_UPDATE)){
+            inflater.inflate(R.menu.menu_update, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
             if (favoritesEvents.containsKey(String.valueOf(event.getId()))) {
