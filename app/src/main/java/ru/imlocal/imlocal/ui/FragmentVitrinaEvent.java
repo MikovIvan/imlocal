@@ -199,10 +199,10 @@ public class FragmentVitrinaEvent extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (bundle.getStringArrayList("photosPathList") != null) {
-            inflater.inflate(R.menu.menu_publish, menu);
-        }   else if(status.equals(STATUS_UPDATE)){
+        if (status.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
+        } else if (bundle.getStringArrayList("photosPathList") != null) {
+            inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
             if (favoritesEvents.containsKey(String.valueOf(event.getId()))) {
