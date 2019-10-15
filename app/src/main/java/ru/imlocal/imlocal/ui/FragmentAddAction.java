@@ -60,10 +60,12 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 
 public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, FragmentCalendarDialog.DatePickerDialogFragmentEvents {
 
@@ -85,7 +87,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private TextInputEditText etActionSubTitle;
     private TextInputEditText etActionDescription;
 
-    private  MaterialSpinner spinner;
+    private MaterialSpinner spinner;
 
     //        это потом заменить на места юзера
     private List<Shop> userShops = new ArrayList<>();
@@ -167,9 +169,11 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     @Override
     public void onPause() {
         super.onPause();
-        saveActionData(action);
-        PreferenceUtils.saveAction(action, getActivity());
-        PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+        if (!status.equals(STATUS_UPDATE)) {
+            saveActionData(action);
+            PreferenceUtils.saveAction(action, getActivity());
+            PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+        }
     }
 
     private void initDatePicker(View view) {
@@ -189,13 +193,13 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
 
         for (Shop shop : shopList) {
 //            if (shop.getCreatorId().equals(user.getId())) {
-                userShops.add(shop);
-                shopsName.add(shop.getShopShortName());
+            userShops.add(shop);
+            shopsName.add(shop.getShopShortName());
 //            }
         }
 
-         spinner = view.findViewById(R.id.spinner_add_action_choose_place);
-        if(!shopsName.isEmpty()){
+        spinner = view.findViewById(R.id.spinner_add_action_choose_place);
+        if (!shopsName.isEmpty()) {
             spinner.setItems(shopsName);
         } else {
             spinner.setHint("У Вас нет мест");
@@ -335,21 +339,21 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
                 }
             }
         }
-        if(!action.getBegin().equals("") ){
-            if(action.getBegin().equals(action.getEnd())){
+        if (!action.getBegin().equals("")) {
+            if (action.getBegin().equals(action.getEnd())) {
                 tvDatePicker.setText(action.getBegin());
             } else {
                 tvDatePicker.setText("c " + action.getBegin() + " по " + action.getEnd());
             }
             tvDatePicker.setTextColor(getResources().getColor(R.color.color_text));
         }
-        if(!action.getTitle().equals("")){
+        if (!action.getTitle().equals("")) {
             etActionName.setText(action.getTitle());
         }
-        if(!action.getShortDesc().equals("")){
+        if (!action.getShortDesc().equals("")) {
             etActionSubTitle.setText(action.getShortDesc());
         }
-        if(!action.getFullDesc().equals("")){
+        if (!action.getFullDesc().equals("")) {
             etActionDescription.setText(action.getFullDesc());
         }
         if (action.getActionTypeId() != 0) {
@@ -358,13 +362,13 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     }
 
     private void saveActionData(Action action) {
-        if(!etActionName.getText().toString().equals("")){
+        if (!etActionName.getText().toString().equals("")) {
             action.setTitle(etActionName.getText().toString());
         }
-        if(!etActionSubTitle.getText().toString().equals("")){
+        if (!etActionSubTitle.getText().toString().equals("")) {
             action.setShortDesc(etActionSubTitle.getText().toString());
         }
-        if(!etActionDescription.getText().toString().equals("")){
+        if (!etActionDescription.getText().toString().equals("")) {
             action.setFullDesc(etActionDescription.getText().toString());
         }
         if (photosPathList.size() > 1) {

@@ -67,11 +67,13 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER5;
 import static ru.imlocal.imlocal.utils.Constants.KEY_RUB;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
 import static ru.imlocal.imlocal.utils.Utils.simpleDateFormat;
 
@@ -181,9 +183,11 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public void onPause() {
         super.onPause();
-        saveEventData(event);
-        PreferenceUtils.saveEvent(event, getActivity());
-        PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+        if (!status.equals(STATUS_UPDATE)) {
+            saveEventData(event);
+            PreferenceUtils.saveEvent(event, getActivity());
+            PreferenceUtils.savePhotoPathList(photosPathList, getActivity());
+        }
     }
 
     private void initSetPrice(View view) {
