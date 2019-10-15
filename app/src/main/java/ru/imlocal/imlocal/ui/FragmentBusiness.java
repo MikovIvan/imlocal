@@ -164,7 +164,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 //                } else {
 //                    ((MainActivity) getActivity()).openAddAction();
 //                }
-                ((MainActivity) getActivity()).openAddAction();
+                ((MainActivity) getActivity()).openAddAction(null);
                 break;
             case R.id.btn_add_events_business:
                 ((MainActivity) getActivity()).openAddEvent(null);
@@ -173,12 +173,16 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onEditClick(int position) {
-        Toast.makeText(getActivity(), "edit " + position, Toast.LENGTH_LONG).show();
+    public void onEditActionClick(int position) {
+        Action action = actionListBusiness.get(position);
+        Bundle bundle = new Bundle();
+        status = STATUS_UPDATE;
+        bundle.putSerializable("action", action);
+        ((MainActivity) getActivity()).openAddAction(bundle);
     }
 
     @Override
-    public void onDeleteClick(int position) {
+    public void onDeleteActionClick(int position) {
         Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
     }
 

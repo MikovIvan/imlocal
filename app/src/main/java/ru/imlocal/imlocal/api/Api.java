@@ -83,4 +83,8 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @PATCH("happenings/{id}")
     Call<Event> updateEvent(@Header("Authorization") String credentials, @Body Event event, @Path("id") int id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @PATCH("events/{id}")
+    Call<Action> updateAction(@Header("Authorization") String credentials, @Body Action action, @Path("id") String id);
 }

@@ -53,6 +53,7 @@ import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterPhotos;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.ActionPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.FileCompressor;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
@@ -60,6 +61,8 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 import static android.app.Activity.RESULT_OK;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
+import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
 
 public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, FragmentCalendarDialog.DatePickerDialogFragmentEvents {
@@ -87,6 +90,8 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     //        это потом заменить на места юзера
     private List<Shop> userShops = new ArrayList<>();
     private List<String> shopsName = new ArrayList<>();
+
+    private Bundle bundle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,6 +126,22 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         if (photosPathList.isEmpty()) {
             photosPathList.add("add");
         }
+
+        bundle = getArguments();
+        if (bundle != null) {
+            action = (Action) bundle.getSerializable("action");
+            try {
+                loadActionData(action);
+                List<String> photos = new ArrayList<>();
+                for (ActionPhoto actionPhoto : action.getActionPhotos()) {
+                    photos.add(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + actionPhoto.getActionPhoto());
+                }
+                photosPathList.addAll(photos);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
         rvPhotos = view.findViewById(R.id.rv_add_photo);
         adapterPhotos = new RecyclerViewAdapterPhotos(photosPathList, getActivity());
         rvPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));

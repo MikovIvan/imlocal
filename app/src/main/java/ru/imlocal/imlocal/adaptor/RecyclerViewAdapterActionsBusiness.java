@@ -57,9 +57,9 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     }
 
     public interface OnItemClickListener {
-        void onEditClick(int position);
+        void onEditActionClick(int position);
 
-        void onDeleteClick(int position);
+        void onDeleteActionClick(int position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -86,7 +86,7 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onEditClick(position);
+                            mListener.onEditActionClick(position);
                         }
                     }
                 }
@@ -98,7 +98,7 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onDeleteClick(position);
+                            mListener.onDeleteActionClick(position);
                         }
                     }
                 }
