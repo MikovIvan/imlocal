@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,9 +16,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsBusiness;
@@ -28,15 +33,17 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShopsBusiness;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
 import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 
-public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener {
+public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener, FragmentDeleteDialog.DeleteDialogFragment {
 
     private List<Action> actionListBusiness = new ArrayList<>();
     private List<Event> eventListBusiness = new ArrayList<>();
@@ -183,7 +190,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onDeleteActionClick(int position) {
-        Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
+        openDeleteDialog("action", position);
     }
 
     @Override
@@ -197,7 +204,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onDeleteEventClick(int position) {
-        Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
+        openDeleteDialog("event", position);
     }
 
     @Override
@@ -211,14 +218,89 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onDeleteShopClick(int position) {
-        Toast.makeText(getActivity(), "delete " + position, Toast.LENGTH_LONG).show();
+        openDeleteDialog("shop", position);
     }
 
     private void clearPreferences() {
         PreferenceUtils.saveShop(null, getActivity());
-        PreferenceUtils.saveAction(null,getActivity());
-        PreferenceUtils.saveEvent(null,getActivity());
+        PreferenceUtils.saveAction(null, getActivity());
+        PreferenceUtils.saveEvent(null, getActivity());
         List<String> photoPathList = new ArrayList<>();
-        PreferenceUtils.savePhotoPathList(photoPathList,getActivity());
+        PreferenceUtils.savePhotoPathList(photoPathList, getActivity());
+    }
+
+    @Override
+    public void onDeleted(String entity, int position) {
+        switch (entity) {
+            case "event":
+                Call<Event> call = api.deleteEvent(Credentials.basic(user.getAccessToken(), ""), eventListBusiness.get(position).getId());
+                call.enqueue(new Callback<Event>() {
+                    @Override
+                    public void onResponse(Call<Event> call, Response<Event> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Event> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
+                eventListBusiness.remove(position);
+                adapterEventsBusiness.notifyItemChanged(position);
+                break;
+            case "shop":
+                Call<ShopAddress> call1 = api.deleteShopAddress(Credentials.basic(user.getAccessToken(), ""), shopListBusiness.get(position).getShopAddressId());
+                call1.enqueue(new Callback<ShopAddress>() {
+                    @Override
+                    public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
+                        
+                    }
+
+                    @Override
+                    public void onFailure(Call<ShopAddress> call, Throwable t) {
+
+                    }
+                });
+                Call<Shop> call2 = api.deleteShop(Credentials.basic(user.getAccessToken(), ""), shopListBusiness.get(position).getShopId());
+                call2.enqueue(new Callback<Shop>() {
+                    @Override
+                    public void onResponse(Call<Shop> call, Response<Shop> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Shop> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
+                shopListBusiness.remove(position);
+                adapterShopsBusiness.notifyItemChanged(position);
+                break;
+            case "action":
+                Call<Action> call3 = api.deleteAction(Credentials.basic(user.getAccessToken(), ""), actionListBusiness.get(position).getId());
+                call3.enqueue(new Callback<Action>() {
+                    @Override
+                    public void onResponse(Call<Action> call, Response<Action> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Action> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
+                actionListBusiness.remove(position);
+                adapterActionBusiness.notifyItemChanged(position);
+                break;
+        }
+    }
+
+    private void openDeleteDialog(String entity, int position) {
+        FragmentDeleteDialog fragmentDeleteDialog = new FragmentDeleteDialog(entity, position);
+        fragmentDeleteDialog.setDeleteDialogFragment(FragmentBusiness.this);
+        fragmentDeleteDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
     }
 }

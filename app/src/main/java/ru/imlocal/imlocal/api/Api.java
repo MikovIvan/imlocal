@@ -6,6 +6,7 @@ import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -77,6 +78,10 @@ public interface Api {
     Call<ShopAddress> updateShopAddress(@Header("Authorization") String credentials, @Body ShopAddress shopAddress, @Path("id") String id);
 
     @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("shopaddresses/{id}")
+    Call<ShopAddress> deleteShopAddress(@Header("Authorization") String credentials, @Path("id") String id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("shops")
     Call<Shop> createShop(@Header("Authorization") String credentials, @Body Shop shop);
 
@@ -93,6 +98,18 @@ public interface Api {
     Call<Action> updateAction(@Header("Authorization") String credentials, @Body Action action, @Path("id") String id);
 
     @Headers("Content-Type: application/json; charset=utf-8")
-    @PATCH("events/{id}")
+    @PATCH("shops/{id}")
     Call<Shop> updateShop(@Header("Authorization") String credentials, @Body Shop shop, @Path("id") int id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("shops/{id}")
+    Call<Shop> deleteShop(@Header("Authorization") String credentials, @Path("id") int id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("happenings/{id}")
+    Call<Event> deleteEvent(@Header("Authorization") String credentials, @Path("id") int id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("events/{id}")
+    Call<Action> deleteAction(@Header("Authorization") String credentials, @Path("id") String id);
 }
