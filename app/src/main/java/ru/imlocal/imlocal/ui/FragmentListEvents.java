@@ -204,22 +204,22 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
                 filter(filterList, category);
                 break;
             case 4:
-                category = 5;
+                category = 7;
                 Toast.makeText(getContext(), "Театр", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;
             case 5:
-                category = 6;
+                category = 8;
                 Toast.makeText(getContext(), "Шоу", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;
             case 6:
-                category = 7;
+                category = 5;
                 Toast.makeText(getContext(), "Ярмарка", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;
             case 7:
-                category = 8;
+                category = 6;
                 Toast.makeText(getContext(), "Творчество", Toast.LENGTH_SHORT).show();
                 filter(filterList, category);
                 break;

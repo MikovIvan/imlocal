@@ -16,6 +16,7 @@ import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,9 @@ import static ru.imlocal.imlocal.MainActivity.latitude;
 import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
+import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
+import static ru.imlocal.imlocal.utils.Constants.SIMPLE_DATE_FORMAT_FROM;
+import static ru.imlocal.imlocal.utils.Constants.SIMPLE_DATE_FORMAT_TO;
 
 public class Utils {
     public static boolean isValidEmail(CharSequence target) {
@@ -53,6 +57,14 @@ public class Utils {
 
     public static String newDateFormat(String date) {
         return FORMATTER3.format(FORMATTER2.parse(date));
+    }
+
+    public static String newDateFormat2(String date) {
+        return FORMATTER4.format(FORMATTER2.parse(date));
+    }
+
+    public static String simpleDateFormat(String date) throws ParseException {
+        return SIMPLE_DATE_FORMAT_TO.format(SIMPLE_DATE_FORMAT_FROM.parse(date));
     }
 
     public static String getDistance(PlacemarkMapObject placemarkMapObject, double latitude, double longitude) {

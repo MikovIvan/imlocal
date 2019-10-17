@@ -31,6 +31,9 @@ public class Event implements Serializable {
     @SerializedName("begin")
     @Expose
     private String begin;
+    @SerializedName("end")
+    @Expose
+    private String end;
     @SerializedName("createdOn")
     @Expose
     private String createdOn;
@@ -71,6 +74,14 @@ public class Event implements Serializable {
     }
 
     public Event() {
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
     }
 
     public int getId() {

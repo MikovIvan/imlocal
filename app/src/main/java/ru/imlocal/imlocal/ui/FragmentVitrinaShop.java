@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsLight;
@@ -37,11 +44,14 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
+import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.entity.ShopPhoto;
 import ru.imlocal.imlocal.utils.Utils;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
@@ -50,6 +60,7 @@ import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.PURCHASES;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
@@ -69,8 +80,9 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private Button btnRating;
     private RecyclerView rvListPlaces;
     private RecyclerView rvListEvents;
-    private Shop shop;
 
+    private Shop shop;
+    private Bundle bundle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,17 +119,21 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAdress.setOnClickListener(this);
         tvShopPhone.setOnClickListener(this);
 
-        Bundle bundle = getArguments();
+        bundle = getArguments();
         shop = (Shop) bundle.getSerializable("shop");
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         rvListEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
-        RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
-        RecyclerViewAdapterEvent adapterEvent = new RecyclerViewAdapterEvent(shop.getShopEventList(), getContext());
-        rvListEvents.setAdapter(adapterEvent);
-        rvListPlaces.setAdapter(adapter);
-        adapterEvent.setOnItemClickListener(this);
-        adapter.setOnItemClickListener(this);
+        if (shop.getShopActionArray() != null) {
+            RecyclerViewAdapterActionsLight adapter = new RecyclerViewAdapterActionsLight(shop.getShopActionArray(), getContext());
+            rvListPlaces.setAdapter(adapter);
+            adapter.setOnItemClickListener(this);
+        }
+        if (shop.getShopEventList() != null) {
+            RecyclerViewAdapterEvent adapterEvent = new RecyclerViewAdapterEvent(shop.getShopEventList(), getContext());
+            rvListEvents.setAdapter(adapterEvent);
+            adapterEvent.setOnItemClickListener(this);
+        }
         setShopType(shop);
         tvVitrinaNameOfPlace.setText(shop.getShopShortName());
         tvAdress.setText(shop.getShopAddress().toString());
@@ -127,7 +143,18 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAboutShop.setText(shop.getShopFullDescription());
         btnRating.setText(String.valueOf(shop.getShopAvgRating()));
 
-        if (shop.getShopPhotoArray().size() > 1) {
+        if (bundle.getStringArrayList("photosPathList") != null) {
+            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
+            if (photosPathList.size() == 2) {
+                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                    flipperImages(photoPath, true);
+                }
+            } else if (photosPathList.size() > 2) {
+                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
+                    flipperImages(photoPath, true);
+                }
+            }
+        } else if (shop.getShopPhotoArray().size() > 1) {
             for (ShopPhoto shopPhoto : shop.getShopPhotoArray())
                 flipperImages(shopPhoto.getShopPhoto(), true);
         } else {
@@ -182,6 +209,70 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                     Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
                             .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
+                return true;
+            case R.id.publish:
+                Call<ShopAddress> call = api.createShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddress());
+                call.enqueue(new Callback<ShopAddress>() {
+                    @Override
+                    public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
+                        shop.setShopAddressId(String.valueOf(response.body().getId()));
+                        Log.d("SHOP", response.toString());
+                        Log.d("SHOP", "AdressId " + response.body().getId());
+                        Call<Shop> call2 = api.createShop(Credentials.basic(user.getAccessToken(), ""), shop);
+                        call2.enqueue(new Callback<Shop>() {
+                            @Override
+                            public void onResponse(Call<Shop> call, Response<Shop> response) {
+                                Log.d("SHOP", response.toString());
+                                Log.d("SHOP", String.valueOf(response.code()));
+                                Log.d("SHOP", String.valueOf(response.body().getShopId()));
+                            }
+
+                            @Override
+                            public void onFailure(Call<Shop> call, Throwable t) {
+                                Log.d("SHOP", t.getMessage());
+                                Log.d("SHOP", t.toString());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Call<ShopAddress> call, Throwable t) {
+
+                    }
+                });
+
+                Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
+            case R.id.update:
+                Call<ShopAddress> call1 = api.updateShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddress(), shop.getShopAddressId());
+                call1.enqueue(new Callback<ShopAddress>() {
+                    @Override
+                    public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
+                        Log.d("SHOP", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<ShopAddress> call, Throwable t) {
+
+                    }
+                });
+
+                Call<Shop> call2 = api.updateShop(Credentials.basic(user.getAccessToken(), ""), shop, shop.getShopId());
+                call2.enqueue(new Callback<Shop>() {
+                    @Override
+                    public void onResponse(Call<Shop> call, Response<Shop> response) {
+                        Log.d("SHOP", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Shop> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -189,11 +280,17 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_vitrina, menu);
-        if (favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+        if (status.equals(STATUS_UPDATE)) {
+            inflater.inflate(R.menu.menu_update, menu);
+        } else if (bundle.getStringArrayList("photosPathList") != null) {
+            inflater.inflate(R.menu.menu_publish, menu);
         } else {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
+            inflater.inflate(R.menu.menu_vitrina, menu);
+            if (favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart_pressed));
+            } else {
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_heart));
+            }
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

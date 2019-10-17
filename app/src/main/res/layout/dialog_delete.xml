@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_delete_dialog">
+
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_round_main_color"
+        android:textColor="@android:color/white"
+        android:text="Удалить"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/font_small_14"
+        android:textAllCaps="false"
+        android:layout_marginStart="@dimen/font_normal_16"
+        android:layout_marginBottom="@dimen/spacing_huge_32"
+        app:layout_constraintTop_toBottomOf="@id/tv_delete_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_cancel"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_round_favorites"
+        android:textColor="@color/color_main"
+        android:text="Отмена"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/font_small_14"
+        android:textAllCaps="false"
+        android:layout_marginEnd="@dimen/spacing_normal_16"
+        android:layout_marginBottom="@dimen/spacing_huge_32"
+        app:layout_constraintTop_toBottomOf="@id/tv_delete_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_delete" />
+
+    <TextView
+        android:id="@+id/tv_delete_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:minLines="2"
+        android:paddingTop="@dimen/spacing_large_24"
+        android:paddingBottom="@dimen/spacing_large_24"
+        android:paddingStart="64dp"
+        android:paddingEnd="64dp"
+        android:text="Вы уверены, что хотите \n удалить акцию?"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

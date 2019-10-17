@@ -15,17 +15,17 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.Shop;
 
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 
-public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<RecyclerViewAdapterActionsBusiness.ViewHolder> {
-    private List<Action> dataActions;
+public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<RecyclerViewAdapterShopsBusiness.ViewHolder> {
+    private List<Shop> dataActions;
     private Context context;
     private OnItemClickListener mListener;
 
-    public RecyclerViewAdapterActionsBusiness(List<Action> dataActions, Context context) {
+    public RecyclerViewAdapterShopsBusiness(List<Shop> dataActions, Context context) {
         this.dataActions = dataActions;
         this.context = context;
     }
@@ -35,20 +35,17 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     }
 
     @Override
-    public RecyclerViewAdapterActionsBusiness.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_action_business, parent, false);
+    public RecyclerViewAdapterShopsBusiness.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_shop_business, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapterActionsBusiness.ViewHolder holder, int position) {
-        Action action = dataActions.get(position);
-        if (action.getActionPhotos() != null && !action.getActionPhotos().isEmpty()) {
-            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
-                    .into(holder.ivActionIcon);
-        }
-        holder.tvEventTitle.setText(action.getTitle());
-        holder.tvActionDescription.setText(action.getFullDesc());
+    public void onBindViewHolder(RecyclerViewAdapterShopsBusiness.ViewHolder holder, int position) {
+        Shop shop = dataActions.get(position);
+        Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
+                .into(holder.ivShopIcon);
+        holder.tvShopTitle.setText(shop.getShopShortName());
     }
 
     @Override
@@ -57,24 +54,22 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     }
 
     public interface OnItemClickListener {
-        void onEditActionClick(int position);
+        void onEditShopClick(int position);
 
-        void onDeleteActionClick(int position);
+        void onDeleteShopClick(int position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvEventTitle;
-        ImageView ivActionIcon;
-        TextView tvActionDescription;
+        TextView tvShopTitle;
+        ImageView ivShopIcon;
         ImageButton ibEdit;
         ImageButton ibDelete;
 
         ViewHolder(View v) {
             super(v);
-            tvEventTitle = v.findViewById(R.id.tv_action_title_business);
-            tvActionDescription = v.findViewById(R.id.tv_action_description_business);
-            ivActionIcon = v.findViewById(R.id.iv_action_icon_business);
+            tvShopTitle = v.findViewById(R.id.tv_shop_title_business);
+            ivShopIcon = v.findViewById(R.id.iv_shop_icon_business);
 
             ibEdit = v.findViewById(R.id.ib_edit_business);
             ibDelete = v.findViewById(R.id.ib_delete_business);
@@ -86,7 +81,7 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onEditActionClick(position);
+                            mListener.onEditShopClick(position);
                         }
                     }
                 }
@@ -98,7 +93,7 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onDeleteActionClick(position);
+                            mListener.onDeleteShopClick(position);
                         }
                     }
                 }

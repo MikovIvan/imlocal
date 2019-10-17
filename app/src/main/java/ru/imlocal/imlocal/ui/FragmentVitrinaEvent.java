@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,19 +25,35 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
+import static ru.imlocal.imlocal.utils.Constants.CITY;
+import static ru.imlocal.imlocal.utils.Constants.CREATION;
 import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.FAIR;
+import static ru.imlocal.imlocal.utils.Constants.FOOD;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
+import static ru.imlocal.imlocal.utils.Constants.SHOW;
+import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
+import static ru.imlocal.imlocal.utils.Constants.THEATRE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
+import static ru.imlocal.imlocal.utils.Utils.newDateFormat2;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentVitrinaEvent extends Fragment {
@@ -92,13 +109,19 @@ public class FragmentVitrinaEvent extends Fragment {
 
         tvEventName.setText(event.getTitle());
         tvEventAdress.setText(event.getAddress().substring(0, event.getAddress().length() - 8));
-        tvEventType.setText(String.valueOf(event.getEventTypeId()));
+        setEventType(event);
         if (event.getPrice() > 0) {
             tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
         } else {
             tvEventPrice.setText("Бесплатно");
         }
-        tvEventDate.setText(newDateFormat(event.getBegin()));
+        if (event.getEnd() != null && !event.getEnd().substring(0, 11).equals(event.getBegin().substring(0, 11))) {
+            StringBuilder sb = new StringBuilder(newDateFormat(event.getBegin()));
+            sb.append(" - ").append(newDateFormat2(event.getEnd()));
+            tvEventDate.setText(sb);
+        } else {
+            tvEventDate.setText(newDateFormat(event.getBegin()));
+        }
         tvEventDiscription.setText(event.getDescription());
 
         return view;
@@ -134,8 +157,39 @@ public class FragmentVitrinaEvent extends Fragment {
                     Snackbar.make(getView(), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
                             .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(getActivity())).show();
                 }
+                return true;
             case R.id.publish:
-                Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                    Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""), event);
+                    call.enqueue(new Callback<Event>() {
+                        @Override
+                        public void onResponse(Call<Event> call, Response<Event> response) {
+                            Log.d("EVENT", response.toString());
+                            Log.d("EVENT", String.valueOf(response.code()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<Event> call, Throwable t) {
+                            Log.d("EVENT", t.getMessage());
+                            Log.d("EVENT", t.toString());
+                        }
+                    });
+                    Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
+            case R.id.update:
+                Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(),""),event,event.getId());
+                call1.enqueue(new Callback<Event>() {
+                    @Override
+                    public void onResponse(Call<Event> call, Response<Event> response) {
+                        Log.d("EVENT", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Event> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
                 ((MainActivity) getActivity()).openBusiness();
                 return true;
             default:
@@ -145,7 +199,9 @@ public class FragmentVitrinaEvent extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (bundle.getStringArrayList("photosPathList") != null) {
+        if (status.equals(STATUS_UPDATE)) {
+            inflater.inflate(R.menu.menu_update, menu);
+        } else if (bundle.getStringArrayList("photosPathList") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
@@ -157,4 +213,33 @@ public class FragmentVitrinaEvent extends Fragment {
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+    private void setEventType(Event event) {
+        switch (event.getEventTypeId()) {
+            case 1:
+                tvEventType.setText(FOOD);
+                break;
+            case 2:
+                tvEventType.setText(CHILDREN);
+                break;
+            case 3:
+                tvEventType.setText(SPORT);
+                break;
+            case 4:
+                tvEventType.setText(CITY);
+                break;
+            case 5:
+                tvEventType.setText(FAIR);
+            case 6:
+                tvEventType.setText(CREATION);
+                break;
+            case 7:
+                tvEventType.setText(THEATRE);
+                break;
+            case 8:
+                tvEventType.setText(SHOW);
+                break;
+        }
+    }
 }
+

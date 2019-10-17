@@ -18,17 +18,29 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/iv_photos_icon"
+            android:id="@+id/iv_shop_icon_business"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerInside"
+            android:foreground="@drawable/image_gradient"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
         <ImageButton
-            android:id="@+id/ib_delete_photos"
+            android:id="@+id/ib_edit_business"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/spacing_small_8"
+            android:src="@drawable/ic_edit_business"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ib_delete_business"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -38,19 +50,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_avatar"
+            android:id="@+id/tv_shop_title_business"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tv_round"
-            android:gravity="center"
-            android:layout_margin="8dp"
-            android:padding="4dp"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
+            android:layout_margin="@dimen/spacing_small_8"
+            android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
-            android:visibility="invisible"
-            android:text="Главная"
-            app:layout_constraintTop_toTopOf="@id/iv_photos_icon"
-            app:layout_constraintStart_toStartOf="@id/iv_photos_icon"/>
+            android:maxLines="2"
+            android:padding="@dimen/spacing_small_8"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_normal_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Неделя грузинской кухни" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

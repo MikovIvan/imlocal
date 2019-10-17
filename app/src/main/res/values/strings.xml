@@ -61,12 +61,12 @@
     <string name="events">События</string>
     <string name="need_editable">Нужно перейти в режим редактирования</string>
 
-    <string name="tap_to_reload">Tap to reload</string>
-    <string name="error_msg_no_internet">Not connected to internet</string>
-    <string name="error_msg_timeout">The server took too long to respond</string>
-    <string name="error_msg_unknown">An unexpected error occurred</string>
-    <string name="error_msg">Sorry! Couldn\'t fetch movies.</string>
-    <string name="btn_retry">Retry</string>
+    <string name="tap_to_reload">Нажмите для перезагрузки</string>
+    <string name="error_msg_no_internet">Нет подключения к интернету</string>
+    <string name="error_msg_timeout">Сервер не отвечает</string>
+    <string name="error_msg_unknown">Ошибка</string>
+    <string name="error_msg">Извините! Невозможно обновить места.</string>
+    <string name="btn_retry">Повторить</string>
 
 
     <string-array name="custom_months">

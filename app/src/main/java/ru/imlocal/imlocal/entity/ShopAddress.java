@@ -34,17 +34,6 @@ public class ShopAddress implements Serializable {
     public ShopAddress() {
     }
 
-    public ShopAddress(int id, String city, String street, String houseNumber, int housing, int building, float latitude, float longitude) {
-        this.id = id;
-        this.city = city;
-        this.street = street;
-        this.houseNumber = houseNumber;
-        this.housing = housing;
-        this.building = building;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
     public int getId() {
         return id;
     }

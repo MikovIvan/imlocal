@@ -41,6 +41,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
+import com.yandex.mapkit.search.SearchFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,7 @@ import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.network.RetrofitClient;
 import ru.imlocal.imlocal.ui.FragmentAddAction;
 import ru.imlocal.imlocal.ui.FragmentAddEvent;
+import ru.imlocal.imlocal.ui.FragmentAddShop;
 import ru.imlocal.imlocal.ui.FragmentBusiness;
 import ru.imlocal.imlocal.ui.FragmentFavorites;
 import ru.imlocal.imlocal.ui.FragmentFeedback;
@@ -233,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                 .remove(getSupportFragmentManager().findFragmentByTag("FragmentLogin"))
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void openViewPager() {
@@ -304,8 +306,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    public void openAddAction() {
+    public void openAddAction(Bundle bundle) {
         Fragment fragment = new FragmentAddAction();
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.frame, fragment)
@@ -313,12 +316,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    public void openAddEvent() {
+    public void openAddEvent(Bundle bundle) {
         Fragment fragment = new FragmentAddEvent();
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.frame, fragment)
                 .addToBackStack("FragmentAddEvent")
+                .commit();
+    }
+
+    public void openAddShop(Bundle bundle) {
+        Fragment fragment = new FragmentAddShop();
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.frame, fragment)
+                .addToBackStack("FragmentAddShop")
                 .commit();
     }
 
@@ -512,6 +526,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initYandexMaps() {
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
+        SearchFactory.initialize(this);
     }
 
     private void configAccessTokenTrakerFB() {
@@ -547,6 +562,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                    request.executeAsync();
                 } else {
                     enter.setTitle("Вход");
+                    user.setLogin(false);
                     navigationView.getMenu().findItem(R.id.nav_favorites).setVisible(false);
                     navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
                 }

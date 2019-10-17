@@ -40,9 +40,11 @@ import ru.imlocal.imlocal.utils.Utils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
@@ -59,7 +61,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     private ViewFlipper viewFlipperAction;
 
     private Action action;
-    Bundle bundle;
+    private Bundle bundle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -157,7 +159,6 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 }
                 return true;
             case R.id.publish:
-
                 Call<Action> call = api.createAction(Credentials.basic(user.getAccessToken(), ""), action);
                 call.enqueue(new Callback<Action>() {
                     @Override
@@ -174,6 +175,22 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
                 ((MainActivity) getActivity()).openBusiness();
                 return true;
+            case R.id.update:
+                Call<Action> call1 = api.updateAction(Credentials.basic(user.getAccessToken(), ""), action, action.getId());
+                call1.enqueue(new Callback<Action>() {
+                    @Override
+                    public void onResponse(Call<Action> call, Response<Action> response) {
+                        Log.d("ACTION", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Action> call, Throwable t) {
+
+                    }
+                });
+                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
+                ((MainActivity) getActivity()).openBusiness();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -181,7 +198,9 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (bundle.getStringArrayList("photosPathList") != null) {
+        if (status.equals(STATUS_UPDATE)) {
+            inflater.inflate(R.menu.menu_update, menu);
+        } else if (bundle.getStringArrayList("photosPathList") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
