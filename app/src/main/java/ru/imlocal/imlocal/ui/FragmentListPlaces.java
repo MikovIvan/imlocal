@@ -60,7 +60,7 @@ import static ru.imlocal.imlocal.MainActivity.longitude;
 
 public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     public static List<Shop> shopList = new ArrayList<>();
-    private List<Shop> copyList = new ArrayList<>();
+    public static List<Shop> copyList = new ArrayList<>();
 
     private RecyclerView rvPlaces, rvCategory;
     private static final int PAGE_START = 1;
