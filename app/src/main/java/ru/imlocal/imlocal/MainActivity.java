@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +48,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.api.Api;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
@@ -68,9 +72,12 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
 import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
-import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.utils.Constants.MAPKIT_API_KEY;
+import static ru.imlocal.imlocal.utils.Utils.actionMap;
+import static ru.imlocal.imlocal.utils.Utils.eventMap;
+import static ru.imlocal.imlocal.utils.Utils.setSnackbarOnClickListener;
+import static ru.imlocal.imlocal.utils.Utils.shopMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -404,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         account = GoogleSignIn.getLastSignedInAccount(this);
         if (VKSdk.isLoggedIn() || account != null || (accessToken != null && !accessToken.isExpired())) {
             user = PreferenceUtils.getUser(MainActivity.this);
+            getFavorites();
             enter.setTitle(user.getUsername());
             setFavoritesAndLogoutButtonsInNavigationDrawer(true);
         }
@@ -438,10 +446,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_for_business:
                 if (user.isLogin()) {
+                    getFavorites();
                     openBusiness();
                 } else {
                     Snackbar.make(getWindow().getDecorView().findViewById(R.id.drawer_layout), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
-                            .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(this)).show();
+                            .setAction(getResources().getString(R.string.login), setSnackbarOnClickListener(this)).show();
                 }
                 break;
             case R.id.nav_favorites:
@@ -580,6 +589,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         appBarLayout.setVisibility(View.VISIBLE);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    private void getFavorites() {
+        Call<User> call = api.loginUser(user);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.body().getId() != null) {
+                    Log.d("AUTH", "sucsecc " + response.body().getId());
+                    Log.d("AUTH", "message: " + response.message());
+                    favoritesShops.putAll(shopMap(response.body().getShopsFavoritesList()));
+                    favoritesEvents.putAll(eventMap(response.body().getEventsFavoritesList()));
+                    favoritesActions.putAll(actionMap(response.body().getActionsFavoritesList()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
