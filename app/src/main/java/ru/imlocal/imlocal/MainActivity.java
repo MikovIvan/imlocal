@@ -446,7 +446,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_for_business:
                 if (user.isLogin()) {
-                    getFavorites();
                     openBusiness();
                 } else {
                     Snackbar.make(getWindow().getDecorView().findViewById(R.id.drawer_layout), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
