@@ -20,8 +20,8 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.latitude;
 import static ru.imlocal.imlocal.MainActivity.longitude;
-import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
 
 public class RecyclerViewAdapterFavPlaces extends RecyclerView.Adapter<RecyclerViewAdapterFavPlaces.ViewHolder> {
@@ -65,7 +65,7 @@ public class RecyclerViewAdapterFavPlaces extends RecyclerView.Adapter<RecyclerV
         holder.tvDistance.setText(distancestr);
 
         if (!place.getShopPhotoArray().isEmpty()) {
-            Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + place.getShopPhotoArray().get(0).getShopPhoto()).into(holder.ivPlaceIcon);
+            Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + place.getShopPhotoArray().get(0).getShopPhoto()).into(holder.ivPlaceIcon);
         } else {
             holder.ivPlaceIcon.setVisibility(View.GONE);
         }
