@@ -24,6 +24,7 @@ import ru.imlocal.imlocal.utils.Utils;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
 
 public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerViewAdapterActions.ViewHolder> implements Filterable {
@@ -61,7 +62,7 @@ public class RecyclerViewAdapterActions extends RecyclerView.Adapter<RecyclerVie
         if (action.getShop() != null) {
             if (action.getShop().getShopShortName() != null) {
                 holder.tvShopTitle.setText(action.getShop().getShopShortName());
-                Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
+                Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
                         .into(holder.ivIcon);
                 holder.tvShopRating.setText(String.valueOf(action.getShop().getShopAvgRating()));
             }
