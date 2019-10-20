@@ -65,7 +65,7 @@
     <string name="error_msg_no_internet">Нет подключения к интернету</string>
     <string name="error_msg_timeout">Сервер не отвечает</string>
     <string name="error_msg_unknown">Ошибка</string>
-    <string name="error_msg">Извините! Невозможно обновить места.</string>
+    <string name="error_msg">Извините! Невозможно отобразить данные.</string>
     <string name="btn_retry">Повторить</string>
 
 

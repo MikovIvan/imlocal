@@ -39,6 +39,9 @@ public interface Api {
     @GET("happenings")
     Observable<List<Event>> getAllEvents();
 
+    @GET("happenings")
+    Call<List<Event>> getAllEvents(@Query("page") int page, @Query("per-page") int perPage);
+
     @Headers("Content-Type: application/json; charset=utf-8")
     @POST("user/register")
     Call<User> registerUser(@Body User user);
