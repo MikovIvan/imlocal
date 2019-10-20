@@ -139,7 +139,11 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAdress.setText(shop.getShopAddress().toString());
         tvShopTimetable.setText(shop.getShopWorkTime());
         tvShopPhone.setText(shop.getShopPhone());
-        tvPrice.setText(shop.getShopCostMin() + "-" + shop.getShopCostMax());
+        if (!shop.getShopCostMin().equals("") && !shop.getShopCostMax().equals("")) {
+            tvPrice.setText(shop.getShopCostMin() + "-" + shop.getShopCostMax());
+        } else {
+            tvPrice.setText("");
+        }
         tvAboutShop.setText(shop.getShopFullDescription());
         btnRating.setText(String.valueOf(shop.getShopAvgRating()));
 
@@ -329,8 +333,12 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 startActivity(openMap);
                 break;
             case R.id.tv_website:
-                Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(shop.getShopWeb()));
-                startActivity(openWeb);
+                if (!shop.getShopWeb().equals("")) {
+                    Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(shop.getShopWeb()));
+                    startActivity(openWeb);
+                } else {
+                    Snackbar.make(getView(), "У этого места нет сайта", Snackbar.LENGTH_LONG).show();
+                }
                 break;
             case R.id.tv_shop_phone:
                 Intent openPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + tvShopPhone.getText()));

@@ -225,18 +225,20 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 } else {
                     Snackbar.make(getView(), "Неверный формат телефона", Snackbar.LENGTH_LONG).show();
                 }
-            } else {
-                Snackbar.make(getView(), "Введите телефон", Snackbar.LENGTH_LONG).show();
             }
+//            else {
+//                Snackbar.make(getView(), "Введите телефон", Snackbar.LENGTH_LONG).show();
+//            }
             if (!etWebsite.getText().toString().equals("")) {
                 if (isValidUrl(etWebsite.getText().toString())) {
                     shop.setShopWeb(etWebsite.getText().toString());
                 } else {
                     Snackbar.make(getView(), "Неверный формат сайта", Snackbar.LENGTH_LONG).show();
                 }
-            } else {
-                Snackbar.make(getView(), "Введите адрес сайт", Snackbar.LENGTH_LONG).show();
             }
+//            else {
+//                Snackbar.make(getView(), "Введите адрес сайт", Snackbar.LENGTH_LONG).show();
+//            }
 
             if (!etMinPrice.getText().toString().endsWith(KEY_RUB) && !etMinPrice.getText().toString().equals("")) {
                 shop.setShopCostMin(etMinPrice.getText().toString());
@@ -244,14 +246,16 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             if (!etMaxPrice.getText().toString().endsWith(KEY_RUB) && !etMaxPrice.getText().toString().equals("")) {
                 shop.setShopCostMax(etMaxPrice.getText().toString());
             }
-            if (etMinPrice.getText().toString().equals("")) {
-                Snackbar.make(getView(), "Введите минимальную стоимость", Snackbar.LENGTH_LONG).show();
-            } else if (etMinPrice.getText().toString().contains(KEY_RUB) && !etMinPrice.getText().toString().endsWith(KEY_RUB)) {
+//            if (etMinPrice.getText().toString().equals("")) {
+//                Snackbar.make(getView(), "Введите минимальную стоимость", Snackbar.LENGTH_LONG).show();
+//            } else
+            if (etMinPrice.getText().toString().contains(KEY_RUB) && !etMinPrice.getText().toString().endsWith(KEY_RUB)) {
                 Snackbar.make(getView(), "Неверно указана минимальная стоимость", Snackbar.LENGTH_LONG).show();
             }
-            if (etMaxPrice.getText().toString().equals("")) {
-                Snackbar.make(getView(), "Введите максимальную стоимость", Snackbar.LENGTH_LONG).show();
-            } else if (etMaxPrice.getText().toString().contains(KEY_RUB) && !etMaxPrice.getText().toString().endsWith(KEY_RUB)) {
+//            if (etMaxPrice.getText().toString().equals("")) {
+//                Snackbar.make(getView(), "Введите максимальную стоимость", Snackbar.LENGTH_LONG).show();
+//            } else
+            if (etMaxPrice.getText().toString().contains(KEY_RUB) && !etMaxPrice.getText().toString().endsWith(KEY_RUB)) {
                 Snackbar.make(getView(), "Неверно указана максимальная стоимость", Snackbar.LENGTH_LONG).show();
             }
             if (tvAddAddress.getText().equals("")) {
@@ -282,8 +286,9 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
 
             if (!shop.getCreatorId().equals("") && !shop.getShopShortName().equals("") && !shop.getShopShortDescription().equals("")
                     && !shop.getShopFullDescription().equals("") && shop.getShopTypeId() != -1 && shopAddress != null
-                    && !shop.getShopPhone().equals("") && !shop.getShopWeb().equals("") && !shop.getShopCostMin().equals("")
-                    && !shop.getShopCostMax().equals("") && !shop.getShopWorkTime().equals("")) {
+//                    && !shop.getShopPhone().equals("") && !shop.getShopWeb().equals("") && !shop.getShopCostMin().equals("")
+//                    && !shop.getShopCostMax().equals("")
+                    && !shop.getShopWorkTime().equals("")) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("shop", shop);
                 bundle.putStringArrayList("photosPathList", (ArrayList<String>) photosPathList);

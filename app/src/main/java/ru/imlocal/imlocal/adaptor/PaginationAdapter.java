@@ -120,10 +120,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         }
                     });
 
-                    if (shop.getShopPhotoArray() != null) {
+                    if (shop.getShopPhotoArray() != null && !shop.getShopPhotoArray().isEmpty()) {
                         Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
                                 .placeholder(R.drawable.placeholder)
                                 .into(shopVH.ivShopIcon);
+                    } else {
+                        Picasso.get().load(R.drawable.placeholder).placeholder(R.drawable.placeholder).into(shopVH.ivShopIcon);
                     }
                     shopVH.tvShopDescription.setText(shop.getShopShortDescription());
                     shopVH.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
