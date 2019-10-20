@@ -348,7 +348,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                     if (errorLayout.getVisibility() == View.GONE) {
                         errorLayout.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
-                        txtError.setText("нет мест около вас");
+                        txtError.setText("нет акций около вас");
                     }
                 } else {
                     TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
