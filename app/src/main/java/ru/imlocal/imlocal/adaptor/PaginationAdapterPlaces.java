@@ -36,7 +36,7 @@ import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
-public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
+public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
     private static final int ITEM = 0;
     private static final int LOADING = 1;
@@ -50,9 +50,9 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private List<Shop> dataShops;
     private List<Shop> dataShopsFiltered;
     private Context context;
-    private RecyclerViewAdapterShops.OnItemClickListener mListener;
+    private PaginationAdapterPlaces.OnItemClickListener mListener;
 
-    public PaginationAdapter(List<Shop> dataShops, Context context, FragmentListPlaces fragmentListPlaces) {
+    public PaginationAdapterPlaces(List<Shop> dataShops, Context context, FragmentListPlaces fragmentListPlaces) {
         this.context = context;
         this.mCallback = fragmentListPlaces;
         this.dataShops = dataShops;
@@ -67,7 +67,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.dataShops = dataShops;
     }
 
-    public void setOnItemClickListener(RecyclerViewAdapterShops.OnItemClickListener listener) {
+    public void setOnItemClickListener(PaginationAdapterPlaces.OnItemClickListener listener) {
         mListener = listener;
     }
 
