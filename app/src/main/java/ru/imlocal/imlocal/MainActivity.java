@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static Api api;
     public static AppBarLayout appBarLayout;
-    public static ProgressBar progressBar;
     public static NavigationView navigationView;
     public static MenuItem enter;
     public static GoogleSignInClient mGoogleSignInClient;
@@ -111,15 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AccessTokenTracker accessTokenTracker;
     private String currentFragment;
 
-    public static void showLoadingIndicator(boolean show) {
-        isLoading = show;
-        if (isLoading) {
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         api = RetrofitClient.getInstance(this).getApi();
 
-        initView();
         initToolbar();
         initNavigationDrawer();
 
@@ -513,10 +501,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void configFbAuth() {
         callbackManager = CallbackManager.Factory.create();
-    }
-
-    private void initView() {
-        progressBar = findViewById(R.id.progressbar);
     }
 
     private void initNavigationDrawer() {
