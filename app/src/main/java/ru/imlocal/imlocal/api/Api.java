@@ -31,6 +31,9 @@ public interface Api {
     Call<List<Shop>> getAllShops(@Query("userPoint") String point, @Query("range") int range, @Query("page") int page, @Query("per-page") int perPage);
 
     @GET("events")
+    Call<List<Action>> getAllActions(@Query("page") int page, @Query("per-page") int perPage);
+
+    @GET("events")
     Observable<List<Action>> getAllActions();
 
     @GET("happenings")

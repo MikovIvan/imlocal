@@ -1,9 +1,10 @@
 package ru.imlocal.imlocal.ui;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,49 +14,50 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jaredrummler.materialspinner.MaterialSpinner;
-import com.yandex.mapkit.geometry.Geo;
-import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.adaptor.PaginationAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
+import ru.imlocal.imlocal.utils.PaginationScrollListener;
 import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
-import static ru.imlocal.imlocal.MainActivity.latitude;
-import static ru.imlocal.imlocal.MainActivity.longitude;
-import static ru.imlocal.imlocal.MainActivity.showLoadingIndicator;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
-public class FragmentListActions extends Fragment implements MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
+public class FragmentListActions extends Fragment implements PaginationAdapterCallback, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterActions.OnItemClickListener {
     //раскомитить когда будет апи для бизнеса
     //    private List<Action> actionList = new ArrayList<>();
 //    удалить когда будет апи для бизнеса
@@ -63,7 +65,19 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
     private List<Action> copyList = new ArrayList<>();
 
     private RecyclerView rvActions, rvCategory;
-    private RecyclerViewAdapterActions adapter;
+    //    private RecyclerViewAdapterActions adapter;
+    private static final int PAGE_START = 1;
+    private static int CATEGORY = 0;
+    private static int TOTAL_PAGES = 2;
+    private PaginationAdapterActions adapter;
+    private LinearLayoutManager linearLayoutManager;
+    private ProgressBar progressBar;
+    private LinearLayout errorLayout;
+    private Button btnRetry;
+    private TextView txtError;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int currentPage = PAGE_START;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,18 +91,20 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_list_actions, container, false);
         appBarLayout.setVisibility(View.VISIBLE);
-        showLoadingIndicator(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
-        getAllActions();
 
         rvActions = view.findViewById(R.id.rv_fragment_list_actions);
         rvCategory = view.findViewById(R.id.rv_category);
-        rvActions.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "action");
-        rvCategory.setAdapter(adaptorCategory);
-        adaptorCategory.setOnItemClickListener(this);
+
+        progressBar = view.findViewById(R.id.main_progress);
+        errorLayout = view.findViewById(R.id.error_layout);
+        btnRetry = view.findViewById(R.id.error_btn_retry);
+        txtError = view.findViewById(R.id.error_txt_cause);
+
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        rvActions.setLayoutManager(linearLayoutManager);
+        rvActions.setItemAnimator(new DefaultItemAnimator());
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_sort);
         spinner.setItems("по рейтингу", "по удаленности");
@@ -103,6 +119,38 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
                 adapter.notifyDataSetChanged();
             }
         });
+
+        rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "action");
+        rvCategory.setAdapter(adaptorCategory);
+        adaptorCategory.setOnItemClickListener(this);
+
+        rvActions.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage += 1;
+                loadNextPage();
+            }
+
+            @Override
+            public int getTotalPageCount() {
+                return TOTAL_PAGES;
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
+
+        loadFirstPage();
+        btnRetry.setOnClickListener(view1 -> loadFirstPage());
         return view;
     }
 
@@ -159,31 +207,30 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
 
     @Override
     public void onItemClickCategory(int position) {
-        List<Action> filterList = new ArrayList<>();
         switch (position) {
             case 0:
-                Toast.makeText(getContext(), "Еда", Toast.LENGTH_SHORT).show();
-                filter(filterList, 1);
+                CATEGORY = 1;
+                filter(copyList, 1);
                 break;
             case 1:
-                Toast.makeText(getContext(), "Дети", Toast.LENGTH_SHORT).show();
-                filter(filterList, 2);
+                CATEGORY = 2;
+                filter(copyList, 2);
                 break;
             case 2:
-                Toast.makeText(getContext(), "Фитнес", Toast.LENGTH_SHORT).show();
-                filter(filterList, 3);
+                CATEGORY = 3;
+                filter(copyList, 3);
                 break;
             case 3:
-                Toast.makeText(getContext(), "Красота", Toast.LENGTH_SHORT).show();
-                filter(filterList, 4);
+                CATEGORY = 4;
+                filter(copyList, 4);
                 break;
             case 4:
-                Toast.makeText(getContext(), "Покупки", Toast.LENGTH_SHORT).show();
-                filter(filterList, 5);
+                CATEGORY = 5;
+                filter(copyList, 5);
                 break;
             case 5:
-                Toast.makeText(getContext(), "Все", Toast.LENGTH_SHORT).show();
-                filter(filterList, 0);
+                CATEGORY = 0;
+                filter(copyList, 0);
                 break;
         }
     }
@@ -210,71 +257,130 @@ public class FragmentListActions extends Fragment implements MenuItem.OnActionEx
         return false;
     }
 
-    @SuppressLint("CheckResult")
-    private void getAllActions() {
-        api.getAllActions()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Action>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d("TAG", "onsub");
+    private void sortByRating() {
+        adapter.sortByRating();
+    }
+
+    private void sortByDistance() {
+        adapter.sortByDistance();
+    }
+
+    private void filter(List<Action> filterList, int i) {
+        adapter.filter(filterList, i);
+    }
+
+    @Override
+    public void retryPageLoad() {
+        loadNextPage();
+    }
+
+    private void loadNextPage() {
+        Log.d("loadNextPage", "loadNextPage: " + currentPage);
+        callAllActions().enqueue(new Callback<List<Action>>() {
+            @Override
+            public void onResponse(Call<List<Action>> call, Response<List<Action>> response) {
+                Log.d("GPS2", response.body().toString());
+                Log.d("GPS2", response.toString());
+                adapter.removeLoadingFooter();
+                isLoading = false;
+
+                List<Action> results = fetchResults(response);
+                actionList.addAll(results);
+                copyList.addAll(results);
+
+                if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+            @Override
+            public void onFailure(Call<List<Action>> call, Throwable t) {
+                t.printStackTrace();
+                adapter.showRetry(true, fetchErrorMessage(t));
+            }
+        });
+    }
+
+    private Call<List<Action>> callAllActions() {
+        return api.getAllActions(currentPage, 3);
+    }
+
+    private void showErrorView(Throwable throwable) {
+        if (errorLayout.getVisibility() == View.GONE) {
+            errorLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            txtError.setText(fetchErrorMessage(throwable));
+        }
+    }
+
+    private String fetchErrorMessage(Throwable throwable) {
+        String errorMsg = getResources().getString(R.string.error_msg_unknown);
+        if (!isNetworkConnected()) {
+            errorMsg = getResources().getString(R.string.error_msg_no_internet);
+        } else if (throwable instanceof TimeoutException) {
+            errorMsg = getResources().getString(R.string.error_msg_timeout);
+        }
+        return errorMsg;
+    }
+
+    private void hideErrorView() {
+        if (errorLayout.getVisibility() == View.VISIBLE) {
+            errorLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    private void loadFirstPage() {
+
+        hideErrorView();
+        currentPage = PAGE_START;
+        callAllActions().enqueue(new Callback<List<Action>>() {
+            @Override
+            public void onResponse(Call<List<Action>> call, Response<List<Action>> response) {
+                hideErrorView();
+                Log.d("GPS2", response.toString());
+                Log.d("GPS2", response.body().toString());
+                if (response.headers().get("X-Pagination-Page-Count") == null) {
+                    if (errorLayout.getVisibility() == View.GONE) {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        txtError.setText("нет мест около вас");
                     }
+                } else {
+                    TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
+                    List<Action> results = fetchResults(response);
+                    actionList.clear();
+                    copyList.clear();
+                    actionList.addAll(results);
+                    copyList.addAll(results);
+                    progressBar.setVisibility(View.GONE);
+                    displayData(actionList);
 
-                    @Override
-                    public void onNext(List<Action> actions) {
-                        Log.d("TAG", "onnext");
-                        actionList.clear();
-                        copyList.clear();
-                        actionList.addAll(actions);
-                        copyList.addAll(actions);
-                        displayData(actionList);
-                        showLoadingIndicator(false);
-                    }
+                    isLastPage = false;
+                    if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                    else isLastPage = true;
+                }
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("TAG", "onsub");
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("TAG", "oncomplete");
-
-                    }
-                });
+            @Override
+            public void onFailure(Call<List<Action>> call, Throwable t) {
+                t.printStackTrace();
+                showErrorView(t);
+            }
+        });
     }
 
     private void displayData(List<Action> actionList) {
-        adapter = new RecyclerViewAdapterActions(actionList, getContext());
+        adapter = new PaginationAdapterActions(actionList, getActivity(), FragmentListActions.this);
         rvActions.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
     }
 
-    private void filter(List<Action> filterList, int i) {
-        actionList.clear();
-        actionList.addAll(copyList);
-        if (i != 0) {
-            for (Action action : actionList) {
-                if (action.getActionTypeId() == i) {
-                    filterList.add(action);
-                }
-            }
-            actionList.clear();
-            actionList.addAll(filterList);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    private void sortByRating() {
-        Collections.sort(actionList, (s1, s2) -> Double.compare(s1.getShop().getShopAvgRating(), s2.getShop().getShopAvgRating()));
-        Collections.reverse(actionList);
-    }
-
-    private void sortByDistance() {
-        Collections.sort(actionList, (s1, s2) ->
-                Double.compare(Geo.distance(new Point(s1.getShop().getShopAddress().getLatitude(), s1.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude)),
-                        Geo.distance(new Point(s2.getShop().getShopAddress().getLatitude(), s2.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude))));
+    private List<Action> fetchResults(Response<List<Action>> response) {
+        return response.body();
     }
 }
