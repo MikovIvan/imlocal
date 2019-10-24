@@ -3,6 +3,7 @@ package ru.imlocal.imlocal.api;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,8 +13,10 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import ru.imlocal.imlocal.entity.Action;
@@ -91,9 +94,20 @@ public interface Api {
     @POST("shops")
     Call<Shop> createShop(@Header("Authorization") String credentials, @Body Shop shop);
 
-    @Headers("Content-Type: application/json; charset=utf-8")
+    @Multipart
     @POST("happenings")
-    Call<Event> createEvent(@Header("Authorization") String credentials, @Body Event event);
+    Call<Event> createEvent(@Header("Authorization") String credentials,
+                            @Part("creatorId") RequestBody creatorId,
+                            @Part("title") RequestBody title,
+                            @Part("description") RequestBody description,
+                            @Part("address") RequestBody address,
+                            @Part("price") RequestBody price,
+                            @Part("begin") RequestBody begin,
+                            @Part("end") RequestBody end,
+                            @Part("happeningTypeId") RequestBody happeningTypeId,
+                            @Part MultipartBody.Part file
+    );
+
 
     @Headers("Content-Type: application/json; charset=utf-8")
     @PATCH("happenings/{id}")
@@ -118,4 +132,5 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("events/{id}")
     Call<Action> deleteAction(@Header("Authorization") String credentials, @Path("id") String id);
+    
 }
