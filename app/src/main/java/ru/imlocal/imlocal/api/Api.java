@@ -107,8 +107,7 @@ public interface Api {
                             @Part("happeningTypeId") RequestBody happeningTypeId,
                             @Part MultipartBody.Part file
     );
-
-
+    
     @Headers("Content-Type: application/json; charset=utf-8")
     @PATCH("happenings/{id}")
     Call<Event> updateEvent(@Header("Authorization") String credentials, @Body Event event, @Path("id") int id);
@@ -132,5 +131,12 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("events/{id}")
     Call<Action> deleteAction(@Header("Authorization") String credentials, @Path("id") String id);
-    
+
+    @FormUrlEncoded
+    @POST("shop-rating/create")
+    Call<RequestBody> addRating(@Header("Authorization") String credentials,
+                                @Field("userId") int userId,
+                                @Field("shopId") int shopId,
+                                @Field("rating") int rating
+    );
 }
