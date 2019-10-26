@@ -21,6 +21,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.entity.User;
@@ -139,4 +140,8 @@ public interface Api {
                                 @Field("shopId") int shopId,
                                 @Field("rating") int rating
     );
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("happeningphotos/{id}")
+    Call<EventPhoto> deleteEventPhoto(@Header("Authorization") String credentials, @Path("id") String id);
 }
