@@ -221,6 +221,8 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         PreferenceUtils.saveEvent(null, getActivity());
         List<String> photoPathList = new ArrayList<>();
         List<MediaFile> mediaFileList = new ArrayList<>();
+        List<String> photosIdList = new ArrayList<>();
+        ArrayList<String> photosDeleteList = new ArrayList<>();
         PreferenceUtils.savePhotoPathList(photoPathList, getActivity());
         PreferenceUtils.savePhotoList(mediaFileList, getActivity());
     }
@@ -273,7 +275,8 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 });
                 Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
                 shopListBusiness.remove(position);
-                adapterShopsBusiness.notifyItemChanged(position);
+                adapterShopsBusiness.notifyItemRemoved(position);
+                adapterShopsBusiness.notifyItemRangeChanged(position, shopListBusiness.size());
                 break;
             case "action":
                 Call<Action> call3 = api.deleteAction(Credentials.basic(user.getAccessToken(), ""), actionListBusiness.get(position).getId());
@@ -290,7 +293,8 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 });
                 Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
                 actionListBusiness.remove(position);
-                adapterActionBusiness.notifyItemChanged(position);
+                adapterActionBusiness.notifyItemRemoved(position);
+                adapterActionBusiness.notifyItemRangeChanged(position, actionListBusiness.size());
                 break;
         }
     }
