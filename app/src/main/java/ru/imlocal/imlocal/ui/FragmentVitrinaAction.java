@@ -219,20 +219,40 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 }
                 return true;
             case R.id.update:
-                Call<Action> call1 = api.updateAction(Credentials.basic(user.getAccessToken(), ""), action, action.getId());
-                call1.enqueue(new Callback<Action>() {
-                    @Override
-                    public void onResponse(Call<Action> call, Response<Action> response) {
-                        Log.d("ACTION", response.toString());
-                    }
 
-                    @Override
-                    public void onFailure(Call<Action> call, Throwable t) {
+                if (photosDeleteList != null && !photosDeleteList.isEmpty()) {
+                    for (String s : photosDeleteList) {
+                        Call<ActionPhoto> call1 = api.deleteActionPhoto(Credentials.basic(user.getAccessToken(), ""), s);
+                        call1.enqueue(new Callback<ActionPhoto>() {
+                            @Override
+                            public void onResponse(Call<ActionPhoto> call, Response<ActionPhoto> response) {
 
+                            }
+
+                            @Override
+                            public void onFailure(Call<ActionPhoto> call, Throwable t) {
+
+                            }
+                        });
                     }
-                });
-                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness();
+// add update photos
+                } else {
+                    Call<Action> call1 = api.updateAction(Credentials.basic(user.getAccessToken(), ""), action, action.getId());
+                    call1.enqueue(new Callback<Action>() {
+                        @Override
+                        public void onResponse(Call<Action> call, Response<Action> response) {
+                            Log.d("ACTION", response.toString());
+                            Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
+                            ((MainActivity) getActivity()).openBusiness();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Action> call, Throwable t) {
+
+                        }
+                    });
+                }
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

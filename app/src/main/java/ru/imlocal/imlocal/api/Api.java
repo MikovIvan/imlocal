@@ -20,6 +20,7 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import ru.imlocal.imlocal.entity.Action;
+import ru.imlocal.imlocal.entity.ActionPhoto;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.entity.Shop;
@@ -74,10 +75,6 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @PATCH("users/{id}")
     Call<User> updateUser(@Header("Authorization") String credentials, @Path("id") String id, @Body User user);
-
-//    @Headers("Content-Type: application/json; charset=utf-8")
-//    @POST("events")
-//    Call<Action> createAction(@Header("Authorization") String credentials, @Body Action action);
 
     @Multipart
     @POST("events")
@@ -173,4 +170,8 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("happeningphotos/{id}")
     Call<EventPhoto> deleteEventPhoto(@Header("Authorization") String credentials, @Path("id") String id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("eventphotos/{id}")
+    Call<ActionPhoto> deleteActionPhoto(@Header("Authorization") String credentials, @Path("id") String id);
 }
