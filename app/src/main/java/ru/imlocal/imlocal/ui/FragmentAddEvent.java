@@ -84,6 +84,8 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     private RecyclerView rvPhotos;
     private RecyclerViewAdapterPhotos adapterPhotos;
     private List<String> photosPathList = new ArrayList<>();
+    private List<String> photosIdList = new ArrayList<>();
+    private ArrayList<String> photosDeleteList = new ArrayList<>();
     private ArrayList<MediaFile> photos = new ArrayList<>();
     private EasyImage easyImage;
 
@@ -153,6 +155,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
                 List<String> photos = new ArrayList<>();
                 for (EventPhoto eventPhoto : event.getEventPhotoList()) {
                     photos.add(BASE_IMAGE_URL + EVENT_IMAGE_DIRECTION + eventPhoto.getEventPhoto());
+                    photosIdList.add(String.valueOf(eventPhoto.getId()));
                 }
                 photosPathList.clear();
                 photosPathList.addAll(photos);
@@ -433,15 +436,18 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("event", event);
                     bundle.putParcelableArrayList("photos", photos);
+                    bundle.putStringArrayList("photoId", photosDeleteList);
                     ((MainActivity) getActivity()).openVitrinaEvent(bundle);
                 }
 //                это для обновления инфы,т.к. photos empty может быть
             } else if (event.getCreatorId() != -1 && !event.getTitle().equals("") && !event.getDescription().equals("") && !event.getAddress().equals("")
-                    && event.getPrice() != -1 && event.getEventTypeId() != -1 && time != null && beginDate != null) {
+                    && event.getPrice() != -1 && event.getEventTypeId() != -1 && time != null && beginDate != null
+                    && !photosPathList.isEmpty()) {
                 if (!event.getBegin().equals("") && event.getBegin().endsWith(":00")) {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("event", event);
                     bundle.putParcelableArrayList("photos", photos);
+                    bundle.putStringArrayList("photoId", photosDeleteList);
                     ((MainActivity) getActivity()).openVitrinaEvent(bundle);
                 }
             }
@@ -480,6 +486,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     public void onDeleteClick(int position) {
         if (bundle != null && !photosPathList.isEmpty()) {
             photosPathList.remove(position);
+            photosDeleteList.add(photosIdList.get(position));
             adapterPhotos.notifyDataSetChanged();
         } else if (!photos.isEmpty()) {
             photos.remove(position);

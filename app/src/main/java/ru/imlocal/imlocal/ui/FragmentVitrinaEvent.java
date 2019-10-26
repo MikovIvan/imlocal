@@ -38,6 +38,7 @@ import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Event;
+import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
 
@@ -76,6 +77,7 @@ public class FragmentVitrinaEvent extends Fragment {
     private Bundle bundle;
 
     private List<MediaFile> photos = new ArrayList<>();
+    private ArrayList<String> photosDeleteList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,6 +104,10 @@ public class FragmentVitrinaEvent extends Fragment {
 
         bundle = getArguments();
         event = (Event) bundle.getSerializable("event");
+
+        if (bundle.getStringArrayList("photoId") != null && !bundle.getStringArrayList("photoId").isEmpty()) {
+            photosDeleteList.addAll(bundle.getStringArrayList("photoId"));
+        }
 
         if (bundle.getParcelableArrayList("photos") != null && !bundle.getParcelableArrayList("photos").isEmpty()) {
             photos = bundle.getParcelableArrayList("photos");
@@ -205,20 +211,39 @@ public class FragmentVitrinaEvent extends Fragment {
                 });
                 return true;
             case R.id.update:
-                Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(), ""), event, event.getId());
-                call1.enqueue(new Callback<Event>() {
-                    @Override
-                    public void onResponse(Call<Event> call, Response<Event> response) {
-                        Log.d("EVENT", response.toString());
-                    }
 
-                    @Override
-                    public void onFailure(Call<Event> call, Throwable t) {
+                if (photosDeleteList != null && !photosDeleteList.isEmpty()) {
+                    for (String s : photosDeleteList) {
+                        Call<EventPhoto> call1 = api.deleteEventPhoto(Credentials.basic(user.getAccessToken(), ""), s);
+                        call1.enqueue(new Callback<EventPhoto>() {
+                            @Override
+                            public void onResponse(Call<EventPhoto> call, Response<EventPhoto> response) {
 
+                            }
+
+                            @Override
+                            public void onFailure(Call<EventPhoto> call, Throwable t) {
+
+                            }
+                        });
                     }
-                });
-                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness();
+                    //добавить метод для обновления фотки
+                } else {
+                    Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(), ""), event, event.getId());
+                    call1.enqueue(new Callback<Event>() {
+                        @Override
+                        public void onResponse(Call<Event> call, Response<Event> response) {
+                            Log.d("EVENT", response.toString());
+                            Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
+                            ((MainActivity) getActivity()).openBusiness();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Event> call, Throwable t) {
+
+                        }
+                    });
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
