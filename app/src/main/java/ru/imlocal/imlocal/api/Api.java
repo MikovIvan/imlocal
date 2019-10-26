@@ -107,6 +107,23 @@ public interface Api {
     Call<Shop> createShop(@Header("Authorization") String credentials, @Body Shop shop);
 
     @Multipart
+    @POST("shops")
+    Call<Shop> createShop(@Header("Authorization") String credentials,
+                          @Part("creatorId") RequestBody creatorId,
+                          @Part("shopShortName") RequestBody shopShortName,
+                          @Part("shopTypeId") RequestBody shopTypeId,
+                          @Part("shopPhone") RequestBody shopPhone,
+                          @Part("shopWeb") RequestBody shopWeb,
+                          @Part("shopAddressId") RequestBody shopAddressId,
+                          @Part("shopCostMin") RequestBody shopCostMin,
+                          @Part("shopCostMax") RequestBody shopCostMax,
+                          @Part("shopWorkTime") RequestBody shopWorkTime,
+                          @Part("shopShortDescription") RequestBody shopShortDescription,
+                          @Part("shopFullDescription") RequestBody shopFullDescription,
+                          @Part MultipartBody.Part[] file
+    );
+
+    @Multipart
     @POST("happenings")
     Call<Event> createEvent(@Header("Authorization") String credentials,
                             @Part("creatorId") RequestBody creatorId,

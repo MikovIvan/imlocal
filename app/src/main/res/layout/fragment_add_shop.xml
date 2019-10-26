@@ -200,6 +200,24 @@
             tools:showIn="@layout/list_item_photos">
         </androidx.recyclerview.widget.RecyclerView>
 
+        <Button
+            android:id="@+id/btn_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Добавить фото"
+            android:paddingStart="32dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="8dp"
+            android:layout_marginStart="@dimen/spacing_normal_16"
+            android:layout_marginTop="@dimen/spacing_small_8"
+            android:fontFamily="sans-serif"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:textSize="@dimen/font_small_14"
+            android:textAllCaps="false"
+            android:background="@drawable/btn_round_main_color" />
+
         <TextView
             android:id="@+id/tv_add_shop_address"
             android:layout_width="wrap_content"

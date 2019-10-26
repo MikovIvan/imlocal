@@ -17,8 +17,8 @@ import java.util.List;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Shop;
 
-import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
 public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<RecyclerViewAdapterShopsBusiness.ViewHolder> {
     private List<Shop> dataActions;
@@ -43,7 +43,7 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
     @Override
     public void onBindViewHolder(RecyclerViewAdapterShopsBusiness.ViewHolder holder, int position) {
         Shop shop = dataActions.get(position);
-        Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
+        Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
                 .into(holder.ivShopIcon);
         holder.tvShopTitle.setText(shop.getShopShortName());
     }

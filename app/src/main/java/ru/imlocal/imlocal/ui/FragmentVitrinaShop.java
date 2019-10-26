@@ -1,5 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -31,10 +32,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import id.zelory.compressor.Compressor;
 import okhttp3.Credentials;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import pl.aprilapps.easyphotopicker.MediaFile;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,9 +89,13 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private Button btnRating;
     private RecyclerView rvListPlaces;
     private RecyclerView rvListEvents;
+    private ProgressDialog loadingDialog;
 
     private Shop shop;
     private Bundle bundle;
+
+    private List<MediaFile> photos = new ArrayList<>();
+    private ArrayList<String> photosDeleteList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,15 +160,17 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAboutShop.setText(shop.getShopFullDescription());
         btnRating.setText(String.valueOf(shop.getShopAvgRating()));
 
-        if (bundle.getStringArrayList("photosPathList") != null) {
-            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
-            if (photosPathList.size() == 2) {
-                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
-                    flipperImages(photoPath, true);
-                }
-            } else if (photosPathList.size() > 2) {
-                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
-                    flipperImages(photoPath, true);
+        if (bundle.getStringArrayList("photoId") != null && !bundle.getStringArrayList("photoId").isEmpty()) {
+            photosDeleteList.addAll(bundle.getStringArrayList("photoId"));
+        }
+
+        if (bundle.getParcelableArrayList("photos") != null && !bundle.getParcelableArrayList("photos").isEmpty()) {
+            photos = bundle.getParcelableArrayList("photos");
+            if (photos.size() == 1) {
+                flipperImagesFile(photos.get(0), false, true);
+            } else if (photos.size() > 1) {
+                for (int i = 0; i < photos.size(); i++) {
+                    flipperImagesFile(photos.get(i), true, true);
                 }
             }
         } else if (shop.getShopPhotoArray().size() > 1) {
@@ -167,6 +181,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 flipperImages(shopPhoto.getShopPhoto(), false);
         }
 
+        initDialog();
         return view;
     }
 
@@ -183,6 +198,24 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         viewFlipperShop.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
     }
 
+    private void flipperImagesFile(MediaFile mediaFile, boolean autostart, boolean preview) {
+        ImageView imageView = new ImageView(getActivity());
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        if (preview) {
+            Picasso.get().load(mediaFile.getFile()).noPlaceholder().centerCrop().fit()
+                    .into(imageView);
+        } else {
+            Picasso.get()
+                    .load(mediaFile.getFile())
+                    .into(imageView);
+        }
+
+        viewFlipperShop.addView(imageView);
+        viewFlipperShop.setFlipInterval(4000);
+        viewFlipperShop.setAutoStart(autostart);
+        viewFlipperShop.setInAnimation(getActivity(), android.R.anim.slide_in_left);
+        viewFlipperShop.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -220,24 +253,55 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 call.enqueue(new Callback<ShopAddress>() {
                     @Override
                     public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
-                        shop.setShopAddressId(String.valueOf(response.body().getId()));
-                        Log.d("SHOP", response.toString());
-                        Log.d("SHOP", "AdressId " + response.body().getId());
-                        Call<Shop> call2 = api.createShop(Credentials.basic(user.getAccessToken(), ""), shop);
-                        call2.enqueue(new Callback<Shop>() {
-                            @Override
-                            public void onResponse(Call<Shop> call, Response<Shop> response) {
-                                Log.d("SHOP", response.toString());
-                                Log.d("SHOP", String.valueOf(response.code()));
-                                Log.d("SHOP", String.valueOf(response.body().getShopId()));
-                            }
+                        if (response.isSuccessful()) {
+                            shop.setShopAddressId(String.valueOf(response.body().getId()));
+                            Log.d("SHOP", response.toString());
+                            Log.d("SHOP", "AdressId " + response.body().getId());
+                            showpDialog();
+                            try {
+                                MultipartBody.Part[] body = new MultipartBody.Part[photos.size()];
+                                for (int i = 0; i < photos.size(); i++) {
+                                    File file = new Compressor(getActivity()).compressToFile(photos.get(i).getFile());
+                                    body[i] = MultipartBody.Part.createFormData("files[]", file.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+                                }
+                                Call<Shop> call1 = api.createShop(Credentials.basic(user.getAccessToken(), ""),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getCreatorId()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortName()),
+                                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(shop.getShopTypeId())),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopPhone()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopWeb()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopAddressId()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopCostMin()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopCostMax()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopWorkTime()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortDescription()),
+                                        RequestBody.create(MediaType.parse("text/plain"), shop.getShopFullDescription()),
+                                        body);
+                                call1.enqueue(new Callback<Shop>() {
+                                    @Override
+                                    public void onResponse(Call<Shop> call, Response<Shop> response) {
+                                        Log.d("Action", "Action: " + response.toString());
+                                        if (response.isSuccessful()) {
+                                            if (response.code() == 200) {
+                                                hidepDialog();
+                                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                                ((MainActivity) getActivity()).openBusiness();
+                                            } else {
+                                                hidepDialog();
+                                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    }
 
-                            @Override
-                            public void onFailure(Call<Shop> call, Throwable t) {
-                                Log.d("SHOP", t.getMessage());
-                                Log.d("SHOP", t.toString());
+                                    @Override
+                                    public void onFailure(Call<Shop> call, Throwable t) {
+                                        Log.d("Action", "Action: " + t.toString());
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        });
+                        }
                     }
 
                     @Override
@@ -287,7 +351,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (status.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
-        } else if (bundle.getStringArrayList("photosPathList") != null) {
+        } else if (bundle.getParcelableArrayList("photos") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
@@ -298,6 +362,20 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
             }
         }
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void initDialog() {
+        loadingDialog = new ProgressDialog(getActivity());
+        loadingDialog.setMessage(getString(R.string.msg_loading));
+        loadingDialog.setCancelable(true);
+    }
+
+    private void showpDialog() {
+        if (!loadingDialog.isShowing()) loadingDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
     }
 
     private void setShopType(Shop shop) {
