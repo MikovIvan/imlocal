@@ -34,6 +34,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import okhttp3.Credentials;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -139,7 +140,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         tvAdress.setText(shop.getShopAddress().toString());
         tvShopTimetable.setText(shop.getShopWorkTime());
         tvShopPhone.setText(shop.getShopPhone());
-        if (!shop.getShopCostMin().equals("") && !shop.getShopCostMax().equals("")) {
+        if (shop.getShopCostMin() != null && shop.getShopCostMax() != null) {
             tvPrice.setText(shop.getShopCostMin() + "-" + shop.getShopCostMax());
         } else {
             tvPrice.setText("");
@@ -361,6 +362,18 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         ratingdialog.setPositiveButton("Готово",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Call<RequestBody> call = api.addRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId(), (int) rating.getRating());
+                        call.enqueue(new Callback<RequestBody>() {
+                            @Override
+                            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+                                Log.d("Rating", "Rating: " + response.body());
+                            }
+
+                            @Override
+                            public void onFailure(Call<RequestBody> call, Throwable t) {
+
+                            }
+                        });
                         Snackbar.make(getView(), "ждем апи, рейтинг: " + rating.getRating(), Snackbar.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
