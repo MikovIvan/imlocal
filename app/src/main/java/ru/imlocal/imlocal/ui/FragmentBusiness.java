@@ -83,6 +83,9 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         View view = inflater.inflate(R.layout.fragment_business, container, false);
 
         clearPreferences();
+        eventListBusiness.clear();
+        shopListBusiness.clear();
+        actionListBusiness.clear();
 
         for (Event event : eventList) {
             if (event.getCreatorId() == Integer.parseInt(user.getId())) {
