@@ -32,7 +32,6 @@ import com.jaredrummler.materialspinner.MaterialSpinner;
 
 import org.threeten.bp.LocalDate;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,21 +134,17 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         bundle = getArguments();
         if (bundle != null) {
             action = (Action) bundle.getSerializable("action");
-            try {
-                loadActionData(action);
-                List<String> photos = new ArrayList<>();
-                for (ActionPhoto actionPhoto : action.getActionPhotos()) {
-                    photos.add(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + actionPhoto.getActionPhoto());
-                    photosIdList.add(String.valueOf(actionPhoto.getId()));
-                }
-                photosPathList.addAll(photos);
-                if (photosPathList.size() < 3) {
-                    btnAddPhoto.setVisibility(View.VISIBLE);
-                } else {
-                    btnAddPhoto.setVisibility(View.GONE);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            loadActionData(action);
+            List<String> photos = new ArrayList<>();
+            for (ActionPhoto actionPhoto : action.getActionPhotos()) {
+                photos.add(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + actionPhoto.getActionPhoto());
+                photosIdList.add(String.valueOf(actionPhoto.getId()));
+            }
+            photosPathList.addAll(photos);
+            if (photosPathList.size() < 3) {
+                btnAddPhoto.setVisibility(View.VISIBLE);
+            } else {
+                btnAddPhoto.setVisibility(View.GONE);
             }
         }
 
@@ -174,11 +169,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         super.onResume();
         if (PreferenceUtils.getAction(getActivity()) != null) {
             action = PreferenceUtils.getAction(getContext());
-            try {
-                loadActionData(action);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            loadActionData(action);
         }
     }
 
@@ -353,7 +344,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         }
     }
 
-    private void loadActionData(Action action) throws ParseException {
+    private void loadActionData(Action action) {
         if (action.getShop() != null && action.getShop().getShopId() != -1) {
             String name = "";
             for (Shop shop : userShops) {
