@@ -24,9 +24,12 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.zelory.compressor.Compressor;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -176,39 +179,44 @@ public class FragmentVitrinaEvent extends Fragment {
                 return true;
             case R.id.publish:
                 showpDialog();
-                MultipartBody.Part body =
-                        MultipartBody.Part.createFormData("files[]", photos.get(0).getFile().getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), photos.get(0).getFile()));
-                Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""),
-                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getCreatorId())),
-                        RequestBody.create(MediaType.parse("text/plain"), event.getTitle()),
-                        RequestBody.create(MediaType.parse("text/plain"), event.getDescription()),
-                        RequestBody.create(MediaType.parse("text/plain"), event.getAddress()),
-                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getPrice())),
-                        RequestBody.create(MediaType.parse("text/plain"), event.getBegin()),
-                        RequestBody.create(MediaType.parse("text/plain"), event.getEnd()),
-                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getEventTypeId())),
-                        body);
-                call.enqueue(new Callback<Event>() {
-                    @Override
-                    public void onResponse(Call<Event> call, Response<Event> response) {
-                        Log.d("Event", "Event: " + response.toString());
-                        if (response.isSuccessful()) {
-                            if (response.code() == 200) {
-                                hidepDialog();
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                ((MainActivity) getActivity()).openBusiness();
-                            } else {
-                                hidepDialog();
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                try {
+                    File file = new Compressor(getActivity()).compressToFile(photos.get(0).getFile());
+                    MultipartBody.Part body =
+                            MultipartBody.Part.createFormData("files[]", file.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+                    Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getCreatorId())),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getTitle()),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getDescription()),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getAddress()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getPrice())),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getBegin()),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getEnd()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getEventTypeId())),
+                            body);
+                    call.enqueue(new Callback<Event>() {
+                        @Override
+                        public void onResponse(Call<Event> call, Response<Event> response) {
+                            Log.d("Event", "Event: " + response.toString());
+                            if (response.isSuccessful()) {
+                                if (response.code() == 200) {
+                                    hidepDialog();
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                    ((MainActivity) getActivity()).openBusiness();
+                                } else {
+                                    hidepDialog();
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Event> call, Throwable t) {
-                        Log.d("Event", "Event: " + t.toString());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Event> call, Throwable t) {
+                            Log.d("Event", "Event: " + t.toString());
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return true;
             case R.id.update:
 
@@ -227,7 +235,41 @@ public class FragmentVitrinaEvent extends Fragment {
                             }
                         });
                     }
-                    //добавить метод для обновления фотки
+                    showpDialog();
+                    MultipartBody.Part body1 =
+                            MultipartBody.Part.createFormData("files[]", photos.get(0).getFile().getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), photos.get(0).getFile()));
+                    Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(), ""),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getCreatorId())),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getTitle()),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getDescription()),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getAddress()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getPrice())),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getBegin()),
+                            RequestBody.create(MediaType.parse("text/plain"), event.getEnd()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getEventTypeId())),
+                            body1,
+                            String.valueOf(event.getId()));
+                    call1.enqueue(new Callback<Event>() {
+                        @Override
+                        public void onResponse(Call<Event> call, Response<Event> response) {
+                            Log.d("Event", "Event: " + response.toString());
+                            if (response.isSuccessful()) {
+                                if (response.code() == 200) {
+                                    hidepDialog();
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                    ((MainActivity) getActivity()).openBusiness();
+                                } else {
+                                    hidepDialog();
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Event> call, Throwable t) {
+                            Log.d("Event", "Event: " + t.toString());
+                        }
+                    });
                 } else {
                     Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(), ""), event, event.getId());
                     call1.enqueue(new Callback<Event>() {
