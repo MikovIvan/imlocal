@@ -79,6 +79,21 @@ public interface Api {
     @POST("events")
     Call<Action> createAction(@Header("Authorization") String credentials, @Body Action action);
 
+    @Multipart
+    @POST("happenings")
+    Call<Action> createAction(@Header("Authorization") String credentials,
+                              @Part("eventOwnerId") RequestBody actionOwnerId,
+                              @Part("eventTypeId") RequestBody actionTypeId,
+                              @Part("title") RequestBody title,
+                              @Part("shortDesc") RequestBody shortDesc,
+                              @Part("fullDesc") RequestBody fullDesc,
+                              @Part("begin") RequestBody begin,
+                              @Part("end") RequestBody end,
+                              @Part("creatorId") RequestBody creatorId,
+                              @Part("shop") RequestBody shop,
+                              @Part MultipartBody.Part file
+    );
+
     @Headers("Content-Type: application/json; charset=utf-8")
     @POST("shopaddresses")
     Call<ShopAddress> createShopAddress(@Header("Authorization") String credentials, @Body ShopAddress shopAddress);
