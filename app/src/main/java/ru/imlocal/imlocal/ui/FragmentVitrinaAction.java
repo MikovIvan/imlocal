@@ -1,5 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -24,9 +25,17 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import id.zelory.compressor.Compressor;
 import okhttp3.Credentials;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import pl.aprilapps.easyphotopicker.MediaFile;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,6 +51,7 @@ import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
+import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
@@ -59,9 +69,13 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     private TextView tvActionDescription;
     private TextView tvWhen;
     private ViewFlipper viewFlipperAction;
+    private ProgressDialog loadingDialog;
 
     private Action action;
     private Bundle bundle;
+
+    private List<MediaFile> photos = new ArrayList<>();
+    private ArrayList<String> photosDeleteList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,15 +105,17 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         bundle = getArguments();
         action = (Action) bundle.getSerializable("action");
 
-        if (bundle.getStringArrayList("photosPathList") != null) {
-            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
-            if (photosPathList.size() == 2) {
-                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
-                    flipperImages(photoPath, false, true);
-                }
-            } else if (photosPathList.size() > 2) {
-                for (String photoPath : photosPathList.subList(1, photosPathList.size())) {
-                    flipperImages(photoPath, true, true);
+        if (bundle.getStringArrayList("photoId") != null && !bundle.getStringArrayList("photoId").isEmpty()) {
+            photosDeleteList.addAll(bundle.getStringArrayList("photoId"));
+        }
+
+        if (bundle.getParcelableArrayList("photos") != null && !bundle.getParcelableArrayList("photos").isEmpty()) {
+            photos = bundle.getParcelableArrayList("photos");
+            if (photos.size() == 1) {
+                flipperImagesFile(photos.get(0), false, true);
+            } else if (photos.size() > 1) {
+                for (int i = 0; i < photos.size(); i++) {
+                    flipperImagesFile(photos.get(i), true, true);
                 }
             }
         } else if (action.getActionPhotos().isEmpty()) {
@@ -124,6 +140,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         tvActionDescription.setText(action.getFullDesc());
         tvWhen.setText(action.getBegin() + " - " + action.getEnd());
 
+        initDialog();
         return view;
     }
 
@@ -159,21 +176,47 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 }
                 return true;
             case R.id.publish:
-                Call<Action> call = api.createAction(Credentials.basic(user.getAccessToken(), ""), action);
-                call.enqueue(new Callback<Action>() {
-                    @Override
-                    public void onResponse(Call<Action> call, Response<Action> response) {
-                        Log.d("ACTION", response.toString());
+                showpDialog();
+                try {
+                    MultipartBody.Part[] body = new MultipartBody.Part[photos.size()];
+                    for (int i = 0; i < photos.size(); i++) {
+                        File file = new Compressor(getActivity()).compressToFile(photos.get(i).getFile());
+                        body[i] = MultipartBody.Part.createFormData("files[]", file.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
                     }
+                    Call<Action> call = api.createAction(Credentials.basic(user.getAccessToken(), ""),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getActionOwnerId())),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getActionTypeId())),
+                            RequestBody.create(MediaType.parse("text/plain"), action.getTitle()),
+                            RequestBody.create(MediaType.parse("text/plain"), action.getShortDesc()),
+                            RequestBody.create(MediaType.parse("text/plain"), action.getFullDesc()),
+                            RequestBody.create(MediaType.parse("text/plain"), action.getBegin()),
+                            RequestBody.create(MediaType.parse("text/plain"), action.getEnd()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getCreatorId())),
+                            body);
+                    call.enqueue(new Callback<Action>() {
+                        @Override
+                        public void onResponse(Call<Action> call, Response<Action> response) {
+                            Log.d("Action", "Action: " + response.toString());
+                            if (response.isSuccessful()) {
+                                if (response.code() == 200) {
+                                    hidepDialog();
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                    ((MainActivity) getActivity()).openBusiness();
+                                } else {
+                                    hidepDialog();
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+                        }
 
-                    @Override
-                    public void onFailure(Call<Action> call, Throwable t) {
-                        Log.d("ACTION", t.getMessage());
-                        Log.d("ACTION", t.toString());
-                    }
-                });
-                Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness();
+                        @Override
+                        public void onFailure(Call<Action> call, Throwable t) {
+                            Log.d("Action", "Action: " + t.toString());
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return true;
             case R.id.update:
                 Call<Action> call1 = api.updateAction(Credentials.basic(user.getAccessToken(), ""), action, action.getId());
@@ -200,7 +243,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (status.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
-        } else if (bundle.getStringArrayList("photosPathList") != null) {
+        } else if (bundle.getParcelableArrayList("photos") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
@@ -213,6 +256,39 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private void initDialog() {
+        loadingDialog = new ProgressDialog(getActivity());
+        loadingDialog.setMessage(getString(R.string.msg_loading));
+        loadingDialog.setCancelable(true);
+    }
+
+    private void showpDialog() {
+        if (!loadingDialog.isShowing()) loadingDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
+    }
+
+    private void flipperImagesFile(MediaFile mediaFile, boolean autostart, boolean preview) {
+        ImageView imageView = new ImageView(getActivity());
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        if (preview) {
+            Picasso.get().load(mediaFile.getFile()).noPlaceholder().centerCrop().fit()
+                    .into(imageView);
+        } else {
+            Picasso.get()
+                    .load(mediaFile.getFile())
+                    .into(imageView);
+        }
+
+        viewFlipperAction.addView(imageView);
+        viewFlipperAction.setFlipInterval(4000);
+        viewFlipperAction.setAutoStart(autostart);
+        viewFlipperAction.setInAnimation(getActivity(), android.R.anim.slide_in_left);
+        viewFlipperAction.setOutAnimation(getActivity(), android.R.anim.slide_out_right);
+    }
+
     private void flipperImages(String photo, boolean autostart, boolean preview) {
         ImageView imageView = new ImageView(getActivity());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -221,7 +297,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                     .into(imageView);
         } else {
             Picasso.get()
-                    .load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + photo)
+                    .load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + photo)
                     .into(imageView);
         }
 

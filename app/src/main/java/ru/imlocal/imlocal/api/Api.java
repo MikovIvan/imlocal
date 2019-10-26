@@ -75,12 +75,12 @@ public interface Api {
     @PATCH("users/{id}")
     Call<User> updateUser(@Header("Authorization") String credentials, @Path("id") String id, @Body User user);
 
-    @Headers("Content-Type: application/json; charset=utf-8")
-    @POST("events")
-    Call<Action> createAction(@Header("Authorization") String credentials, @Body Action action);
+//    @Headers("Content-Type: application/json; charset=utf-8")
+//    @POST("events")
+//    Call<Action> createAction(@Header("Authorization") String credentials, @Body Action action);
 
     @Multipart
-    @POST("happenings")
+    @POST("events")
     Call<Action> createAction(@Header("Authorization") String credentials,
                               @Part("eventOwnerId") RequestBody actionOwnerId,
                               @Part("eventTypeId") RequestBody actionTypeId,
@@ -90,8 +90,7 @@ public interface Api {
                               @Part("begin") RequestBody begin,
                               @Part("end") RequestBody end,
                               @Part("creatorId") RequestBody creatorId,
-                              @Part("shop") RequestBody shop,
-                              @Part MultipartBody.Part file
+                              @Part MultipartBody.Part[] file
     );
 
     @Headers("Content-Type: application/json; charset=utf-8")
@@ -122,6 +121,21 @@ public interface Api {
                             @Part("end") RequestBody end,
                             @Part("happeningTypeId") RequestBody happeningTypeId,
                             @Part MultipartBody.Part file
+    );
+
+    @Multipart
+    @POST("happenings/{id}")
+    Call<Event> updateEvent(@Header("Authorization") String credentials,
+                            @Part("creatorId") RequestBody creatorId,
+                            @Part("title") RequestBody title,
+                            @Part("description") RequestBody description,
+                            @Part("address") RequestBody address,
+                            @Part("price") RequestBody price,
+                            @Part("begin") RequestBody begin,
+                            @Part("end") RequestBody end,
+                            @Part("happeningTypeId") RequestBody happeningTypeId,
+                            @Part MultipartBody.Part file,
+                            @Path("id") String id
     );
     
     @Headers("Content-Type: application/json; charset=utf-8")
