@@ -44,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.adaptor.PaginationAdapter;
+import ru.imlocal.imlocal.adaptor.PaginationAdapterPlaces;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
@@ -58,7 +58,7 @@ import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.latitude;
 import static ru.imlocal.imlocal.MainActivity.longitude;
 
-public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
+public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterPlaces.OnItemClickListener {
     public static List<Shop> shopList = new ArrayList<>();
     public static List<Shop> copyList = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private static int CATEGORY = 0;
     private static int TOTAL_PAGES = 2;
     private FloatingActionButton fab;
-    private PaginationAdapter adapter;
+    private PaginationAdapterPlaces adapter;
     private LinearLayoutManager linearLayoutManager;
     private ProgressBar progressBar;
     private LinearLayout errorLayout;
@@ -321,7 +321,8 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         callAllShops().enqueue(new Callback<List<Shop>>() {
             @Override
             public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
-
+                Log.d("GPS2", response.body().toString());
+                Log.d("GPS2", response.toString());
                 adapter.removeLoadingFooter();
                 isLoading = false;
 
@@ -343,7 +344,8 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     private Call<List<Shop>> callAllShops() {
-        return api.getShops(currentPage);
+//        return api.getShops(currentPage);
+        return api.getAllShops(latitude + "," + longitude, 110000, currentPage, 10);
     }
 
     private void showErrorView(Throwable throwable) {
@@ -384,21 +386,29 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
             @Override
             public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
                 hideErrorView();
+                Log.d("GPS2", response.toString());
+                Log.d("GPS2", response.body().toString());
+                if (response.headers().get("X-Pagination-Page-Count") == null) {
+                    if (errorLayout.getVisibility() == View.GONE) {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        txtError.setText("нет мест около вас");
+                    }
+                } else {
+                    TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
+                    List<Shop> results = fetchResults(response);
+                    shopList.clear();
+                    copyList.clear();
+                    shopList.addAll(results);
+                    copyList.addAll(results);
+                    progressBar.setVisibility(View.GONE);
+                    displayData(shopList);
 
-                TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
-                List<Shop> results = fetchResults(response);
-                shopList.clear();
-                copyList.clear();
-                shopList.addAll(results);
-                copyList.addAll(results);
-                progressBar.setVisibility(View.GONE);
-                displayData(shopList);
-
-                isLastPage = false;
-                if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
-                else isLastPage = true;
+                    isLastPage = false;
+                    if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                    else isLastPage = true;
+                }
             }
-
 
             @Override
             public void onFailure(Call<List<Shop>> call, Throwable t) {
@@ -409,7 +419,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     private void displayData(List<Shop> shops) {
-        adapter = new PaginationAdapter(shops, getActivity(), FragmentListPlaces.this);
+        adapter = new PaginationAdapterPlaces(shops, getActivity(), FragmentListPlaces.this);
         rvPlaces.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
     }

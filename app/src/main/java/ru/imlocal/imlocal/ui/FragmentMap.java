@@ -3,6 +3,7 @@ package ru.imlocal.imlocal.ui;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,9 @@ import com.yandex.runtime.image.ImageProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
@@ -51,6 +55,7 @@ import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 import ru.imlocal.imlocal.utils.Utils;
 
+import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.latitude;
 import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.ui.FragmentListPlaces.copyList;
@@ -65,6 +70,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
     private boolean isSelected;
     private PlacemarkMapObject selected;
     private List<Shop> dataShopsFiltered = new ArrayList<>();
+    private List<Shop> dataShops = new ArrayList<>();
 
     private MapView mapView;
     private UserLocationLayer userLocationLayer;
@@ -160,6 +166,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
 //        mapView.getMap().move(new CameraPosition(new Point(latitude, longitude), 14, 0, 0));
 //        для теста
         mapView.getMap().move(new CameraPosition(new Point(55.7739, 37.4719), 14, 0, 0));
+        Log.d("MAP", mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude() + " " + mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
         mapObjects = mapView.getMap().getMapObjects().addCollection();
         mapView.getMap().addCameraListener(this);
 
@@ -168,7 +175,8 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
 //        userLocationLayer.setVisible(true);
 //        userLocationLayer.setHeadingEnabled(true);
 //        userLocationLayer.setObjectListener(this);
-        createMapObjects(shopList);
+
+//        createMapObjects(shopList);
 
         return view;
     }
@@ -242,6 +250,11 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
     @Override
     public void onCameraPositionChanged(@NonNull Map map, @NonNull CameraPosition cameraPosition, @NonNull CameraUpdateSource cameraUpdateSource, boolean finish) {
         cardView.setVisibility(View.GONE);
+        if (finish) {
+            String point = getPoint(cameraPosition.getTarget().getLatitude(), cameraPosition.getTarget().getLongitude());
+            getPlaces(point);
+            Log.d("MAP", mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude() + " " + mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
+        }
 //        if (finish) {
 //            if (followUserLocation) {
 //                userLocationLayer.setAnchor(
@@ -364,5 +377,30 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
             dataShopsFiltered.clear();
         }
         return filterList;
+    }
+
+    private String getPoint(double lat, double lon) {
+        return lat + "," + lon;
+    }
+
+    private void getPlaces(String point) {
+        Call<List<Shop>> call = api.getAllShops(point, 1100, 1, 50);
+//        Log.d("MAP", "Radius:" + mapView.getMap().getCameraPosition().getZoom() * 30);
+//        Log.d("MAP", "Point:" + getPoint());
+        call.enqueue(new Callback<List<Shop>>() {
+            @Override
+            public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
+
+                dataShops.clear();
+                dataShops.addAll(response.body());
+                createMapObjects(dataShops);
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Shop>> call, Throwable t) {
+                Log.d("MAP", t.toString());
+            }
+        });
     }
 }
