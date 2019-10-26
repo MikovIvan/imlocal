@@ -1,5 +1,6 @@
 package ru.imlocal.imlocal.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -23,9 +24,14 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Credentials;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import pl.aprilapps.easyphotopicker.MediaFile;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,9 +70,12 @@ public class FragmentVitrinaEvent extends Fragment {
     private TextView tvEventPrice;
     private TextView tvEventDate;
     private TextView tvEventDiscription;
+    private ProgressDialog loadingDialog;
 
     private Event event;
     private Bundle bundle;
+
+    private List<MediaFile> photos = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,10 +103,10 @@ public class FragmentVitrinaEvent extends Fragment {
         bundle = getArguments();
         event = (Event) bundle.getSerializable("event");
 
-        if (bundle.getStringArrayList("photosPathList") != null) {
-            List<String> photosPathList = bundle.getStringArrayList("photosPathList");
+        if (bundle.getParcelableArrayList("photos") != null && !bundle.getParcelableArrayList("photos").isEmpty()) {
+            photos = bundle.getParcelableArrayList("photos");
             Picasso.get()
-                    .load(photosPathList.get(0))
+                    .load(photos.get(0).getFile())
                     .into(ivEventPhoto);
         } else if (!event.getEventPhotoList().isEmpty()) {
             Picasso.get()
@@ -124,6 +133,7 @@ public class FragmentVitrinaEvent extends Fragment {
         }
         tvEventDiscription.setText(event.getDescription());
 
+        initDialog();
         return view;
     }
 
@@ -159,25 +169,43 @@ public class FragmentVitrinaEvent extends Fragment {
                 }
                 return true;
             case R.id.publish:
-                    Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""), event);
-                    call.enqueue(new Callback<Event>() {
-                        @Override
-                        public void onResponse(Call<Event> call, Response<Event> response) {
-                            Log.d("EVENT", response.toString());
-                            Log.d("EVENT", String.valueOf(response.code()));
+                showpDialog();
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("files[]", photos.get(0).getFile().getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), photos.get(0).getFile()));
+                Call<Event> call = api.createEvent(Credentials.basic(user.getAccessToken(), ""),
+                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getCreatorId())),
+                        RequestBody.create(MediaType.parse("text/plain"), event.getTitle()),
+                        RequestBody.create(MediaType.parse("text/plain"), event.getDescription()),
+                        RequestBody.create(MediaType.parse("text/plain"), event.getAddress()),
+                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getPrice())),
+                        RequestBody.create(MediaType.parse("text/plain"), event.getBegin()),
+                        RequestBody.create(MediaType.parse("text/plain"), event.getEnd()),
+                        RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getEventTypeId())),
+                        body);
+                call.enqueue(new Callback<Event>() {
+                    @Override
+                    public void onResponse(Call<Event> call, Response<Event> response) {
+                        Log.d("Event", "Event: " + response.toString());
+                        if (response.isSuccessful()) {
+                            if (response.code() == 200) {
+                                hidepDialog();
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                ((MainActivity) getActivity()).openBusiness();
+                            } else {
+                                hidepDialog();
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                            }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<Event> call, Throwable t) {
-                            Log.d("EVENT", t.getMessage());
-                            Log.d("EVENT", t.toString());
-                        }
-                    });
-                    Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness();
+                    @Override
+                    public void onFailure(Call<Event> call, Throwable t) {
+                        Log.d("Event", "Event: " + t.toString());
+                    }
+                });
                 return true;
             case R.id.update:
-                Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(),""),event,event.getId());
+                Call<Event> call1 = api.updateEvent(Credentials.basic(user.getAccessToken(), ""), event, event.getId());
                 call1.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
@@ -201,7 +229,7 @@ public class FragmentVitrinaEvent extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (status.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
-        } else if (bundle.getStringArrayList("photosPathList") != null) {
+        } else if (bundle.getParcelableArrayList("photos") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
             inflater.inflate(R.menu.menu_vitrina, menu);
@@ -212,6 +240,20 @@ public class FragmentVitrinaEvent extends Fragment {
             }
         }
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void initDialog() {
+        loadingDialog = new ProgressDialog(getActivity());
+        loadingDialog.setMessage(getString(R.string.msg_loading));
+        loadingDialog.setCancelable(true);
+    }
+
+    private void showpDialog() {
+        if (!loadingDialog.isShowing()) loadingDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
     }
 
     private void setEventType(Event event) {

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Credentials;
+import pl.aprilapps.easyphotopicker.MediaFile;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,10 +83,6 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         View view = inflater.inflate(R.layout.fragment_business, container, false);
 
         clearPreferences();
-//        for test only
-//        actionListBusiness.addAll(actionList);
-//        eventListBusiness.addAll(eventList);
-//        shopListBusiness.addAll(shopList);
 
         for (Event event : eventList) {
             if (event.getCreatorId() == Integer.parseInt(user.getId())) {
@@ -119,19 +116,16 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         btnAddEvent.setOnClickListener(this);
         btnAddAction.setOnClickListener(this);
 
-//        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness.subList(0, 2), getActivity());
         adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness, getActivity());
         rvActions.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         rvActions.setAdapter(adapterActionBusiness);
         adapterActionBusiness.setOnItemClickListener(this);
 
-//        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness.subList(0, 2), getActivity());
         adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness, getActivity());
         rvEvents.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
         rvEvents.setAdapter(adapterEventsBusiness);
         adapterEventsBusiness.setOnItemClickListener(this);
 
-//        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness.subList(0, 2), getActivity());
         adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness, getActivity());
         rvShops.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         rvShops.setAdapter(adapterShopsBusiness);
@@ -226,7 +220,9 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         PreferenceUtils.saveAction(null, getActivity());
         PreferenceUtils.saveEvent(null, getActivity());
         List<String> photoPathList = new ArrayList<>();
+        List<MediaFile> mediaFileList = new ArrayList<>();
         PreferenceUtils.savePhotoPathList(photoPathList, getActivity());
+        PreferenceUtils.savePhotoList(mediaFileList, getActivity());
     }
 
     @Override
@@ -247,7 +243,8 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 });
                 Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
                 eventListBusiness.remove(position);
-                adapterEventsBusiness.notifyItemChanged(position);
+                adapterEventsBusiness.notifyItemRemoved(position);
+                adapterEventsBusiness.notifyItemRangeChanged(position, eventListBusiness.size());
                 break;
             case "shop":
                 Call<ShopAddress> call1 = api.deleteShopAddress(Credentials.basic(user.getAccessToken(), ""), shopListBusiness.get(position).getShopAddressId());

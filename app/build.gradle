@@ -79,6 +79,8 @@ dependencies {
 
     implementation 'com.karumi:dexter:4.2.0'
 
+//    image picker
+    implementation 'com.github.jkwiecien:EasyImage:3.0.3'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.13.1'
 }
