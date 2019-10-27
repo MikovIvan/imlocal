@@ -16,6 +16,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -25,6 +26,7 @@ import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
+import ru.imlocal.imlocal.entity.ShopRating;
 import ru.imlocal.imlocal.entity.User;
 
 public interface Api {
@@ -151,7 +153,7 @@ public interface Api {
                             @Part MultipartBody.Part file,
                             @Path("id") String id
     );
-    
+
     @Headers("Content-Type: application/json; charset=utf-8")
     @PATCH("happenings/{id}")
     Call<Event> updateEvent(@Header("Authorization") String credentials, @Body Event event, @Path("id") int id);
@@ -182,6 +184,21 @@ public interface Api {
                                 @Field("userId") int userId,
                                 @Field("shopId") int shopId,
                                 @Field("rating") int rating
+    );
+
+    @FormUrlEncoded
+    @PUT("shop-ratings/{userId},{shopId}")
+    Call<RequestBody> updateRating(@Header("Authorization") String credentials,
+                                   @Path("userId") int userId,
+                                   @Path("shopId") int shopId,
+                                   @Field("rating") String rating
+    );
+
+
+    @GET("shop-ratings/{userId},{shopId}")
+    Call<ShopRating> getRating(@Header("Authorization") String credentials,
+                               @Path("userId") int userId,
+                               @Path("shopId") int shopId
     );
 
     @Headers("Content-Type: application/json; charset=utf-8")
