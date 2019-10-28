@@ -94,7 +94,8 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     private Shop shop;
     private Bundle bundle;
-    private boolean isRated;
+    private boolean isRated = false;
+    private float rate;
 
     private List<MediaFile> photos = new ArrayList<>();
     private ArrayList<String> photosDeleteList = new ArrayList<>();
@@ -439,55 +440,66 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         final RatingBar rating = linearlayout.findViewById(R.id.ratingbar);
 
-        Call<ShopRating> call = api.getRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId());
-        call.enqueue(new Callback<ShopRating>() {
-            @Override
-            public void onResponse(Call<ShopRating> call, Response<ShopRating> response) {
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        Log.d("Rating", "Rating set: " + response.body().getRating());
-                        rating.setRating(response.body().getRating());
-                        isRated = true;
+        if (rate == 0.0) {
+            Call<ShopRating> call = api.getRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId());
+            call.enqueue(new Callback<ShopRating>() {
+                @Override
+                public void onResponse(Call<ShopRating> call, Response<ShopRating> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body() != null) {
+                            Log.d("Rating", "Rating set: " + response.body().getRating());
+                            rate = response.body().getRating();
+                            rating.setRating(rate);
+                            isRated = true;
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ShopRating> call, Throwable t) {
+                @Override
+                public void onFailure(Call<ShopRating> call, Throwable t) {
+                    Log.d("Rating", t.toString());
+                }
+            });
+        } else {
+            rating.setRating(rate);
+            isRated = true;
+        }
 
-            }
-        });
         ratingdialog.setPositiveButton("Готово",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (!isRated) {
-                            Call<RequestBody> call = api.addRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId(), (int) rating.getRating());
-                            call.enqueue(new Callback<RequestBody>() {
+                            Call<ShopRating> call = api.addRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId(), (int) rating.getRating());
+                            call.enqueue(new Callback<ShopRating>() {
                                 @Override
-                                public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+                                public void onResponse(Call<ShopRating> call, Response<ShopRating> response) {
                                     Log.d("Rating", "Rating: " + response.toString());
+                                    rate = rating.getRating();
+                                    dialog.dismiss();
                                 }
 
                                 @Override
-                                public void onFailure(Call<RequestBody> call, Throwable t) {
-
+                                public void onFailure(Call<ShopRating> call, Throwable t) {
+                                    Log.d("Rating", t.toString());
                                 }
                             });
                         } else {
-                            Call<RequestBody> call1 = api.updateRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId(), String.valueOf((int) rating.getRating()));
-                            call1.enqueue(new Callback<RequestBody>() {
+                            Call<ShopRating> call1 = api.updateRating(Credentials.basic(user.getAccessToken(), ""), Integer.parseInt(user.getId()), shop.getShopId(), String.valueOf((int) rating.getRating()));
+                            call1.enqueue(new Callback<ShopRating>() {
                                 @Override
-                                public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+                                public void onResponse(Call<ShopRating> call, Response<ShopRating> response) {
                                     Log.d("Rating", "Rating update: " + response.toString());
+                                    rate = rating.getRating();
+                                    dialog.dismiss();
                                 }
 
                                 @Override
-                                public void onFailure(Call<RequestBody> call, Throwable t) {
-
+                                public void onFailure(Call<ShopRating> call, Throwable t) {
+                                    Log.d("Rating", t.toString());
                                 }
                             });
                         }
-                        dialog.dismiss();
+
                     }
                 })
 

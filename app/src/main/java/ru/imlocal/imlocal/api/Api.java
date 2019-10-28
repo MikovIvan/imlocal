@@ -180,18 +180,18 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("shop-rating/create")
-    Call<RequestBody> addRating(@Header("Authorization") String credentials,
-                                @Field("userId") int userId,
-                                @Field("shopId") int shopId,
-                                @Field("rating") int rating
+    Call<ShopRating> addRating(@Header("Authorization") String credentials,
+                               @Field("userId") int userId,
+                               @Field("shopId") int shopId,
+                               @Field("rating") int rating
     );
 
     @FormUrlEncoded
     @PUT("shop-ratings/{userId},{shopId}")
-    Call<RequestBody> updateRating(@Header("Authorization") String credentials,
-                                   @Path("userId") int userId,
-                                   @Path("shopId") int shopId,
-                                   @Field("rating") String rating
+    Call<ShopRating> updateRating(@Header("Authorization") String credentials,
+                                  @Path("userId") int userId,
+                                  @Path("shopId") int shopId,
+                                  @Field("rating") String rating
     );
 
 
