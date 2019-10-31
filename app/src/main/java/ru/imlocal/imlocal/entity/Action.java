@@ -25,9 +25,6 @@ public class Action implements Serializable {
     @SerializedName("title")
     @Expose
     private String title;
-    @SerializedName("shortDesc")
-    @Expose
-    private String shortDesc;
     @SerializedName("fullDesc")
     @Expose
     private String fullDesc;
@@ -51,11 +48,11 @@ public class Action implements Serializable {
         this.actionTypeId = actionTypeId;
     }
 
-    public Action(int actionOwnerId, int actionTypeId, String title, String shortDesc, String fullDesc, String begin, String end, int creatorId, Shop shop) {
+    public Action(int actionOwnerId, int actionTypeId, String title, String fullDesc, String begin, String end, int creatorId, Shop shop) {
         this.actionOwnerId = actionOwnerId;
         this.actionTypeId = actionTypeId;
         this.title = title;
-        this.shortDesc = shortDesc;
+//        this.shortDesc = shortDesc;
         this.fullDesc = fullDesc;
         this.begin = begin;
         this.end = end;
@@ -63,14 +60,14 @@ public class Action implements Serializable {
         this.shop = shop;
     }
 
-    public Action(String id, String active, String isActionTop, int actionOwnerId, int actionTypeId, String title, String shortDesc, String fullDesc, String begin, String end, int creatorId, List<ActionPhoto> actionPhotos, Shop shop) {
+    public Action(String id, String active, String isActionTop, int actionOwnerId, int actionTypeId, String title, String fullDesc, String begin, String end, int creatorId, List<ActionPhoto> actionPhotos, Shop shop) {
         this.id = id;
         this.active = active;
         this.isActionTop = isActionTop;
         this.actionOwnerId = actionOwnerId;
         this.actionTypeId = actionTypeId;
         this.title = title;
-        this.shortDesc = shortDesc;
+//        this.shortDesc = shortDesc;
         this.fullDesc = fullDesc;
         this.begin = begin;
         this.end = end;
@@ -136,14 +133,6 @@ public class Action implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getShortDesc() {
-        return shortDesc;
-    }
-
-    public void setShortDesc(String shortDesc) {
-        this.shortDesc = shortDesc;
     }
 
     public String getFullDesc() {

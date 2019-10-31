@@ -84,7 +84,6 @@ public interface Api {
                               @Part("eventOwnerId") RequestBody actionOwnerId,
                               @Part("eventTypeId") RequestBody actionTypeId,
                               @Part("title") RequestBody title,
-                              @Part("shortDesc") RequestBody shortDesc,
                               @Part("fullDesc") RequestBody fullDesc,
                               @Part("begin") RequestBody begin,
                               @Part("end") RequestBody end,

@@ -187,7 +187,6 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                             RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getActionOwnerId())),
                             RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getActionTypeId())),
                             RequestBody.create(MediaType.parse("text/plain"), action.getTitle()),
-                            RequestBody.create(MediaType.parse("text/plain"), action.getShortDesc()),
                             RequestBody.create(MediaType.parse("text/plain"), action.getFullDesc()),
                             RequestBody.create(MediaType.parse("text/plain"), action.getBegin()),
                             RequestBody.create(MediaType.parse("text/plain"), action.getEnd()),

@@ -75,10 +75,9 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private ArrayList<MediaFile> photos = new ArrayList<>();
     private EasyImage easyImage;
 
-    private Action action = new Action(-1, -1, "", "", "", "", "", -1, null);
+    private Action action = new Action(-1, -1, "", "", "", "", -1, null);
 
     private TextInputEditText etActionName;
-    private TextInputEditText etActionSubTitle;
     private TextInputEditText etActionDescription;
 
     private MaterialSpinner spinner;
@@ -128,7 +127,6 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         initDatePicker(view);
 
         etActionName = view.findViewById(R.id.et_add_action_enter_name);
-        etActionSubTitle = view.findViewById(R.id.et_add_action_subtitle);
         etActionDescription = view.findViewById(R.id.et_add_action_full_description);
 
         bundle = getArguments();
@@ -234,11 +232,6 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
             } else {
                 Snackbar.make(getView(), "Название неправильное", Snackbar.LENGTH_LONG).show();
             }
-            if (!etActionSubTitle.getText().toString().equals("") && etActionSubTitle.getText().length() <= 40) {
-                action.setShortDesc(String.valueOf(etActionSubTitle.getText()));
-            } else {
-                Snackbar.make(getView(), "Подзаголовок неправильный", Snackbar.LENGTH_LONG).show();
-            }
             if (!etActionDescription.getText().toString().equals("")) {
                 action.setFullDesc(String.valueOf(etActionDescription.getText()));
             } else {
@@ -257,7 +250,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
                 Snackbar.make(getView(), "Прикрепите фотографию", Snackbar.LENGTH_LONG).show();
             }
 
-            if (action.getActionOwnerId() != -1 && action.getActionTypeId() != -1 && action.getTitle().length() > 0 && action.getShortDesc().length() > 0
+            if (action.getActionOwnerId() != -1 && action.getActionTypeId() != -1 && action.getTitle().length() > 0
                     && action.getFullDesc().length() > 0 && action.getCreatorId() != -1 && action.getShop() != null
                     && !photos.isEmpty()
                     && !action.getBegin().equals("")) {
@@ -266,7 +259,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
                 bundle.putParcelableArrayList("photos", photos);
                 bundle.putStringArrayList("photoId", photosDeleteList);
                 ((MainActivity) getActivity()).openVitrinaAction(bundle);
-            } else if (action.getActionOwnerId() != -1 && action.getActionTypeId() != -1 && action.getTitle().length() > 0 && action.getShortDesc().length() > 0
+            } else if (action.getActionOwnerId() != -1 && action.getActionTypeId() != -1 && action.getTitle().length() > 0
                     && action.getFullDesc().length() > 0 && action.getCreatorId() != -1 && action.getShop() != null
                     && !photosPathList.isEmpty()
                     && !action.getBegin().equals("")) {
@@ -369,9 +362,6 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         if (!action.getTitle().equals("")) {
             etActionName.setText(action.getTitle());
         }
-        if (!action.getShortDesc().equals("")) {
-            etActionSubTitle.setText(action.getShortDesc());
-        }
         if (!action.getFullDesc().equals("")) {
             etActionDescription.setText(action.getFullDesc());
         }
@@ -383,9 +373,6 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private void saveActionData(Action action) {
         if (!etActionName.getText().toString().equals("")) {
             action.setTitle(etActionName.getText().toString());
-        }
-        if (!etActionSubTitle.getText().toString().equals("")) {
-            action.setShortDesc(etActionSubTitle.getText().toString());
         }
         if (!etActionDescription.getText().toString().equals("")) {
             action.setFullDesc(etActionDescription.getText().toString());
