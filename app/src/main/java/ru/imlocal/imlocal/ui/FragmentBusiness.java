@@ -2,6 +2,7 @@ package ru.imlocal.imlocal.ui;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +36,11 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
+import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
-import static ru.imlocal.imlocal.ui.FragmentListActions.actionList;
-import static ru.imlocal.imlocal.ui.FragmentListEvents.eventList;
-import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 
 public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener, FragmentDeleteDialog.DeleteDialogFragment {
@@ -87,22 +86,6 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         shopListBusiness.clear();
         actionListBusiness.clear();
 
-        for (Event event : eventList) {
-            if (event.getCreatorId() == Integer.parseInt(user.getId())) {
-                eventListBusiness.add(event);
-            }
-        }
-        for (Action action : actionList) {
-            if (action.getCreatorId() == Integer.parseInt(user.getId())) {
-                actionListBusiness.add(action);
-            }
-        }
-        for (Shop shop : shopList) {
-            if (shop.getCreatorId().equals(user.getId())) {
-                shopListBusiness.add(shop);
-            }
-        }
-
         rvShops = view.findViewById(R.id.rv_shops_business);
         rvActions = view.findViewById(R.id.rv_actions_business);
         rvEvents = view.findViewById(R.id.rv_events_business);
@@ -119,6 +102,35 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         btnAddEvent.setOnClickListener(this);
         btnAddAction.setOnClickListener(this);
 
+        Call<User> call = api.getCreated(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shop,events,happenings");
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    Log.d("CREATED", response.body().toString());
+                    if (response.body().getEventsCreatedList() != null) {
+                        eventListBusiness.addAll(response.body().getEventsCreatedList());
+                    }
+                    if (response.body().getShopsCreatedList() != null) {
+                        shopListBusiness.addAll(response.body().getShopsCreatedList());
+                    }
+                    if (response.body().getActionsCreatedList() != null) {
+                        actionListBusiness.addAll(response.body().getActionsCreatedList());
+                    }
+                    displayData(actionListBusiness, eventListBusiness, shopListBusiness);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+
+        return view;
+    }
+
+    private void displayData(List<Action> actionListBusiness, List<Event> eventListBusiness, List<Shop> shopListBusiness) {
         adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness, getActivity());
         rvActions.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         rvActions.setAdapter(adapterActionBusiness);
@@ -143,7 +155,6 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         if (!shopListBusiness.isEmpty()) {
             tvNoShops.setVisibility(View.GONE);
         }
-        return view;
     }
 
     @Override

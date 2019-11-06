@@ -207,4 +207,8 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("eventphotos/{id}")
     Call<ActionPhoto> deleteActionPhoto(@Header("Authorization") String credentials, @Path("id") String id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @GET("users/{id}")
+    Call<User> getCreated(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
 }

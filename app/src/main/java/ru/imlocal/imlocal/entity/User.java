@@ -47,6 +47,15 @@ public class User implements Serializable {
     @SerializedName("happeningsFavorites")
     @Expose
     private List<Event> eventsFavoritesList;
+    @SerializedName("events")
+    @Expose
+    private List<Action> actionsCreatedList;
+    @SerializedName("shops")
+    @Expose
+    private List<Shop> shopsCreatedList;
+    @SerializedName("happenings")
+    @Expose
+    private List<Event> eventsCreatedList;
 
     private boolean isLogin;
 
@@ -66,6 +75,30 @@ public class User implements Serializable {
         this.email = email;
         this.accessToken = accessToken;
         this.username = username;
+    }
+
+    public List<Action> getActionsCreatedList() {
+        return actionsCreatedList;
+    }
+
+    public void setActionsCreatedList(List<Action> actionsCreatedList) {
+        this.actionsCreatedList = actionsCreatedList;
+    }
+
+    public List<Shop> getShopsCreatedList() {
+        return shopsCreatedList;
+    }
+
+    public void setShopsCreatedList(List<Shop> shopsCreatedList) {
+        this.shopsCreatedList = shopsCreatedList;
+    }
+
+    public List<Event> getEventsCreatedList() {
+        return eventsCreatedList;
+    }
+
+    public void setEventsCreatedList(List<Event> eventsCreatedList) {
+        this.eventsCreatedList = eventsCreatedList;
     }
 
     public String getMiddleName() {
