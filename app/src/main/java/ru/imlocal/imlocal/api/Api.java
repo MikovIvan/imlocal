@@ -60,6 +60,7 @@ public interface Api {
     @FormUrlEncoded
     @POST("user/favorite")
     Call<User> addFavorites(
+            @Header("Authorization") String credentials,
             @Field("kind") String kind,
             @Field("source_id") String sourceId,
             @Field("user_id") String userId
@@ -68,6 +69,7 @@ public interface Api {
     @FormUrlEncoded
     @POST("user/favorite")
     Call<RequestBody> removeFavorites(
+            @Header("Authorization") String credentials,
             @Field("kind") String kind,
             @Field("source_id") String sourceId,
             @Field("user_id") String userId,
@@ -211,4 +213,8 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @GET("users/{id}")
     Call<User> getCreated(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @GET("users/{id}")
+    Call<User> getFavorites(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
 }

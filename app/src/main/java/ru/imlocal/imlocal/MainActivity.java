@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -575,13 +575,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void getFavorites() {
-        Call<User> call = api.loginUser(user);
-        call.enqueue(new Callback<User>() {
+        Call<User> call1 = api.getFavorites(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shopsFavorites,eventsFavorites,happeningsFavorites");
+        call1.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                if (response.body().getId() != null) {
-                    Log.d("AUTH", "sucsecc " + response.body().getId());
-                    Log.d("AUTH", "message: " + response.message());
+                if (response.isSuccessful()) {
                     favoritesShops.putAll(shopMap(response.body().getShopsFavoritesList()));
                     favoritesEvents.putAll(eventMap(response.body().getEventsFavoritesList()));
                     favoritesActions.putAll(actionMap(response.body().getActionsFavoritesList()));
@@ -593,6 +591,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+
     }
 
     @Override

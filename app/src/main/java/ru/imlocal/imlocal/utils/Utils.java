@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Credentials;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -93,8 +94,8 @@ public class Utils {
         return result;
     }
 
-    public static void addToFavorites(Constants.Kind kind, String sourceId, String userId) {
-        Call<User> call = api.addFavorites(String.valueOf(kind), sourceId, userId);
+    public static void addToFavorites(String accessToken, Constants.Kind kind, String sourceId, String userId) {
+        Call<User> call = api.addFavorites(Credentials.basic(accessToken, ""), String.valueOf(kind), sourceId, userId);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -109,8 +110,8 @@ public class Utils {
         });
     }
 
-    public static void removeFromFavorites(Constants.Kind kind, String sourceId, String userId) {
-        Call<RequestBody> call = api.removeFavorites(String.valueOf(kind), sourceId, userId, "");
+    public static void removeFromFavorites(String accessToken, Constants.Kind kind, String sourceId, String userId) {
+        Call<RequestBody> call = api.removeFavorites(Credentials.basic(accessToken, ""), String.valueOf(kind), sourceId, userId, "");
         call.enqueue(new Callback<RequestBody>() {
             @Override
             public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {

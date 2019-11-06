@@ -162,12 +162,12 @@ public class FragmentVitrinaEvent extends Fragment {
             case R.id.add_to_favorites:
                 if (user.isLogin()) {
                     if (!favoritesEvents.containsKey(String.valueOf(event.getId()))) {
-                        addToFavorites(Kind.happening, String.valueOf(event.getId()), user.getId());
+                        addToFavorites(user.getAccessToken(), Kind.happening, String.valueOf(event.getId()), user.getId());
                         favoritesEvents.put(String.valueOf(event.getId()), event);
                         item.setIcon(R.drawable.ic_heart_pressed);
                         Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
                     } else {
-                        removeFromFavorites(Kind.happening, String.valueOf(event.getId()), user.getId());
+                        removeFromFavorites(user.getAccessToken(), Kind.happening, String.valueOf(event.getId()), user.getId());
                         favoritesEvents.remove(String.valueOf(event.getId()));
                         item.setIcon(R.drawable.ic_heart);
                         Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();

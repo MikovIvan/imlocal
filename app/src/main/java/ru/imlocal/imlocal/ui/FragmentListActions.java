@@ -188,12 +188,12 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
     public void onItemAddToFavorites(int position, ImageButton imageButton) {
         if (user.isLogin()) {
             if (!favoritesActions.containsKey(actionList.get(position).getId())) {
-                addToFavorites(Kind.event, actionList.get(position).getId(), user.getId());
+                addToFavorites(user.getAccessToken(), Kind.event, actionList.get(position).getId(), user.getId());
                 favoritesActions.put(actionList.get(position).getId(), actionList.get(position));
                 imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart_pressed));
                 Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
             } else {
-                removeFromFavorites(Kind.event, actionList.get(position).getId(), user.getId());
+                removeFromFavorites(user.getAccessToken(), Kind.event, actionList.get(position).getId(), user.getId());
                 favoritesActions.remove(actionList.get(position).getId());
                 imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_heart));
                 Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();

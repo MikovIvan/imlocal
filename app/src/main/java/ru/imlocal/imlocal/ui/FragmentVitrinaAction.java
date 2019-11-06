@@ -160,13 +160,13 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
             case R.id.add_to_favorites:
                 if (user.isLogin()) {
                     if (!favoritesActions.containsKey(action.getId())) {
-                        addToFavorites(Constants.Kind.event, action.getId(), user.getId());
+                        addToFavorites(user.getAccessToken(), Constants.Kind.event, action.getId(), user.getId());
                         favoritesActions.put((action.getId()), action);
                         item.setIcon(R.drawable.ic_heart_pressed);
                         Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
                     } else {
                         favoritesActions.remove(action.getId());
-                        removeFromFavorites(Constants.Kind.event, action.getId(), user.getId());
+                        removeFromFavorites(user.getAccessToken(), Constants.Kind.event, action.getId(), user.getId());
                         item.setIcon(R.drawable.ic_heart);
                         Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();
                     }

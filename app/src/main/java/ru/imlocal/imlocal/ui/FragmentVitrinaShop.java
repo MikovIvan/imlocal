@@ -236,12 +236,12 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
             case R.id.add_to_favorites:
                 if (user.isLogin()) {
                     if (!favoritesShops.containsKey(String.valueOf(shop.getShopId()))) {
-                        addToFavorites(Kind.shop, String.valueOf(shop.getShopId()), user.getId());
+                        addToFavorites(user.getAccessToken(), Kind.shop, String.valueOf(shop.getShopId()), user.getId());
                         favoritesShops.put(String.valueOf(shop.getShopId()), shop);
                         item.setIcon(R.drawable.ic_heart_pressed);
                         Snackbar.make(getView(), getResources().getString(R.string.add_to_favorite), Snackbar.LENGTH_SHORT).show();
                     } else {
-                        removeFromFavorites(Kind.shop, String.valueOf(shop.getShopId()), user.getId());
+                        removeFromFavorites(user.getAccessToken(), Kind.shop, String.valueOf(shop.getShopId()), user.getId());
                         favoritesShops.remove(String.valueOf(shop.getShopId()));
                         item.setIcon(R.drawable.ic_heart);
                         Snackbar.make(getView(), getResources().getString(R.string.delete_from_favorites), Snackbar.LENGTH_SHORT).show();
