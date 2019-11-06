@@ -11,7 +11,7 @@ public class Constants {
     public static final String MAPKIT_API_KEY = "98816d8a-89ae-4d74-84c8-db5263756c22";
 
     //    public static final String BASE_IMAGE_URL = "https://imlocal.ru/img/";
-    public static final String BASE_IMAGE_URL = "https://www.yiilessons.xyz/img/";
+    public static final String BASE_IMAGE_URL = "https://atolserver.xyz/img/";
     public static final String SHOP_IMAGE_DIRECTION = "shopPhoto/";
     public static final String ACTION_IMAGE_DIRECTION = "eventPhoto/";
     public static final String EVENT_IMAGE_DIRECTION = "happeningPhoto/";
