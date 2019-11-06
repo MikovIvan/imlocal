@@ -60,7 +60,7 @@ import static ru.imlocal.imlocal.MainActivity.longitude;
 
 public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterPlaces.OnItemClickListener {
     public static List<Shop> shopList = new ArrayList<>();
-    public static List<Shop> copyList = new ArrayList<>();
+    private static List<Shop> copyList = new ArrayList<>();
 
     private RecyclerView rvPlaces, rvCategory;
     private static final int PAGE_START = 1;
@@ -345,7 +345,9 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
 
     private Call<List<Shop>> callAllShops() {
 //        return api.getShops(currentPage);
-        return api.getAllShops(latitude + "," + longitude, 110000, currentPage, 10);
+//        return api.getAllShops(latitude + "," + longitude, 110000, currentPage, 10);
+        String s = "55.7655,37.4693";
+        return api.getAllShops(s, 100000, currentPage, 10);
     }
 
     private void showErrorView(Throwable throwable) {
