@@ -102,7 +102,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         btnAddEvent.setOnClickListener(this);
         btnAddAction.setOnClickListener(this);
 
-        Call<User> call = api.getCreated(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shop,events,happenings");
+        Call<User> call = api.getCreated(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shops,events,happenings");
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
