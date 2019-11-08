@@ -2,7 +2,6 @@ package ru.imlocal.imlocal.api;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -31,20 +30,11 @@ import ru.imlocal.imlocal.entity.User;
 
 public interface Api {
 
-    @GET("shops")
-    Call<List<Shop>> getShops(@Query("page") int page);
-
     @GET("shop")
     Call<List<Shop>> getAllShops(@Query("userPoint") String point, @Query("range") int range, @Query("page") int page, @Query("per-page") int perPage);
 
     @GET("events")
     Call<List<Action>> getAllActions(@Query("page") int page, @Query("per-page") int perPage);
-
-    @GET("events")
-    Observable<List<Action>> getAllActions();
-
-    @GET("happenings")
-    Observable<List<Event>> getAllEvents();
 
     @GET("happenings")
     Call<List<Event>> getAllEvents(@Query("page") int page, @Query("per-page") int perPage);
@@ -80,19 +70,6 @@ public interface Api {
     @PATCH("users/{id}")
     Call<User> updateUser(@Header("Authorization") String credentials, @Path("id") String id, @Body User user);
 
-    @Multipart
-    @POST("events")
-    Call<Action> createAction(@Header("Authorization") String credentials,
-                              @Part("eventOwnerId") RequestBody actionOwnerId,
-                              @Part("eventTypeId") RequestBody actionTypeId,
-                              @Part("title") RequestBody title,
-                              @Part("fullDesc") RequestBody fullDesc,
-                              @Part("begin") RequestBody begin,
-                              @Part("end") RequestBody end,
-                              @Part("creatorId") RequestBody creatorId,
-                              @Part MultipartBody.Part[] file
-    );
-
     @Headers("Content-Type: application/json; charset=utf-8")
     @POST("shopaddresses")
     Call<ShopAddress> createShopAddress(@Header("Authorization") String credentials, @Body ShopAddress shopAddress);
@@ -104,10 +81,6 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("shopaddresses/{id}")
     Call<ShopAddress> deleteShopAddress(@Header("Authorization") String credentials, @Path("id") String id);
-
-    @Headers("Content-Type: application/json; charset=utf-8")
-    @POST("shops")
-    Call<Shop> createShop(@Header("Authorization") String credentials, @Body Shop shop);
 
     @Multipart
     @POST("shops")
@@ -138,6 +111,19 @@ public interface Api {
                             @Part("end") RequestBody end,
                             @Part("happeningTypeId") RequestBody happeningTypeId,
                             @Part MultipartBody.Part file
+    );
+
+    @Multipart
+    @POST("events")
+    Call<Action> createAction(@Header("Authorization") String credentials,
+                              @Part("eventOwnerId") RequestBody actionOwnerId,
+                              @Part("eventTypeId") RequestBody actionTypeId,
+                              @Part("title") RequestBody title,
+                              @Part("fullDesc") RequestBody fullDesc,
+                              @Part("begin") RequestBody begin,
+                              @Part("end") RequestBody end,
+                              @Part("creatorId") RequestBody creatorId,
+                              @Part MultipartBody.Part[] file
     );
 
     @Multipart
@@ -217,4 +203,5 @@ public interface Api {
     @Headers("Content-Type: application/json; charset=utf-8")
     @GET("users/{id}")
     Call<User> getFavorites(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
+    
 }
