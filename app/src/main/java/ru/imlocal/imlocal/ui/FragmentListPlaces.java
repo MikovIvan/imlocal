@@ -1,11 +1,8 @@
 package ru.imlocal.imlocal.ui;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,15 +44,12 @@ import ru.imlocal.imlocal.adaptor.PaginationAdapterPlaces;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.gps.MyLocation;
 import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
 import ru.imlocal.imlocal.utils.PaginationScrollListener;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
-import static ru.imlocal.imlocal.MainActivity.latitude;
-import static ru.imlocal.imlocal.MainActivity.longitude;
 
 public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterPlaces.OnItemClickListener {
     public static List<Shop> shopList = new ArrayList<>();
@@ -93,7 +86,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         appBarLayout.setVisibility(View.VISIBLE);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
-        getCurrentLocation(getActivity());
 
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -197,15 +189,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         loadFirstPage();
         mSwipeRefreshLayout.setRefreshing(false);
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                getCurrentLocation(getActivity());
-//                Log.d("GPS2", "Swipe gps: " + longitude + " " + latitude);
-//                mSwipeRefreshLayout.setRefreshing(false);
-//                adapter.notifyDataSetChanged();
-//            }
-//        }, 4000);
     }
 
     @Override
@@ -291,24 +274,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
 
     private void filter(List<Shop> filterList, int i) {
         adapter.filter(filterList, i);
-    }
-
-    private void getCurrentLocation(Context context) {
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
-                @Override
-                public void gotLocation(Location location) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-// когда будет готово апи получение магазинов будет тут
-                    Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
-                }
-            };
-            MyLocation myLocation = new MyLocation();
-            myLocation.getLocation(context, locationResult);
-        }
     }
 
     @Override
