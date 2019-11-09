@@ -68,6 +68,8 @@
     <string name="error_msg">Извините! Невозможно отобразить данные.</string>
     <string name="btn_retry">Повторить</string>
     <string name="msg_loading">Загрузка…</string>
+    <string name="choose_pdf_file">Выберете pdf файл</string>
+    <string name="cancel">Отмена</string>
 
 
     <string-array name="custom_months">
