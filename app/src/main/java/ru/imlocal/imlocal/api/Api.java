@@ -2,6 +2,7 @@ package ru.imlocal.imlocal.api;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -25,6 +26,7 @@ import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
+import ru.imlocal.imlocal.entity.ShopPhoto;
 import ru.imlocal.imlocal.entity.ShopRating;
 import ru.imlocal.imlocal.entity.User;
 
@@ -32,6 +34,9 @@ public interface Api {
 
     @GET("shop")
     Call<List<Shop>> getAllShops(@Query("userPoint") String point, @Query("range") int range, @Query("page") int page, @Query("per-page") int perPage);
+
+    @GET("shops/{id}")
+    Call<Shop> getShop(@Path("id") String id);
 
     @GET("events")
     Call<List<Action>> getAllActions(@Query("page") int page, @Query("per-page") int perPage);
@@ -100,6 +105,24 @@ public interface Api {
     );
 
     @Multipart
+    @PATCH("shops/{id}")
+    Call<Shop> updateShop(@Header("Authorization") String credentials,
+                          @Part("creatorId") RequestBody creatorId,
+                          @Part("shopShortName") RequestBody shopShortName,
+                          @Part("shopTypeId") RequestBody shopTypeId,
+                          @Part("shopPhone") RequestBody shopPhone,
+                          @Part("shopWeb") RequestBody shopWeb,
+                          @Part("shopAddressId") RequestBody shopAddressId,
+                          @Part("shopCostMin") RequestBody shopCostMin,
+                          @Part("shopCostMax") RequestBody shopCostMax,
+                          @Part("shopWorkTime") RequestBody shopWorkTime,
+                          @Part("shopShortDescription") RequestBody shopShortDescription,
+                          @Part("shopFullDescription") RequestBody shopFullDescription,
+                          @Part MultipartBody.Part[] file,
+                          @Path("id") String id
+    );
+
+    @Multipart
     @POST("happenings")
     Call<Event> createEvent(@Header("Authorization") String credentials,
                             @Part("creatorId") RequestBody creatorId,
@@ -109,8 +132,25 @@ public interface Api {
                             @Part("price") RequestBody price,
                             @Part("begin") RequestBody begin,
                             @Part("end") RequestBody end,
+                            @Part("shopId") RequestBody shopId,
                             @Part("happeningTypeId") RequestBody happeningTypeId,
                             @Part MultipartBody.Part file
+    );
+
+    @Multipart
+    @PUT("happenings/{id}")
+    Call<Event> updateEvent(@Header("Authorization") String credentials,
+                            @Part("creatorId") RequestBody creatorId,
+                            @Part("title") RequestBody title,
+                            @Part("description") RequestBody description,
+                            @Part("address") RequestBody address,
+                            @Part("price") RequestBody price,
+                            @Part("begin") RequestBody begin,
+                            @Part("end") RequestBody end,
+                            @Part("shopId") RequestBody shopId,
+                            @Part("happeningTypeId") RequestBody happeningTypeId,
+                            @Part MultipartBody.Part file,
+                            @Path("id") String id
     );
 
     @Multipart
@@ -127,18 +167,17 @@ public interface Api {
     );
 
     @Multipart
-    @POST("happenings/{id}")
-    Call<Event> updateEvent(@Header("Authorization") String credentials,
-                            @Part("creatorId") RequestBody creatorId,
-                            @Part("title") RequestBody title,
-                            @Part("description") RequestBody description,
-                            @Part("address") RequestBody address,
-                            @Part("price") RequestBody price,
-                            @Part("begin") RequestBody begin,
-                            @Part("end") RequestBody end,
-                            @Part("happeningTypeId") RequestBody happeningTypeId,
-                            @Part MultipartBody.Part file,
-                            @Path("id") String id
+    @PUT("events/{id}")
+    Call<Action> updateAction(@Header("Authorization") String credentials,
+                              @Part("eventOwnerId") RequestBody actionOwnerId,
+                              @Part("eventTypeId") RequestBody actionTypeId,
+                              @Part("title") RequestBody title,
+                              @Part("fullDesc") RequestBody fullDesc,
+                              @Part("begin") RequestBody begin,
+                              @Part("end") RequestBody end,
+                              @Part("creatorId") RequestBody creatorId,
+                              @Part MultipartBody.Part[] file,
+                              @Path("id") String id
     );
 
     @Headers("Content-Type: application/json; charset=utf-8")
@@ -197,11 +236,19 @@ public interface Api {
     Call<ActionPhoto> deleteActionPhoto(@Header("Authorization") String credentials, @Path("id") String id);
 
     @Headers("Content-Type: application/json; charset=utf-8")
+    @DELETE("shopphotos/{id}")
+    Call<ShopPhoto> deleteShopPhoto(@Header("Authorization") String credentials, @Path("id") String id);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
     @GET("users/{id}")
     Call<User> getCreated(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
 
     @Headers("Content-Type: application/json; charset=utf-8")
     @GET("users/{id}")
+    Observable<User> getCreatedRX(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
+
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @GET("users/{id}")
     Call<User> getFavorites(@Header("Authorization") String credentials, @Path("id") String id, @Query("expand") String expand);
-    
+
 }
