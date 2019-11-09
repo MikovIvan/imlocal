@@ -169,6 +169,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             List<String> photos = new ArrayList<>();
             for (ShopPhoto shopPhoto : shop.getShopPhotoArray()) {
                 photos.add(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shopPhoto.getShopPhoto());
+                photosIdList.add(String.valueOf(shopPhoto.getId()));
             }
             photosPathList.addAll(photos);
             if (photosPathList.size() < 11) {
@@ -620,7 +621,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     private void onPhotosReturned(@NonNull MediaFile[] returnedPhotos) {
         photos.addAll(Arrays.asList(returnedPhotos));
         adapterPhotos.notifyDataSetChanged();
-        if (photos.size() >= 3) {
+        if (photos.size() >= 11) {
             btnAddPhoto.setVisibility(View.GONE);
         }
     }
