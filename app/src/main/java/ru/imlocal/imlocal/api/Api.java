@@ -101,7 +101,8 @@ public interface Api {
                           @Part("shopWorkTime") RequestBody shopWorkTime,
                           @Part("shopShortDescription") RequestBody shopShortDescription,
                           @Part("shopFullDescription") RequestBody shopFullDescription,
-                          @Part MultipartBody.Part[] file
+                          @Part MultipartBody.Part[] file,
+                          @Part MultipartBody.Part pdf
     );
 
     @Multipart
