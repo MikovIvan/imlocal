@@ -236,7 +236,47 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                             }
                         });
                     }
-// add update photos
+                    showpDialog();
+                    try {
+                        MultipartBody.Part[] body = new MultipartBody.Part[photos.size()];
+                        for (int i = 0; i < photos.size(); i++) {
+                            File file = new Compressor(getActivity()).compressToFile(photos.get(i).getFile());
+                            body[i] = MultipartBody.Part.createFormData("files[]", file.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+                        }
+                        Call<Action> call = api.updateAction(Credentials.basic(user.getAccessToken(), ""),
+                                RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getActionOwnerId())),
+                                RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getActionTypeId())),
+                                RequestBody.create(MediaType.parse("text/plain"), action.getTitle()),
+                                RequestBody.create(MediaType.parse("text/plain"), action.getFullDesc()),
+                                RequestBody.create(MediaType.parse("text/plain"), action.getBegin()),
+                                RequestBody.create(MediaType.parse("text/plain"), action.getEnd()),
+                                RequestBody.create(MediaType.parse("text/plain"), String.valueOf(action.getCreatorId())),
+                                body,
+                                action.getId());
+                        call.enqueue(new Callback<Action>() {
+                            @Override
+                            public void onResponse(Call<Action> call, Response<Action> response) {
+                                Log.d("Action", "Action: " + response.toString());
+                                if (response.isSuccessful()) {
+                                    if (response.code() == 200) {
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                        ((MainActivity) getActivity()).openBusiness(null);
+                                    } else {
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Action> call, Throwable t) {
+                                Log.d("Action", "Action: " + t.toString());
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     Call<Action> call1 = api.updateAction(Credentials.basic(user.getAccessToken(), ""), action, action.getId());
                     call1.enqueue(new Callback<Action>() {
