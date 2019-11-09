@@ -191,6 +191,7 @@ public class FragmentVitrinaEvent extends Fragment {
                             RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getPrice())),
                             RequestBody.create(MediaType.parse("text/plain"), event.getBegin()),
                             RequestBody.create(MediaType.parse("text/plain"), event.getEnd()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getShopId())),
                             RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getEventTypeId())),
                             body);
                     call.enqueue(new Callback<Event>() {
@@ -246,6 +247,7 @@ public class FragmentVitrinaEvent extends Fragment {
                             RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getPrice())),
                             RequestBody.create(MediaType.parse("text/plain"), event.getBegin()),
                             RequestBody.create(MediaType.parse("text/plain"), event.getEnd()),
+                            RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getShopId())),
                             RequestBody.create(MediaType.parse("text/plain"), String.valueOf(event.getEventTypeId())),
                             body1,
                             String.valueOf(event.getId()));

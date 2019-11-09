@@ -294,7 +294,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                                             if (response.code() == 200) {
                                                 hidepDialog();
                                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                                ((MainActivity) getActivity()).openBusiness(null);
+                                                ((MainActivity) getActivity()).openBusiness();
                                             } else {
                                                 hidepDialog();
                                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
@@ -322,7 +322,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 });
 
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness(null);
+                ((MainActivity) getActivity()).openBusiness();
                 return true;
             case R.id.update:
                 if (photosDeleteList != null && !photosDeleteList.isEmpty()) {
@@ -369,7 +369,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                                     if (response.code() == 200) {
                                         hidepDialog();
                                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                        ((MainActivity) getActivity()).openBusiness(null);
+                                        ((MainActivity) getActivity()).openBusiness();
                                     } else {
                                         hidepDialog();
                                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
@@ -392,7 +392,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                         public void onResponse(Call<Shop> call, Response<Shop> response) {
                             Log.d("SHOP", response.toString());
                             Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
-                            ((MainActivity) getActivity()).openBusiness(null);
+                            ((MainActivity) getActivity()).openBusiness();
                         }
 
                         @Override

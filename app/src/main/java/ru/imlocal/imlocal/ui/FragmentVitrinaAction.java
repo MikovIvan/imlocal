@@ -202,7 +202,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                                 if (response.code() == 200) {
                                     hidepDialog();
                                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                    ((MainActivity) getActivity()).openBusiness(null);
+                                    ((MainActivity) getActivity()).openBusiness();
                                 } else {
                                     hidepDialog();
                                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
@@ -261,7 +261,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                                     if (response.code() == 200) {
                                         hidepDialog();
                                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                        ((MainActivity) getActivity()).openBusiness(null);
+                                        ((MainActivity) getActivity()).openBusiness();
                                     } else {
                                         hidepDialog();
                                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
@@ -284,7 +284,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                         public void onResponse(Call<Action> call, Response<Action> response) {
                             Log.d("ACTION", response.toString());
                             Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
-                            ((MainActivity) getActivity()).openBusiness(null);
+                            ((MainActivity) getActivity()).openBusiness();
                         }
 
                         @Override
