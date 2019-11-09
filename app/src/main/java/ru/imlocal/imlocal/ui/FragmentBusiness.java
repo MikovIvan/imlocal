@@ -2,7 +2,6 @@ package ru.imlocal.imlocal.ui;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
 import pl.aprilapps.easyphotopicker.MediaFile;
 import retrofit2.Call;
@@ -41,13 +45,14 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_NONE;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 
 public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener, FragmentDeleteDialog.DeleteDialogFragment {
 
     private List<Action> actionListBusiness = new ArrayList<>();
     private List<Event> eventListBusiness = new ArrayList<>();
-    private List<Shop> shopListBusiness = new ArrayList<>();
+    public static List<Shop> shopListBusiness = new ArrayList<>();
 
     private RecyclerViewAdapterActionsBusiness adapterActionBusiness;
     private RecyclerViewAdapterEventsBusiness adapterEventsBusiness;
@@ -81,6 +86,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_business, container, false);
 
+        status = STATUS_NONE;
         clearPreferences();
         eventListBusiness.clear();
         shopListBusiness.clear();
@@ -102,49 +108,59 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         btnAddEvent.setOnClickListener(this);
         btnAddAction.setOnClickListener(this);
 
-        Call<User> call = api.getCreated(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shops,events,happenings");
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    Log.d("CREATED", response.body().toString());
-                    if (response.body().getEventsCreatedList() != null) {
-                        eventListBusiness.addAll(response.body().getEventsCreatedList());
-                    }
-                    if (response.body().getShopsCreatedList() != null) {
-                        shopListBusiness.addAll(response.body().getShopsCreatedList());
-                    }
-                    if (response.body().getActionsCreatedList() != null) {
-                        actionListBusiness.addAll(response.body().getActionsCreatedList());
-                    }
-                    displayData(actionListBusiness, eventListBusiness, shopListBusiness);
-                }
-            }
+        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(getActivity());
+        rvEvents.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+        rvEvents.setAdapter(adapterEventsBusiness);
+        adapterEventsBusiness.setOnItemClickListener(this);
 
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
+        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(getActivity());
+        rvActions.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
+        rvActions.setAdapter(adapterActionBusiness);
+        adapterActionBusiness.setOnItemClickListener(this);
 
-            }
-        });
+        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(getActivity());
+        rvShops.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
+        rvShops.setAdapter(adapterShopsBusiness);
+        adapterShopsBusiness.setOnItemClickListener(this);
+
+        api.getCreatedRX(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shops,events,happenings")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<User>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(User user) {
+                        eventListBusiness.addAll(user.getEventsCreatedList());
+                        shopListBusiness.addAll(user.getShopsCreatedList());
+                        actionListBusiness.addAll(user.getActionsCreatedList());
+
+                        Collections.reverse(eventListBusiness);
+                        Collections.reverse(actionListBusiness);
+                        Collections.reverse(shopListBusiness);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        displayData(actionListBusiness, eventListBusiness, shopListBusiness);
+                    }
+                });
 
         return view;
     }
 
     private void displayData(List<Action> actionListBusiness, List<Event> eventListBusiness, List<Shop> shopListBusiness) {
-        adapterActionBusiness = new RecyclerViewAdapterActionsBusiness(actionListBusiness, getActivity());
-        rvActions.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
-        rvActions.setAdapter(adapterActionBusiness);
-        adapterActionBusiness.setOnItemClickListener(this);
-
-        adapterEventsBusiness = new RecyclerViewAdapterEventsBusiness(eventListBusiness, getActivity());
-        rvEvents.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
-        rvEvents.setAdapter(adapterEventsBusiness);
-        adapterEventsBusiness.setOnItemClickListener(this);
-
-        adapterShopsBusiness = new RecyclerViewAdapterShopsBusiness(shopListBusiness, getActivity());
-        rvShops.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
-        rvShops.setAdapter(adapterShopsBusiness);
-        adapterShopsBusiness.setOnItemClickListener(this);
+        adapterEventsBusiness.setData(eventListBusiness);
+        adapterActionBusiness.setData(actionListBusiness);
+        adapterShopsBusiness.setData(shopListBusiness);
 
         if (!actionListBusiness.isEmpty()) {
             tvNoActions.setVisibility(View.GONE);
@@ -164,22 +180,11 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 ((MainActivity) getActivity()).openAddShop(null);
                 break;
             case R.id.btn_add_action_business:
-//                //        это потом заменить на места юзера
-//                List<Shop> userShops = new ArrayList<>();
-//                List<String> shopsName = new ArrayList<>();
-//                for (Shop shop : shopList) {
-//                    if (shop.getCreatorId().equals(user.getId())) {
-//                        userShops.add(shop);
-//                        shopsName.add(shop.getShopShortName());
-//                    }
-//                }
-//
-//                if(userShops.isEmpty()){
-//                    Snackbar.make(getView(),"У Вас нет мест,чтобы добавить их акции",Snackbar.LENGTH_LONG).show();
-//                } else {
-//                    ((MainActivity) getActivity()).openAddAction();
-//                }
-                ((MainActivity) getActivity()).openAddAction(null);
+                if (shopListBusiness.isEmpty()) {
+                    Snackbar.make(getView(), "У Вас нет мест,чтобы добавить их акции", Snackbar.LENGTH_LONG).show();
+                } else {
+                    ((MainActivity) getActivity()).openAddAction(null);
+                }
                 break;
             case R.id.btn_add_events_business:
                 ((MainActivity) getActivity()).openAddEvent(null);
@@ -267,7 +272,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
                 call1.enqueue(new Callback<ShopAddress>() {
                     @Override
                     public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
-                        
+
                     }
 
                     @Override

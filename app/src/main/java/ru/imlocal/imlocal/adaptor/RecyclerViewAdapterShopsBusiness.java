@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
@@ -21,12 +22,14 @@ import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 
 public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<RecyclerViewAdapterShopsBusiness.ViewHolder> {
-    private List<Shop> dataActions;
+    private List<Shop> dataShops;
     private Context context;
     private OnItemClickListener mListener;
 
-    public RecyclerViewAdapterShopsBusiness(List<Shop> dataActions, Context context) {
-        this.dataActions = dataActions;
+    //    public RecyclerViewAdapterShopsBusiness(List<Shop> dataActions, Context context) {
+//        this.dataActions = dataActions;
+    public RecyclerViewAdapterShopsBusiness(Context context) {
+        this.dataShops = new ArrayList<>();
         this.context = context;
     }
 
@@ -42,7 +45,7 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterShopsBusiness.ViewHolder holder, int position) {
-        Shop shop = dataActions.get(position);
+        Shop shop = dataShops.get(position);
         Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
                 .into(holder.ivShopIcon);
         holder.tvShopTitle.setText(shop.getShopShortName());
@@ -50,13 +53,19 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
 
     @Override
     public int getItemCount() {
-        return dataActions.size();
+        return dataShops.size();
     }
 
     public interface OnItemClickListener {
         void onEditShopClick(int position);
 
         void onDeleteShopClick(int position);
+    }
+
+    public void setData(List<Shop> shops) {
+        dataShops.clear();
+        dataShops.addAll(shops);
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

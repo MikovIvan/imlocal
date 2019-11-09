@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
@@ -25,8 +26,10 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     private Context context;
     private OnItemClickListener mListener;
 
-    public RecyclerViewAdapterActionsBusiness(List<Action> dataActions, Context context) {
-        this.dataActions = dataActions;
+    //    public RecyclerViewAdapterActionsBusiness(List<Action> dataActions, Context context) {
+//        this.dataActions = dataActions;
+    public RecyclerViewAdapterActionsBusiness(Context context) {
+        this.dataActions = new ArrayList<>();
         this.context = context;
     }
 
@@ -60,6 +63,12 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
         void onEditActionClick(int position);
 
         void onDeleteActionClick(int position);
+    }
+
+    public void setData(List<Action> actions) {
+        dataActions.clear();
+        dataActions.addAll(actions);
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
