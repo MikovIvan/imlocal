@@ -81,6 +81,7 @@ dependencies {
 
 //    image picker
     implementation 'com.github.jkwiecien:EasyImage:3.0.3'
+    implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
 
 //    file compressor
     implementation 'id.zelory:compressor:2.1.0'
