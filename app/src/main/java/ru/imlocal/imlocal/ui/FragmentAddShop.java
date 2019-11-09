@@ -36,7 +36,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,6 +94,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     private EasyImage easyImage;
 
     private TextView tvAddAddress;
+    private TextView tvPdfdocument;
 
     private TextInputEditText etShopName;
     private TextInputEditText etShopShortDescription;
@@ -100,6 +103,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     private Shop shop = new Shop("", "", -1, "", "", "", "", "", "", "", null);
 
     private Bundle bundle;
+    private File pdfFile;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,6 +123,26 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             photos.clear();
             photos.addAll(PreferenceUtils.getPhotoList(getActivity()));
         }
+
+        tvPdfdocument = view.findViewById(R.id.tv_add_shop_add_document);
+        tvPdfdocument.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChooserDialog chooserDialog = new ChooserDialog(getActivity(), R.style.FileChooserStyle);
+                chooserDialog
+                        .withResources(R.string.choose_pdf_file, R.string.ok, R.string.cancel)
+                        .withFilter(false, false, "pdf")
+                        .withChosenListener(new ChooserDialog.Result() {
+                            @Override
+                            public void onChoosePath(String dir, File dirFile) {
+                                pdfFile = dirFile;
+                                tvPdfdocument.setText(dirFile.getName());
+                            }
+                        })
+                        .build()
+                        .show();
+            }
+        });
 
         btnAddPhoto = view.findViewById(R.id.btn_add_photo);
         btnAddPhoto.setOnClickListener(new View.OnClickListener() {
@@ -310,6 +334,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("shop", shop);
                 bundle.putParcelableArrayList("photos", photos);
+                bundle.putSerializable("pdf", pdfFile);
                 bundle.putStringArrayList("photoId", photosDeleteList);
                 ((MainActivity) getActivity()).openVitrinaShop(bundle);
             } else if (!shop.getCreatorId().equals("") && !shop.getShopShortName().equals("") && !shop.getShopShortDescription().equals("")
@@ -319,6 +344,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("shop", shop);
                 bundle.putParcelableArrayList("photos", photos);
+                bundle.putSerializable("pdf", pdfFile);
                 bundle.putStringArrayList("photoId", photosDeleteList);
                 ((MainActivity) getActivity()).openVitrinaShop(bundle);
             }
