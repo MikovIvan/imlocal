@@ -209,8 +209,8 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-                action.setActionOwnerId(userShops.get(position).getShopId());
-                action.setShop(userShops.get(position));
+                action.setActionOwnerId(shopListBusiness.get(position).getShopId());
+                action.setShop(shopListBusiness.get(position));
             }
         });
     }
@@ -337,7 +337,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private void loadActionData(Action action) {
         if (action.getShop() != null && action.getShop().getShopId() != -1) {
             String name = "";
-            for (Shop shop : userShops) {
+            for (Shop shop : shopListBusiness) {
                 if (shop.getShopId() == action.getShop().getShopId()) {
                     name = shop.getShopShortName();
                 }

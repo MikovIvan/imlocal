@@ -280,9 +280,9 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-                event.setShopId(userShops.get(position).getShopId());
-                event.setAddress(userShops.get(position).getShopAddress().toString());
-                tvAddAddress.setText(userShops.get(position).getShopAddress().toString());
+                event.setShopId(shopListBusiness.get(position).getShopId());
+                event.setAddress(shopListBusiness.get(position).getShopAddress().toString());
+                tvAddAddress.setText(shopListBusiness.get(position).getShopAddress().toString());
             }
         });
     }
@@ -504,7 +504,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     private void loadEventData(Event event) throws ParseException {
         if (event.getShopId() != -1) {
             String name = "";
-            for (Shop shop : userShops) {
+            for (Shop shop : shopListBusiness) {
                 if (shop.getShopId() == event.getShopId()) {
                     name = shop.getShopShortName();
                 }
@@ -512,7 +512,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             for (int i = 0; i < shopsName.size(); i++) {
                 if (shopsName.get(i).contains(name)) {
                     spinner.setSelectedIndex(i);
-                    tvAddAddress.setText(userShops.get(i).getShopAddress().toString());
+                    tvAddAddress.setText(shopListBusiness.get(i).getShopAddress().toString());
                 }
             }
         }
