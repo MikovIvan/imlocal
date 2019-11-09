@@ -76,7 +76,6 @@ import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdapterActionsLight.OnItemClickListener, View.OnClickListener {
 
-    private ImageView ivShopImage;
     private TextView tvShopType;
     private TextView tvVitrinaNameOfPlace;
     private TextView tvAdress;
@@ -96,6 +95,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private Bundle bundle;
     private boolean isRated = false;
     private float rate;
+    private File pdfFile;
 
     private List<MediaFile> photos = new ArrayList<>();
     private ArrayList<String> photosDeleteList = new ArrayList<>();
@@ -137,6 +137,9 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         bundle = getArguments();
         shop = (Shop) bundle.getSerializable("shop");
+        if (bundle.getSerializable("pdf") != null) {
+            pdfFile = (File) bundle.getSerializable("pdf");
+        }
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         rvListEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -262,6 +265,8 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                             Log.d("SHOP", "AdressId " + response.body().getId());
                             showpDialog();
                             try {
+                                MultipartBody.Part pdf =
+                                        MultipartBody.Part.createFormData("pdf", pdfFile.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), pdfFile));
                                 MultipartBody.Part[] body = new MultipartBody.Part[photos.size()];
                                 for (int i = 0; i < photos.size(); i++) {
                                     File file = new Compressor(getActivity()).compressToFile(photos.get(i).getFile());
@@ -279,7 +284,8 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                                         RequestBody.create(MediaType.parse("text/plain"), shop.getShopWorkTime()),
                                         RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortDescription()),
                                         RequestBody.create(MediaType.parse("text/plain"), shop.getShopFullDescription()),
-                                        body);
+                                        body,
+                                        pdf);
                                 call1.enqueue(new Callback<Shop>() {
                                     @Override
                                     public void onResponse(Call<Shop> call, Response<Shop> response) {
@@ -288,7 +294,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                                             if (response.code() == 200) {
                                                 hidepDialog();
                                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                                ((MainActivity) getActivity()).openBusiness();
+                                                ((MainActivity) getActivity()).openBusiness(null);
                                             } else {
                                                 hidepDialog();
                                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
@@ -299,6 +305,8 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                                     @Override
                                     public void onFailure(Call<Shop> call, Throwable t) {
                                         Log.d("Action", "Action: " + t.toString());
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
                                     }
                                 });
                             } catch (IOException e) {
@@ -314,9 +322,86 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 });
 
                 Snackbar.make(getView(), "PUBLISH", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness();
+                ((MainActivity) getActivity()).openBusiness(null);
                 return true;
             case R.id.update:
+                if (photosDeleteList != null && !photosDeleteList.isEmpty()) {
+                    for (String s : photosDeleteList) {
+                        Call<ShopPhoto> call1 = api.deleteShopPhoto(Credentials.basic(user.getAccessToken(), ""), s);
+                        call1.enqueue(new Callback<ShopPhoto>() {
+                            @Override
+                            public void onResponse(Call<ShopPhoto> call, Response<ShopPhoto> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<ShopPhoto> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                    showpDialog();
+                    try {
+                        MultipartBody.Part[] body = new MultipartBody.Part[photos.size()];
+                        for (int i = 0; i < photos.size(); i++) {
+                            File file = new Compressor(getActivity()).compressToFile(photos.get(i).getFile());
+                            body[i] = MultipartBody.Part.createFormData("files[]", file.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+                        }
+                        Call<Shop> call1 = api.updateShop(Credentials.basic(user.getAccessToken(), ""),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getCreatorId()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortName()),
+                                RequestBody.create(MediaType.parse("text/plain"), String.valueOf(shop.getShopTypeId())),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopPhone()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopWeb()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopAddressId()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopCostMin()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopCostMax()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopWorkTime()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortDescription()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopFullDescription()),
+                                body,
+                                String.valueOf(shop.getShopId()));
+                        call1.enqueue(new Callback<Shop>() {
+                            @Override
+                            public void onResponse(Call<Shop> call, Response<Shop> response) {
+                                Log.d("Action", "Action: " + response.toString());
+                                if (response.isSuccessful()) {
+                                    if (response.code() == 200) {
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                        ((MainActivity) getActivity()).openBusiness(null);
+                                    } else {
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Shop> call, Throwable t) {
+                                Log.d("Action", "Action: " + t.toString());
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Call<Shop> call2 = api.updateShop(Credentials.basic(user.getAccessToken(), ""), shop, shop.getShopId());
+                    call2.enqueue(new Callback<Shop>() {
+                        @Override
+                        public void onResponse(Call<Shop> call, Response<Shop> response) {
+                            Log.d("SHOP", response.toString());
+                            Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
+                            ((MainActivity) getActivity()).openBusiness(null);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Shop> call, Throwable t) {
+
+                        }
+                    });
+                }
+
                 Call<ShopAddress> call1 = api.updateShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddress(), shop.getShopAddressId());
                 call1.enqueue(new Callback<ShopAddress>() {
                     @Override
@@ -329,21 +414,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
                     }
                 });
-
-                Call<Shop> call2 = api.updateShop(Credentials.basic(user.getAccessToken(), ""), shop, shop.getShopId());
-                call2.enqueue(new Callback<Shop>() {
-                    @Override
-                    public void onResponse(Call<Shop> call, Response<Shop> response) {
-                        Log.d("SHOP", response.toString());
-                    }
-
-                    @Override
-                    public void onFailure(Call<Shop> call, Throwable t) {
-
-                    }
-                });
-                Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
-                ((MainActivity) getActivity()).openBusiness();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -410,8 +480,9 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 }
                 break;
             case R.id.tv_adress:
-                String map = "http://maps.google.co.in/maps?q=" + tvAdress.getText();
-                Intent openMap = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+//                String map = "http://maps.google.co.in/maps?q=" + tvAdress.getText();
+//                Intent openMap = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                Intent openMap = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + tvAdress.getText()));
                 startActivity(openMap);
                 break;
             case R.id.tv_website:
