@@ -43,14 +43,15 @@ import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.ActionPhoto;
+import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
+import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
-import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
@@ -58,7 +59,6 @@ import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
-import static ru.imlocal.imlocal.utils.Utils.shopMap;
 
 public class FragmentVitrinaAction extends Fragment implements View.OnClickListener {
 
@@ -82,7 +82,6 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
     }
 
     @Nullable
@@ -90,6 +89,9 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_action, container, false);
+        appBarLayout.setVisibility(View.VISIBLE);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
 
         ivShopPhoto = view.findViewById(R.id.iv_icon);
         tvShopName = view.findViewById(R.id.tv_shop_title);
@@ -200,7 +202,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                                 if (response.code() == 200) {
                                     hidepDialog();
                                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                                    ((MainActivity) getActivity()).openBusiness();
+                                    ((MainActivity) getActivity()).openBusiness(null);
                                 } else {
                                     hidepDialog();
                                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
@@ -242,7 +244,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                         public void onResponse(Call<Action> call, Response<Action> response) {
                             Log.d("ACTION", response.toString());
                             Snackbar.make(getView(), "UPDATE", Snackbar.LENGTH_LONG).show();
-                            ((MainActivity) getActivity()).openBusiness();
+                            ((MainActivity) getActivity()).openBusiness(null);
                         }
 
                         @Override
@@ -331,14 +333,23 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_icon:
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("shop", shopMap(shopList).get(String.valueOf(action.getShop().getShopAddress().getId())));
-                ((MainActivity) getActivity()).openVitrinaShop(bundle);
-                break;
             case R.id.tv_shop_title:
-                Bundle bundle2 = new Bundle();
-                bundle2.putSerializable("shop", shopMap(shopList).get(String.valueOf(action.getShop().getShopAddress().getId())));
-                ((MainActivity) getActivity()).openVitrinaShop(bundle2);
+                Call<Shop> call = api.getShop(String.valueOf(action.getShop().getShopAddress().getId()));
+                call.enqueue(new Callback<Shop>() {
+                    @Override
+                    public void onResponse(Call<Shop> call, Response<Shop> response) {
+                        if (response.isSuccessful()) {
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("shop", response.body());
+                            ((MainActivity) getActivity()).openVitrinaShop(bundle);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Shop> call, Throwable t) {
+
+                    }
+                });
                 break;
         }
     }
