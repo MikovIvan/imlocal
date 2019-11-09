@@ -51,8 +51,8 @@ import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
+import static ru.imlocal.imlocal.ui.FragmentBusiness.shopListBusiness;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
-import static ru.imlocal.imlocal.ui.FragmentListPlaces.shopList;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
@@ -196,11 +196,8 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     private void initSpinner(View view) {
         //        это потом заменить на места юзера
 
-        for (Shop shop : shopList) {
-//            if (shop.getCreatorId().equals(user.getId())) {
-            userShops.add(shop);
+        for (Shop shop : shopListBusiness) {
             shopsName.add(shop.getShopShortName());
-//            }
         }
 
         spinner = view.findViewById(R.id.spinner_add_action_choose_place);
