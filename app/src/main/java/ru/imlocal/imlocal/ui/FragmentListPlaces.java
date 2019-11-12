@@ -369,8 +369,9 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                     shopList.addAll(results);
                     copyList.addAll(results);
                     progressBar.setVisibility(View.GONE);
-                    displayData(shopList);
 
+                    displayData(shopList);
+                    filter(copyList, CATEGORY);
                     isLastPage = false;
                     if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;
