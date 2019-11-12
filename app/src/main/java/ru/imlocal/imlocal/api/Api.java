@@ -139,7 +139,7 @@ public interface Api {
     );
 
     @Multipart
-    @PUT("happenings/{id}")
+    @PATCH("happenings/{id}")
     Call<Event> updateEvent(@Header("Authorization") String credentials,
                             @Part("creatorId") RequestBody creatorId,
                             @Part("title") RequestBody title,
@@ -168,7 +168,7 @@ public interface Api {
     );
 
     @Multipart
-    @PUT("events/{id}")
+    @PATCH("events/{id}")
     Call<Action> updateAction(@Header("Authorization") String credentials,
                               @Part("eventOwnerId") RequestBody actionOwnerId,
                               @Part("eventTypeId") RequestBody actionTypeId,
