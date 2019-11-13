@@ -64,6 +64,7 @@ import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 public class FragmentMap extends Fragment implements UserLocationObjectListener, CameraListener, InputListener, View.OnClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     private static final float USER_ZOOM_DURATION = 2.0f;
     private static final float ZOOM_DURATION = 0.3f;
+    private static int CATEGORY = 0;
 
     private boolean isSelected;
     private PlacemarkMapObject selected;
@@ -77,6 +78,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
     private MapObjectCollection mapObjects;
 
     private boolean followUserLocation = false;
+    private boolean isCategoryPressed;
 
     private Shop shop;
     private TextView tvDistance;
@@ -89,9 +91,9 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
     private ImageButton ibPlus;
     private ImageButton ibMinus;
     private ImageButton ibUserLocation;
-//    private Button btnFilter;
 
     private RecyclerView rvCategory;
+    private RecyclerViewAdaptorCategory adaptorCategory;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -146,11 +148,10 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
         ibPlus = view.findViewById(R.id.ib_plus);
         ibMinus = view.findViewById(R.id.ib_minus);
         ibUserLocation = view.findViewById(R.id.ib_user_location);
-//        btnFilter = view.findViewById(R.id.btn_filter);
 
         rvCategory = view.findViewById(R.id.rv_category);
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 
@@ -158,7 +159,6 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
         ibPlus.setOnClickListener(this);
         ibMinus.setOnClickListener(this);
         ibUserLocation.setOnClickListener(this);
-//        btnFilter.setOnClickListener(this);
 
         mapView = view.findViewById(R.id.mapview);
         mapView.getMap().setRotateGesturesEnabled(false);
@@ -177,7 +177,6 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
 //        userLocationLayer.setHeadingEnabled(true);
 //        userLocationLayer.setObjectListener(this);
 
-//        createMapObjects(shopList);
 
         String point = getPoint(mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude(), mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
         getPlaces(point, setRange((int) mapView.getMap().getCameraPosition().getZoom()));
@@ -325,9 +324,6 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 bundle.putSerializable("shop", shop);
                 ((MainActivity) getActivity()).openVitrinaShop(bundle);
                 break;
-//            case R.id.btn_filter:
-//                Toast.makeText(getActivity(), "Что сюда вставить?", Toast.LENGTH_LONG).show();
-//                break;
         }
     }
 
@@ -340,7 +336,6 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
     }
 
     private void addSelectedPlaceMark(Shop shop, float scale, float x, float y) {
-//        addPlaceMark(shop, 1.5f, 0.5f, 0.85f);
         PlacemarkMapObject placemarkMapObject = mapObjects.addPlacemark(new Point(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude()),
                 ImageProvider.fromResource(getActivity(), R.drawable.ic_marker));
         placemarkMapObject.setIconStyle(new IconStyle().setScale(scale).setAnchor(new PointF(x, y)));
@@ -359,27 +354,46 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
         selected = null;
         switch (position) {
             case 0:
-                createMapObjects(filter(copyList, 1));
+                isCatPressed(1);
+//                createMapObjects(filter(copyList, 1));
                 break;
             case 1:
-                createMapObjects(filter(copyList, 2));
+                isCatPressed(2);
+//                createMapObjects(filter(copyList, 2));
                 break;
             case 2:
-                createMapObjects(filter(copyList, 3));
+                isCatPressed(3);
+//                createMapObjects(filter(copyList, 3));
                 break;
             case 3:
-                createMapObjects(filter(copyList, 4));
+                isCatPressed(4);
+//                createMapObjects(filter(copyList, 4));
                 break;
             case 4:
-                createMapObjects(filter(copyList, 5));
+                isCatPressed(5);
+//                createMapObjects(filter(copyList, 5));
                 break;
             case 5:
+                isCatPressed(0);
 //                createMapObjects(shopList);
-                String point = getPoint(mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude(),
-                        mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
-                getPlaces(point, setRange((int) mapView.getMap().getCameraPosition().getZoom()));
+//                String point = getPoint(mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude(),
+//                        mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
+//                getPlaces(point, setRange((int) mapView.getMap().getCameraPosition().getZoom()));
                 break;
         }
+    }
+
+    private void isCatPressed(int cat) {
+        if (isCategoryPressed && CATEGORY == cat) {
+            isCategoryPressed = false;
+            CATEGORY = 0;
+            createMapObjects(filter(copyList, 0));
+        } else {
+            isCategoryPressed = true;
+            CATEGORY = cat;
+            createMapObjects(filter(copyList, cat));
+        }
+        adaptorCategory.notifyDataSetChanged();
     }
 
     private List<Shop> filter(List<Shop> copy, int i) {
@@ -393,6 +407,8 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 }
             }
             dataShopsFiltered.clear();
+        } else {
+            filterList.addAll(copy);
         }
         return filterList;
     }
@@ -413,7 +429,7 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 copyList.clear();
                 copyList.addAll(response.body());
                 dataShops.addAll(response.body());
-                createMapObjects(dataShops);
+                createMapObjects(filter(dataShops, CATEGORY));
             }
 
             @Override
