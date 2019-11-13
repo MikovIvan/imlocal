@@ -18,8 +18,8 @@ import pl.aprilapps.easyphotopicker.MediaFile;
 import ru.imlocal.imlocal.R;
 
 public class RecyclerViewAdapterPhotos extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    final int VIEW_TYPE_ADD = 1;
-    final int VIEW_TYPE_UPDATE = 2;
+    final int VIEW_TYPE_FILE = 1;
+    final int VIEW_TYPE_FILE_PATH = 2;
 
     private List<MediaFile> imagesFiles;
     private List<String> photoPaths;
@@ -39,10 +39,10 @@ public class RecyclerViewAdapterPhotos extends RecyclerView.Adapter<RecyclerView
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_photos, parent, false);
-        if (viewType == VIEW_TYPE_ADD) {
+        if (viewType == VIEW_TYPE_FILE) {
             return new ViewHolder1(v);
         }
-        if (viewType == VIEW_TYPE_UPDATE) {
+        if (viewType == VIEW_TYPE_FILE_PATH) {
             return new ViewHolder2(v);
         }
 
@@ -52,7 +52,7 @@ public class RecyclerViewAdapterPhotos extends RecyclerView.Adapter<RecyclerView
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ViewHolder1) {
-            ((ViewHolder1) holder).populate1(imagesFiles.get(position), position);
+            ((ViewHolder1) holder).populate1(imagesFiles.get(position - photoPaths.size()), position);
         }
 
         if (holder instanceof ViewHolder2) {
@@ -68,17 +68,34 @@ public class RecyclerViewAdapterPhotos extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemViewType(int position) {
-        if (photoPaths != null && !photoPaths.isEmpty()) {
-            return 2;
+        if (position < photoPaths.size()) {
+            return VIEW_TYPE_FILE_PATH;
         }
-        if (imagesFiles != null && !imagesFiles.isEmpty()) {
-            return 1;
+        if (position - photoPaths.size() < imagesFiles.size()) {
+            return VIEW_TYPE_FILE;
         }
-        return 0;
+//        if (photoPaths != null && !photoPaths.isEmpty()) {
+//            return 2;
+//        }
+//        if (imagesFiles != null && !imagesFiles.isEmpty()) {
+//            return 1;
+//        }
+        return -1;
     }
 
     public interface OnItemClickListener {
         void onDeleteClick(int position);
+    }
+
+    public void add(MediaFile mediaFile) {
+        imagesFiles.add(mediaFile);
+        notifyItemInserted(imagesFiles.size() - 1);
+    }
+
+    public void addImageFile(List<MediaFile> mediaFileList) {
+        for (MediaFile mediaFile : mediaFileList) {
+            add(mediaFile);
+        }
     }
 
     class ViewHolder1 extends RecyclerView.ViewHolder {

@@ -651,6 +651,9 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         if (photos.size() >= 11) {
             btnAddPhoto.setVisibility(View.GONE);
         }
+        if (adapterPhotos.getItemCount() >= 11) {
+            btnAddPhoto.setVisibility(View.GONE);
+        }
     }
 
     private boolean arePermissionsGranted(String[] permissions) {

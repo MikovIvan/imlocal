@@ -293,6 +293,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                 List<Action> results = fetchResults(response);
                 actionList.addAll(results);
                 copyList.addAll(results);
+                filter(copyList, CATEGORY);
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -367,7 +368,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                     displayData(actionList);
 
                     isLastPage = false;
-                    if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                    if (currentPage < TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;
                 }
             }

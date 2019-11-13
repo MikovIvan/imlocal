@@ -385,6 +385,52 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                } else if (!photos.isEmpty()) {
+                    showpDialog();
+                    try {
+                        MultipartBody.Part[] body = new MultipartBody.Part[photos.size()];
+                        for (int i = 0; i < photos.size(); i++) {
+                            File file = new Compressor(getActivity()).compressToFile(photos.get(i).getFile());
+                            body[i] = MultipartBody.Part.createFormData("files[]", file.getPath(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+                        }
+                        Call<Shop> call1 = api.updateShop(Credentials.basic(user.getAccessToken(), ""),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getCreatorId()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortName()),
+                                RequestBody.create(MediaType.parse("text/plain"), String.valueOf(shop.getShopTypeId())),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopPhone()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopWeb()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopAddressId()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopCostMin()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopCostMax()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopWorkTime()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopShortDescription()),
+                                RequestBody.create(MediaType.parse("text/plain"), shop.getShopFullDescription()),
+                                body,
+                                String.valueOf(shop.getShopId()));
+                        call1.enqueue(new Callback<Shop>() {
+                            @Override
+                            public void onResponse(Call<Shop> call, Response<Shop> response) {
+                                Log.d("Action", "Action: " + response.toString());
+                                if (response.isSuccessful()) {
+                                    if (response.code() == 200) {
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                        ((MainActivity) getActivity()).openBusiness();
+                                    } else {
+                                        hidepDialog();
+                                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Ошибка загрузки файла", Snackbar.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Shop> call, Throwable t) {
+                                Log.d("Action", "Action: " + t.toString());
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     Call<Shop> call2 = api.updateShop(Credentials.basic(user.getAccessToken(), ""), shop, shop.getShopId());
                     call2.enqueue(new Callback<Shop>() {

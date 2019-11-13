@@ -413,6 +413,9 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
         if (photos.size() >= 3) {
             btnAddPhoto.setVisibility(View.GONE);
         }
+        if (adapterPhotos.getItemCount() >= 3) {
+            btnAddPhoto.setVisibility(View.GONE);
+        }
     }
 
     private boolean arePermissionsGranted(String[] permissions) {
