@@ -46,8 +46,13 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
     @Override
     public void onBindViewHolder(RecyclerViewAdapterShopsBusiness.ViewHolder holder, int position) {
         Shop shop = dataShops.get(position);
-        Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
-                .into(holder.ivShopIcon);
+        if (!shop.getShopPhotoArray().isEmpty()) {
+            Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
+                    .into(holder.ivShopIcon);
+        } else {
+            Picasso.get().load(R.drawable.placeholder)
+                    .into(holder.ivShopIcon);
+        }
         holder.tvShopTitle.setText(shop.getShopShortName());
     }
 
