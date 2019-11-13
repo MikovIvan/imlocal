@@ -268,7 +268,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
 
     private void initSpinner(View view) {
         //        это потом заменить на места юзера
-
+        shopsName.clear();
         for (Shop shop : shopListBusiness) {
             shopsName.add(shop.getShopShortName());
         }

@@ -132,6 +132,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
 
         bundle = getArguments();
         if (bundle != null) {
+            photosPathList.clear();
             action = (Action) bundle.getSerializable("action");
             loadActionData(action);
             List<String> photos = new ArrayList<>();

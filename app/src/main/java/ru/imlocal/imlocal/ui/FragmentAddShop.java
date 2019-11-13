@@ -189,6 +189,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
 
         bundle = getArguments();
         if (bundle != null) {
+            photosPathList.clear();
             shop = (Shop) bundle.getSerializable("shop");
             loadShopData(shop);
             List<String> photos = new ArrayList<>();
