@@ -58,18 +58,16 @@ import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
 public class FragmentListActions extends Fragment implements PaginationAdapterCallback, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterActions.OnItemClickListener {
-    //раскомитить когда будет апи для бизнеса
-    //    private List<Action> actionList = new ArrayList<>();
-//    удалить когда будет апи для бизнеса
-    public static List<Action> actionList = new ArrayList<>();
+
+    private List<Action> actionList = new ArrayList<>();
     private List<Action> copyList = new ArrayList<>();
 
     private RecyclerView rvActions, rvCategory;
-    //    private RecyclerViewAdapterActions adapter;
     private static final int PAGE_START = 1;
     private static int CATEGORY = 0;
     private static int TOTAL_PAGES = 2;
     private PaginationAdapterActions adapter;
+    private RecyclerViewAdaptorCategory adaptorCategory;
     private LinearLayoutManager linearLayoutManager;
     private ProgressBar progressBar;
     private LinearLayout errorLayout;
@@ -78,6 +76,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private int currentPage = PAGE_START;
+    private boolean isCategoryPressed;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,7 +120,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
         });
 
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "action");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "action");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 
@@ -209,30 +208,37 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
     public void onItemClickCategory(int position) {
         switch (position) {
             case 0:
-                CATEGORY = 1;
-                filter(copyList, 1);
+                isCatPressed(1);
                 break;
             case 1:
-                CATEGORY = 2;
-                filter(copyList, 2);
+                isCatPressed(2);
                 break;
             case 2:
-                CATEGORY = 3;
-                filter(copyList, 3);
+                isCatPressed(3);
                 break;
             case 3:
-                CATEGORY = 4;
-                filter(copyList, 4);
+                isCatPressed(4);
                 break;
             case 4:
-                CATEGORY = 5;
-                filter(copyList, 5);
+                isCatPressed(5);
                 break;
             case 5:
-                CATEGORY = 0;
-                filter(copyList, 0);
+                isCatPressed(0);
                 break;
         }
+    }
+
+    private void isCatPressed(int cat) {
+        if (isCategoryPressed && CATEGORY == cat) {
+            isCategoryPressed = false;
+            CATEGORY = 0;
+            filter(copyList, 0);
+        } else {
+            isCategoryPressed = true;
+            CATEGORY = cat;
+            filter(copyList, cat);
+        }
+        adaptorCategory.notifyDataSetChanged();
     }
 
     @Override
@@ -301,7 +307,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
     }
 
     private Call<List<Action>> callAllActions() {
-        return api.getAllActions(currentPage, 3);
+        return api.getAllActions(currentPage, 10);
     }
 
     private void showErrorView(Throwable throwable) {

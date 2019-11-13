@@ -61,6 +61,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private static int TOTAL_PAGES = 2;
     private FloatingActionButton fab;
     private PaginationAdapterPlaces adapter;
+    private RecyclerViewAdaptorCategory adaptorCategory;
     private LinearLayoutManager linearLayoutManager;
     private ProgressBar progressBar;
     private LinearLayout errorLayout;
@@ -69,6 +70,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private int currentPage = PAGE_START;
+    private boolean isCategoryPressed;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -143,7 +145,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         });
 
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 
@@ -216,30 +218,37 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     public void onItemClickCategory(int position) {
         switch (position) {
             case 0:
-                CATEGORY = 1;
-                filter(copyList, 1);
+                isCatPressed(1);
                 break;
             case 1:
-                CATEGORY = 2;
-                filter(copyList, 2);
+                isCatPressed(2);
                 break;
             case 2:
-                CATEGORY = 3;
-                filter(copyList, 3);
+                isCatPressed(3);
                 break;
             case 3:
-                CATEGORY = 4;
-                filter(copyList, 4);
+                isCatPressed(4);
                 break;
             case 4:
-                CATEGORY = 5;
-                filter(copyList, 5);
+                isCatPressed(5);
                 break;
             case 5:
-                CATEGORY = 0;
-                filter(copyList, 0);
+                isCatPressed(0);
                 break;
         }
+    }
+
+    private void isCatPressed(int cat) {
+        if (isCategoryPressed && CATEGORY == cat) {
+            isCategoryPressed = false;
+            CATEGORY = 0;
+            filter(copyList, 0);
+        } else {
+            isCategoryPressed = true;
+            CATEGORY = cat;
+            filter(copyList, cat);
+        }
+        adaptorCategory.notifyDataSetChanged();
     }
 
     @Override
@@ -309,10 +318,9 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     private Call<List<Shop>> callAllShops() {
-//        return api.getShops(currentPage);
 //        return api.getAllShops(latitude + "," + longitude, 110000, currentPage, 10);
         String s = "55.7655,37.4693";
-        return api.getAllShops(s, 100000, currentPage, 10);
+        return api.getAllShops(s, 100000, currentPage, 20);
     }
 
     private void showErrorView(Throwable throwable) {
@@ -371,7 +379,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                     progressBar.setVisibility(View.GONE);
 
                     displayData(shopList);
-                    filter(copyList, CATEGORY);
                     isLastPage = false;
                     if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;

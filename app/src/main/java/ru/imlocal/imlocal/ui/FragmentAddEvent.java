@@ -325,6 +325,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public void onItemClickCategory(int position) {
         event.setEventTypeId(position + 1);
+        adaptorCategory.notifyDataSetChanged();
     }
 
     @Override

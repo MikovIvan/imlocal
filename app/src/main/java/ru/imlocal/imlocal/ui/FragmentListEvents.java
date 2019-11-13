@@ -57,18 +57,16 @@ import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
 
 public class FragmentListEvents extends Fragment implements View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterCallback, PaginationAdapterEvents.OnItemClickListener {
 
-    private RecyclerView recyclerView;
-    //    private RecyclerViewAdapterEvent adapter;
     private SwitchButton sbFreeEvents;
     private TextView tvDatePicker;
-    //    пока не будет апи
-    public static List<Event> eventList = new ArrayList<>();
+    private List<Event> eventList = new ArrayList<>();
     private List<Event> copyList = new ArrayList<>();
     private RecyclerView rvEvents, rvCategory;
     private static final int PAGE_START = 1;
     private static int CATEGORY = 0;
     private static int TOTAL_PAGES = 2;
     private PaginationAdapterEvents adapter;
+    private RecyclerViewAdaptorCategory adaptorCategory;
     private LinearLayoutManager linearLayoutManager;
     private ProgressBar progressBar;
     private LinearLayout errorLayout;
@@ -77,6 +75,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private int currentPage = PAGE_START;
+    private boolean isCategoryPressed;
 
     private boolean isShowFree;
     private ConstraintLayout constraintCalendar;
@@ -171,7 +170,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
 
     private void initRV() {
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "event");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "event");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
     }
@@ -231,42 +230,46 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
     public void onItemClickCategory(int position) {
         switch (position) {
             case 0:
-                CATEGORY = 1;
-                filter(copyList, CATEGORY);
+                isCatPressed(1);
                 break;
             case 1:
-                CATEGORY = 2;
-                filter(copyList, CATEGORY);
+                isCatPressed(2);
                 break;
             case 2:
-                CATEGORY = 3;
-                filter(copyList, CATEGORY);
+                isCatPressed(3);
                 break;
             case 3:
-                CATEGORY = 4;
-                filter(copyList, CATEGORY);
+                isCatPressed(4);
                 break;
             case 4:
-                CATEGORY = 7;
-                filter(copyList, CATEGORY);
+                isCatPressed(7);
                 break;
             case 5:
-                CATEGORY = 8;
-                filter(copyList, CATEGORY);
+                isCatPressed(8);
                 break;
             case 6:
-                CATEGORY = 5;
-                filter(copyList, CATEGORY);
+                isCatPressed(5);
                 break;
             case 7:
-                CATEGORY = 6;
-                filter(copyList, CATEGORY);
+                isCatPressed(6);
                 break;
             case 8:
-                CATEGORY = 0;
-                filter(copyList, CATEGORY);
+                isCatPressed(0);
                 break;
         }
+    }
+
+    private void isCatPressed(int cat) {
+        if (isCategoryPressed && CATEGORY == cat) {
+            isCategoryPressed = false;
+            CATEGORY = 0;
+            filter(copyList, 0);
+        } else {
+            isCategoryPressed = true;
+            CATEGORY = cat;
+            filter(copyList, cat);
+        }
+        adaptorCategory.notifyDataSetChanged();
     }
 
     private void filter(List<Event> filterList, int i) {

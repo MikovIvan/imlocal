@@ -273,6 +273,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     @Override
     public void onItemClickCategory(int position) {
         action.setActionTypeId(position + 1);
+        adaptorCategory.notifyDataSetChanged();
     }
 
     private void initRvCategory(View view) {

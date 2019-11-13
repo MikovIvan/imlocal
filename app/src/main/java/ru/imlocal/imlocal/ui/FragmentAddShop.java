@@ -475,6 +475,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             @Override
             public void onItemClickCategory(int position) {
                 shop.setShopTypeId(position + 1);
+                adaptorCategory.notifyDataSetChanged();
             }
         });
     }
