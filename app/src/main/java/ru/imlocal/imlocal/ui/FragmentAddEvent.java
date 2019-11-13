@@ -57,6 +57,7 @@ import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.EventPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.shopListBusiness;
@@ -204,6 +205,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             PreferenceUtils.saveEvent(event, getActivity());
             PreferenceUtils.savePhotoList(photos, getActivity());
         }
+        Utils.hideKeyboardFrom(getContext(), getView());
     }
 
     private void initSetPrice(View view) {

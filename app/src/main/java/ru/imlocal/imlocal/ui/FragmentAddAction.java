@@ -49,6 +49,7 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.ActionPhoto;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.shopListBusiness;
@@ -179,6 +180,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
             PreferenceUtils.saveAction(action, getActivity());
             PreferenceUtils.savePhotoList(photos, getActivity());
         }
+        Utils.hideKeyboardFrom(getContext(), getView());
     }
 
     private void initDatePicker(View view) {

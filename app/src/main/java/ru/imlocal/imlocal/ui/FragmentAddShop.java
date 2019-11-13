@@ -60,6 +60,7 @@ import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.entity.ShopPhoto;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
+import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
@@ -230,6 +231,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             PreferenceUtils.saveShop(shop, getActivity());
             PreferenceUtils.savePhotoList(photos, getActivity());
         }
+        Utils.hideKeyboardFrom(getContext(), getView());
     }
 
     @Override
