@@ -132,6 +132,8 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_sort);
         spinner.setItems("по рейтингу", "по удаленности");
+        spinner.setSelectedIndex(1);
+        spinner.setTextColor(getActivity().getResources().getColor(R.color.color_main));
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
@@ -304,6 +306,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                 shopList.addAll(results);
                 copyList.addAll(results);
                 filter(copyList, CATEGORY);
+                sortByDistance();
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -379,6 +382,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                     progressBar.setVisibility(View.GONE);
 
                     displayData(shopList);
+                    sortByDistance();
                     isLastPage = false;
                     if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;

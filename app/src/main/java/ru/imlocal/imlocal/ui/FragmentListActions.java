@@ -52,6 +52,8 @@ import ru.imlocal.imlocal.utils.Utils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.MainActivity.latitude;
+import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
@@ -107,6 +109,8 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_sort);
         spinner.setItems("по рейтингу", "по удаленности");
+        spinner.setSelectedIndex(1);
+        spinner.setTextColor(getActivity().getResources().getColor(R.color.color_main));
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
@@ -114,6 +118,8 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                     sortByRating();
                 } else {
                     sortByDistance();
+                    Log.d("List", adapter.getActions().toString());
+                    Log.d("List", "Coord: " + latitude + " " + longitude);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -294,6 +300,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                 actionList.addAll(results);
                 copyList.addAll(results);
                 filter(copyList, CATEGORY);
+                sortByDistance();
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -366,7 +373,11 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                     copyList.addAll(results);
                     progressBar.setVisibility(View.GONE);
                     displayData(actionList);
-
+                    Log.d("List", actionList.toString());
+                    Log.d("List", "Coord: " + latitude + " " + longitude);
+                    sortByDistance();
+                    Log.d("List", actionList.toString());
+                    Log.d("List", "Coord: " + latitude + " " + longitude);
                     isLastPage = false;
                     if (currentPage < TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;

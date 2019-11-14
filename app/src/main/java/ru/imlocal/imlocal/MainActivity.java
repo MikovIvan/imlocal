@@ -146,7 +146,7 @@ public class MainActivity extends LocationBaseActivity implements NavigationView
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
-            openViewPager();
+//            openViewPager();
             currentFragment = "FragmentViewPager";
         }
 
@@ -639,7 +639,7 @@ public class MainActivity extends LocationBaseActivity implements NavigationView
                             ContextCompat.checkSelfPermission(this,
                                     Manifest.permission.ACCESS_COARSE_LOCATION)
                                     == PackageManager.PERMISSION_GRANTED) {
-                        openViewPager();
+//                        openViewPager();
                     }
                 } else {
                     Toast.makeText(this, "Без этого разрешения ничего работать не будет", Toast.LENGTH_LONG).show();
@@ -656,6 +656,7 @@ public class MainActivity extends LocationBaseActivity implements NavigationView
         dismissProgress();
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+
     }
 
     @Override
@@ -740,6 +741,10 @@ public class MainActivity extends LocationBaseActivity implements NavigationView
         switch (processType) {
             case ProcessType.GETTING_LOCATION_FROM_GOOGLE_PLAY_SERVICES: {
                 updateProgress("Getting Location from Google Play Services...");
+                if (latitude != 0.0 && longitude != 0.0) {
+                    openViewPager();
+                    currentFragment = "FragmentViewPager";
+                }
                 break;
             }
             case ProcessType.GETTING_LOCATION_FROM_GPS_PROVIDER: {
