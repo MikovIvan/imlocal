@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,17 +18,17 @@ import ru.imlocal.imlocal.R;
 
 public class FragmentDeleteDialog extends AppCompatDialogFragment implements View.OnClickListener {
 
-    private String entity;
-    private int position;
+    String text;
+
     private DeleteDialogFragment deleteDialogFragment;
 
-    public FragmentDeleteDialog(String entity, int position) {
-        this.entity = entity;
-        this.position = position;
+    public FragmentDeleteDialog() {
+
     }
 
-    void setDeleteDialogFragment(DeleteDialogFragment deleteDialogFragment) {
+    void setDeleteDialogFragment(DeleteDialogFragment deleteDialogFragment, String text) {
         this.deleteDialogFragment = deleteDialogFragment;
+        this.text = text;
     }
 
     @Nullable
@@ -43,6 +44,8 @@ public class FragmentDeleteDialog extends AppCompatDialogFragment implements Vie
 
         Button btnDelete = view.findViewById(R.id.btn_delete);
         Button btnCancel = view.findViewById(R.id.btn_cancel);
+        TextView tvTitle = view.findViewById(R.id.tv_delete_title);
+        tvTitle.setText(text);
 
         btnDelete.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
@@ -54,7 +57,7 @@ public class FragmentDeleteDialog extends AppCompatDialogFragment implements Vie
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_delete:
-                deleteDialogFragment.onDeleted(entity, position);
+                deleteDialogFragment.onDeleted();
                 dismiss();
                 break;
             case R.id.btn_cancel:
@@ -64,6 +67,6 @@ public class FragmentDeleteDialog extends AppCompatDialogFragment implements Vie
     }
 
     public interface DeleteDialogFragment {
-        void onDeleted(String entity, int position);
+        void onDeleted();
     }
 }

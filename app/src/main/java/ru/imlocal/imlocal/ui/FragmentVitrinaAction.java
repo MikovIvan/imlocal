@@ -55,12 +55,13 @@ import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_PREVIEW;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 import static ru.imlocal.imlocal.utils.Utils.replaceString;
 
-public class FragmentVitrinaAction extends Fragment implements View.OnClickListener {
+public class FragmentVitrinaAction extends Fragment implements View.OnClickListener, FragmentDeleteDialog.DeleteDialogFragment {
 
     private ImageView ivShopPhoto;
     private TextView tvShopName;
@@ -73,6 +74,7 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
     private Action action;
     private Bundle bundle;
+    private String update = "";
 
     private List<MediaFile> photos = new ArrayList<>();
     private ArrayList<String> photosDeleteList = new ArrayList<>();
@@ -106,6 +108,9 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
         bundle = getArguments();
         action = (Action) bundle.getSerializable("action");
+        if (bundle.getString("update") != null) {
+            update = bundle.getString("update");
+        }
 
         if (bundle.getStringArrayList("photoId") != null && !bundle.getStringArrayList("photoId").isEmpty()) {
             photosDeleteList.addAll(bundle.getStringArrayList("photoId"));
@@ -337,6 +342,15 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 }
 
                 return true;
+            case R.id.edit_business:
+                Bundle bundle = new Bundle();
+                bundle.putString("update", STATUS_UPDATE);
+                bundle.putSerializable("action", action);
+                ((MainActivity) getActivity()).openAddAction(bundle);
+                return true;
+            case R.id.delete_business:
+                openDeleteDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -344,8 +358,10 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (status.equals(STATUS_UPDATE)) {
+        if (update.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
+        } else if (status.equals(STATUS_PREVIEW)) {
+            inflater.inflate(R.menu.menu_preview, menu);
         } else if (bundle.getParcelableArrayList("photos") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
@@ -434,5 +450,28 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
                 });
                 break;
         }
+    }
+
+    @Override
+    public void onDeleted() {
+        Call<Action> call3 = api.deleteAction(Credentials.basic(user.getAccessToken(), ""), action.getId());
+        call3.enqueue(new Callback<Action>() {
+            @Override
+            public void onResponse(Call<Action> call, Response<Action> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Action> call, Throwable t) {
+
+            }
+        });
+        Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void openDeleteDialog() {
+        FragmentDeleteDialog fragmentDeleteDialog = new FragmentDeleteDialog();
+        fragmentDeleteDialog.setDeleteDialogFragment(FragmentVitrinaAction.this, "Вы уверены, что хотите \n удалить акцию?");
+        fragmentDeleteDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
     }
 }

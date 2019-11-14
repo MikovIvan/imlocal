@@ -28,9 +28,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
 import pl.aprilapps.easyphotopicker.MediaFile;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActionsBusiness;
@@ -39,16 +36,15 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShopsBusiness;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.entity.ShopAddress;
 import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_NONE;
-import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_PREVIEW;
 
-public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener, FragmentDeleteDialog.DeleteDialogFragment {
+public class FragmentBusiness extends Fragment implements View.OnClickListener, RecyclerViewAdapterActionsBusiness.OnItemClickListener, RecyclerViewAdapterEventsBusiness.OnItemClickListener, RecyclerViewAdapterShopsBusiness.OnItemClickListener {
 
     private List<Action> actionListBusiness = new ArrayList<>();
     private List<Event> eventListBusiness = new ArrayList<>();
@@ -76,9 +72,6 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        ((MainActivity) getActivity()).enableUpButtonViews(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
     }
 
     @Nullable
@@ -86,6 +79,10 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_business, container, false);
 
+        ((MainActivity) getActivity()).enableUpButtonViews(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
+        
         status = STATUS_NONE;
         clearPreferences();
         eventListBusiness.clear();
@@ -193,45 +190,30 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onEditActionClick(int position) {
+    public void onActionClick(int position) {
         Action action = actionListBusiness.get(position);
         Bundle bundle = new Bundle();
-        status = STATUS_UPDATE;
+        status = STATUS_PREVIEW;
         bundle.putSerializable("action", action);
-        ((MainActivity) getActivity()).openAddAction(bundle);
+        ((MainActivity) getActivity()).openVitrinaAction(bundle);
     }
 
     @Override
-    public void onDeleteActionClick(int position) {
-        openDeleteDialog("action", position);
-    }
-
-    @Override
-    public void onEditEventClick(int position) {
+    public void onEventClick(int position) {
         Event event = eventListBusiness.get(position);
         Bundle bundle = new Bundle();
-        status = STATUS_UPDATE;
+        status = STATUS_PREVIEW;
         bundle.putSerializable("event", event);
-        ((MainActivity) getActivity()).openAddEvent(bundle);
+        ((MainActivity) getActivity()).openVitrinaEvent(bundle);
     }
 
     @Override
-    public void onDeleteEventClick(int position) {
-        openDeleteDialog("event", position);
-    }
-
-    @Override
-    public void onEditShopClick(int position) {
+    public void onShopClick(int position) {
         Shop shop = shopListBusiness.get(position);
         Bundle bundle = new Bundle();
-        status = STATUS_UPDATE;
+        status = STATUS_PREVIEW;
         bundle.putSerializable("shop", shop);
-        ((MainActivity) getActivity()).openAddShop(bundle);
-    }
-
-    @Override
-    public void onDeleteShopClick(int position) {
-        openDeleteDialog("shop", position);
+        ((MainActivity) getActivity()).openVitrinaShop(bundle);
     }
 
     private void clearPreferences() {
@@ -244,83 +226,5 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         ArrayList<String> photosDeleteList = new ArrayList<>();
         PreferenceUtils.savePhotoPathList(photoPathList, getActivity());
         PreferenceUtils.savePhotoList(mediaFileList, getActivity());
-    }
-
-    @Override
-    public void onDeleted(String entity, int position) {
-        switch (entity) {
-            case "event":
-                Call<Event> call = api.deleteEvent(Credentials.basic(user.getAccessToken(), ""), eventListBusiness.get(position).getId());
-                call.enqueue(new Callback<Event>() {
-                    @Override
-                    public void onResponse(Call<Event> call, Response<Event> response) {
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<Event> call, Throwable t) {
-
-                    }
-                });
-                Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
-                eventListBusiness.remove(position);
-                adapterEventsBusiness.notifyItemRemoved(position);
-                adapterEventsBusiness.notifyItemRangeChanged(position, eventListBusiness.size());
-                break;
-            case "shop":
-                Call<ShopAddress> call1 = api.deleteShopAddress(Credentials.basic(user.getAccessToken(), ""), shopListBusiness.get(position).getShopAddressId());
-                call1.enqueue(new Callback<ShopAddress>() {
-                    @Override
-                    public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<ShopAddress> call, Throwable t) {
-
-                    }
-                });
-                Call<Shop> call2 = api.deleteShop(Credentials.basic(user.getAccessToken(), ""), shopListBusiness.get(position).getShopId());
-                call2.enqueue(new Callback<Shop>() {
-                    @Override
-                    public void onResponse(Call<Shop> call, Response<Shop> response) {
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<Shop> call, Throwable t) {
-
-                    }
-                });
-                Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
-                shopListBusiness.remove(position);
-                adapterShopsBusiness.notifyItemRemoved(position);
-                adapterShopsBusiness.notifyItemRangeChanged(position, shopListBusiness.size());
-                break;
-            case "action":
-                Call<Action> call3 = api.deleteAction(Credentials.basic(user.getAccessToken(), ""), actionListBusiness.get(position).getId());
-                call3.enqueue(new Callback<Action>() {
-                    @Override
-                    public void onResponse(Call<Action> call, Response<Action> response) {
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<Action> call, Throwable t) {
-
-                    }
-                });
-                Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
-                actionListBusiness.remove(position);
-                adapterActionBusiness.notifyItemRemoved(position);
-                adapterActionBusiness.notifyItemRangeChanged(position, actionListBusiness.size());
-                break;
-        }
-    }
-
-    private void openDeleteDialog(String entity, int position) {
-        FragmentDeleteDialog fragmentDeleteDialog = new FragmentDeleteDialog(entity, position);
-        fragmentDeleteDialog.setDeleteDialogFragment(FragmentBusiness.this);
-        fragmentDeleteDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
     }
 }

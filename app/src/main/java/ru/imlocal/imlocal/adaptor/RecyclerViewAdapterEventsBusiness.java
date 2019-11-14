@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,10 +26,7 @@ public class RecyclerViewAdapterEventsBusiness extends RecyclerView.Adapter<Recy
     private Context context;
     private RecyclerViewAdapterEventsBusiness.OnItemClickListener mListener;
 
-
     public RecyclerViewAdapterEventsBusiness(Context context) {
-//    public RecyclerViewAdapterEventsBusiness(List<Event> dataEvents, Context context) {
-//        this.dataEvents = dataEvents;
         this.dataEvents = new ArrayList<>();
         this.context = context;
     }
@@ -65,31 +61,10 @@ public class RecyclerViewAdapterEventsBusiness extends RecyclerView.Adapter<Recy
     }
 
     public interface OnItemClickListener {
-        void onEditEventClick(int position);
-
-        void onDeleteEventClick(int position);
-    }
-
-    public void addNewEvent(Event event) {
-        dataEvents.add(0, event);
-        notifyItemInserted(0);
+        void onEventClick(int position);
     }
 
     public void setData(List<Event> events) {
-//        final int currentCount = dataEvents.size();
-//        synchronized (dataEvents){
-//            dataEvents.addAll(events);
-//        }
-//        if (Looper.getMainLooper() == Looper.myLooper()) {
-//            notifyItemRangeInserted(currentCount, events.size());
-//        } else {
-//            new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    notifyItemRangeInserted(currentCount, events.size());
-//                }
-//            });
-//        }
         dataEvents.clear();
         dataEvents.addAll(events);
         notifyDataSetChanged();
@@ -100,8 +75,6 @@ public class RecyclerViewAdapterEventsBusiness extends RecyclerView.Adapter<Recy
         ImageView ivEventImage;
         TextView tvEventTitle;
         TextView tvEventDate;
-        ImageButton ibEdit;
-        ImageButton ibDelete;
 
         ViewHolder(View v) {
             super(v);
@@ -109,29 +82,13 @@ public class RecyclerViewAdapterEventsBusiness extends RecyclerView.Adapter<Recy
             tvEventTitle = v.findViewById(R.id.tv_event_title_business);
             tvEventDate = v.findViewById(R.id.tv_event_date_business);
 
-            ibEdit = v.findViewById(R.id.ib_edit_business);
-            ibDelete = v.findViewById(R.id.ib_delete_business);
-
-
-            ibEdit.setOnClickListener(new View.OnClickListener() {
+            v.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View v) {
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onEditEventClick(position);
-                        }
-                    }
-                }
-            });
-
-            ibDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onDeleteEventClick(position);
+                            mListener.onEventClick(position);
                         }
                     }
                 }

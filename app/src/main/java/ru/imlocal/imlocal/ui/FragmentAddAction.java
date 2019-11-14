@@ -53,7 +53,6 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.shopListBusiness;
-import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
@@ -83,11 +82,10 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
 
     private MaterialSpinner spinner;
 
-    //        это потом заменить на места юзера
-    private List<Shop> userShops = new ArrayList<>();
     private List<String> shopsName = new ArrayList<>();
 
     private Bundle bundle;
+    private String update = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -132,6 +130,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
 
         bundle = getArguments();
         if (bundle != null) {
+            update = bundle.getString("update");
             photosPathList.clear();
             action = (Action) bundle.getSerializable("action");
             loadActionData(action);
@@ -176,7 +175,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     @Override
     public void onPause() {
         super.onPause();
-        if (!status.equals(STATUS_UPDATE)) {
+        if (!update.equals(STATUS_UPDATE)) {
             saveActionData(action);
             PreferenceUtils.saveAction(action, getActivity());
             PreferenceUtils.savePhotoList(photos, getActivity());
@@ -197,8 +196,6 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     }
 
     private void initSpinner(View view) {
-        //        это потом заменить на места юзера
-
         for (Shop shop : shopListBusiness) {
             shopsName.add(shop.getShopShortName());
         }
@@ -267,6 +264,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
                 bundle.putSerializable("action", action);
                 bundle.putParcelableArrayList("photos", photos);
                 bundle.putStringArrayList("photoId", photosDeleteList);
+                bundle.putString("update", STATUS_UPDATE);
                 ((MainActivity) getActivity()).openVitrinaAction(bundle);
             }
         }

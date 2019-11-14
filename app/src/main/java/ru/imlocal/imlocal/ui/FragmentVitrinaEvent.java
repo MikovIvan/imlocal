@@ -59,6 +59,7 @@ import static ru.imlocal.imlocal.utils.Constants.FOOD;
 import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.SHOW;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_PREVIEW;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Constants.THEATRE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
@@ -66,7 +67,7 @@ import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat2;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
-public class FragmentVitrinaEvent extends Fragment {
+public class FragmentVitrinaEvent extends Fragment implements FragmentDeleteDialog.DeleteDialogFragment {
     private ImageView ivEventPhoto;
     private TextView tvEventName;
     private TextView tvEventAdress;
@@ -78,6 +79,7 @@ public class FragmentVitrinaEvent extends Fragment {
 
     private Event event;
     private Bundle bundle;
+    private String update = "";
 
     private List<MediaFile> photos = new ArrayList<>();
     private ArrayList<String> photosDeleteList = new ArrayList<>();
@@ -86,9 +88,6 @@ public class FragmentVitrinaEvent extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        ((MainActivity) getActivity()).enableUpButtonViews(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
     }
 
     @Nullable
@@ -96,6 +95,10 @@ public class FragmentVitrinaEvent extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_event, container, false);
+
+        ((MainActivity) getActivity()).enableUpButtonViews(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
         ivEventPhoto = view.findViewById(R.id.iv_vitrina);
         tvEventName = view.findViewById(R.id.tv_vitrina_name_of_place);
@@ -107,6 +110,9 @@ public class FragmentVitrinaEvent extends Fragment {
 
         bundle = getArguments();
         event = (Event) bundle.getSerializable("event");
+        if (bundle.getString("update") != null) {
+            update = bundle.getString("update");
+        }
 
         if (bundle.getStringArrayList("photoId") != null && !bundle.getStringArrayList("photoId").isEmpty()) {
             photosDeleteList.addAll(bundle.getStringArrayList("photoId"));
@@ -289,6 +295,15 @@ public class FragmentVitrinaEvent extends Fragment {
                     });
                 }
                 return true;
+            case R.id.edit_business:
+                Bundle bundle = new Bundle();
+                bundle.putString("update", STATUS_UPDATE);
+                bundle.putSerializable("event", event);
+                ((MainActivity) getActivity()).openAddEvent(bundle);
+                return true;
+            case R.id.delete_business:
+                openDeleteDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -296,8 +311,10 @@ public class FragmentVitrinaEvent extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (status.equals(STATUS_UPDATE)) {
+        if (update.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
+        } else if (status.equals(STATUS_PREVIEW)) {
+            inflater.inflate(R.menu.menu_preview, menu);
         } else if (bundle.getParcelableArrayList("photos") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
@@ -351,6 +368,29 @@ public class FragmentVitrinaEvent extends Fragment {
                 tvEventType.setText(SHOW);
                 break;
         }
+    }
+
+    @Override
+    public void onDeleted() {
+        Call<Event> call = api.deleteEvent(Credentials.basic(user.getAccessToken(), ""), event.getId());
+        call.enqueue(new Callback<Event>() {
+            @Override
+            public void onResponse(Call<Event> call, Response<Event> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Event> call, Throwable t) {
+
+            }
+        });
+        Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void openDeleteDialog() {
+        FragmentDeleteDialog fragmentDeleteDialog = new FragmentDeleteDialog();
+        fragmentDeleteDialog.setDeleteDialogFragment(FragmentVitrinaEvent.this, "Вы уверены, что хотите \n удалить событие?");
+        fragmentDeleteDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
     }
 }
 

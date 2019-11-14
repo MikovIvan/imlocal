@@ -63,7 +63,6 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
-import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.KEY_RUB;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
@@ -105,6 +104,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
 
     private Bundle bundle;
     private File pdfFile;
+    private String update = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -189,6 +189,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
 
         bundle = getArguments();
         if (bundle != null) {
+            update = bundle.getString("update");
             photosPathList.clear();
             shop = (Shop) bundle.getSerializable("shop");
             loadShopData(shop);
@@ -227,7 +228,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
     @Override
     public void onPause() {
         super.onPause();
-        if (!status.equals(STATUS_UPDATE)) {
+        if (!update.equals(STATUS_UPDATE)) {
             saveShopData(shop);
             PreferenceUtils.saveShop(shop, getActivity());
             PreferenceUtils.savePhotoList(photos, getActivity());
@@ -304,7 +305,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
             }
             if (tvAddAddress.getText().equals("")) {
                 Snackbar.make(getView(), "Укажите адрес", Snackbar.LENGTH_LONG).show();
-            } else if (status.equals(STATUS_UPDATE)) {
+            } else if (update.equals(STATUS_UPDATE)) {
                 try {
                     setShopAddress(tvAddAddress.getText().toString());
                 } catch (IOException e) {
@@ -349,6 +350,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 bundle.putParcelableArrayList("photos", photos);
                 bundle.putSerializable("pdf", pdfFile);
                 bundle.putStringArrayList("photoId", photosDeleteList);
+                bundle.putString("update", STATUS_UPDATE);
                 ((MainActivity) getActivity()).openVitrinaShop(bundle);
             }
         }

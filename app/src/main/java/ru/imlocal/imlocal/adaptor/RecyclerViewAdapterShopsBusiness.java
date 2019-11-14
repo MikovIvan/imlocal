@@ -26,8 +26,6 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
     private Context context;
     private OnItemClickListener mListener;
 
-    //    public RecyclerViewAdapterShopsBusiness(List<Shop> dataActions, Context context) {
-//        this.dataActions = dataActions;
     public RecyclerViewAdapterShopsBusiness(Context context) {
         this.dataShops = new ArrayList<>();
         this.context = context;
@@ -62,9 +60,7 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
     }
 
     public interface OnItemClickListener {
-        void onEditShopClick(int position);
-
-        void onDeleteShopClick(int position);
+        void onShopClick(int position);
     }
 
     public void setData(List<Shop> shops) {
@@ -85,29 +81,13 @@ public class RecyclerViewAdapterShopsBusiness extends RecyclerView.Adapter<Recyc
             tvShopTitle = v.findViewById(R.id.tv_shop_title_business);
             ivShopIcon = v.findViewById(R.id.iv_shop_icon_business);
 
-            ibEdit = v.findViewById(R.id.ib_edit_business);
-            ibDelete = v.findViewById(R.id.ib_delete_business);
-
-
-            ibEdit.setOnClickListener(new View.OnClickListener() {
+            v.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View v) {
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onEditShopClick(position);
-                        }
-                    }
-                }
-            });
-
-            ibDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onDeleteShopClick(position);
+                            mListener.onShopClick(position);
                         }
                     }
                 }

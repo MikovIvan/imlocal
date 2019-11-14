@@ -70,11 +70,12 @@ import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Constants.PURCHASES;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.SPORT;
+import static ru.imlocal.imlocal.utils.Constants.STATUS_PREVIEW;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
-public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdapterActionsLight.OnItemClickListener, View.OnClickListener {
+public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdapterActionsLight.OnItemClickListener, View.OnClickListener, FragmentDeleteDialog.DeleteDialogFragment {
 
     private TextView tvShopType;
     private TextView tvVitrinaNameOfPlace;
@@ -96,6 +97,7 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private boolean isRated = false;
     private float rate;
     private File pdfFile;
+    private String update = "";
 
     private List<MediaFile> photos = new ArrayList<>();
     private ArrayList<String> photosDeleteList = new ArrayList<>();
@@ -104,9 +106,6 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        ((MainActivity) getActivity()).enableUpButtonViews(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
     }
 
     @Nullable
@@ -114,6 +113,10 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         View view = inflater.inflate(R.layout.fragment_vitrina_shop, container, false);
+
+        ((MainActivity) getActivity()).enableUpButtonViews(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.toolbar_transparent));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
         tvShopType = view.findViewById(R.id.tv_event_type);
         tvVitrinaNameOfPlace = view.findViewById(R.id.tv_vitrina_name_of_place);
@@ -139,6 +142,10 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         shop = (Shop) bundle.getSerializable("shop");
         if (bundle.getSerializable("pdf") != null) {
             pdfFile = (File) bundle.getSerializable("pdf");
+        }
+
+        if (bundle.getString("update") != null) {
+            update = bundle.getString("update");
         }
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -461,6 +468,15 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                     }
                 });
                 return true;
+            case R.id.edit_business:
+                Bundle bundle = new Bundle();
+                bundle.putString("update", STATUS_UPDATE);
+                bundle.putSerializable("shop", shop);
+                ((MainActivity) getActivity()).openAddShop(bundle);
+                return true;
+            case R.id.delete_business:
+                openDeleteDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -468,8 +484,10 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (status.equals(STATUS_UPDATE)) {
+        if (update.equals(STATUS_UPDATE)) {
             inflater.inflate(R.menu.menu_update, menu);
+        } else if (status.equals(STATUS_PREVIEW)) {
+            inflater.inflate(R.menu.menu_preview, menu);
         } else if (bundle.getParcelableArrayList("photos") != null) {
             inflater.inflate(R.menu.menu_publish, menu);
         } else {
@@ -645,6 +663,41 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         Bundle bundle = new Bundle();
         bundle.putSerializable("event", event);
         ((MainActivity) getActivity()).openVitrinaEvent(bundle);
+    }
+
+    @Override
+    public void onDeleted() {
+        Call<ShopAddress> call1 = api.deleteShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddressId());
+        call1.enqueue(new Callback<ShopAddress>() {
+            @Override
+            public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ShopAddress> call, Throwable t) {
+
+            }
+        });
+        Call<Shop> call2 = api.deleteShop(Credentials.basic(user.getAccessToken(), ""), shop.getShopId());
+        call2.enqueue(new Callback<Shop>() {
+            @Override
+            public void onResponse(Call<Shop> call, Response<Shop> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Shop> call, Throwable t) {
+
+            }
+        });
+        Snackbar.make(getView(), "DELETED", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void openDeleteDialog() {
+        FragmentDeleteDialog fragmentDeleteDialog = new FragmentDeleteDialog();
+        fragmentDeleteDialog.setDeleteDialogFragment(FragmentVitrinaShop.this, "Вы уверены, что хотите \n удалить место?");
+        fragmentDeleteDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
     }
 }
 

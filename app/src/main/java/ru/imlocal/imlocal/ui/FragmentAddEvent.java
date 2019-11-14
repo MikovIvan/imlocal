@@ -61,7 +61,6 @@ import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.shopListBusiness;
-import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER5;
@@ -99,12 +98,10 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     private TextInputEditText etEventName;
     private TextInputEditText etEventDescription;
 
-    //        это потом заменить на места юзера
-    private List<Shop> userShops = new ArrayList<>();
     private List<String> shopsName = new ArrayList<>();
 
     private Bundle bundle;
-
+    private String update = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -151,6 +148,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
         bundle = getArguments();
         if (bundle != null) {
             event = (Event) bundle.getSerializable("event");
+            update = bundle.getString("update");
             try {
                 loadEventData(event);
                 List<String> photos = new ArrayList<>();
@@ -200,7 +198,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
     @Override
     public void onPause() {
         super.onPause();
-        if (!status.equals(STATUS_UPDATE)) {
+        if (!update.equals(STATUS_UPDATE)) {
             saveEventData(event);
             PreferenceUtils.saveEvent(event, getActivity());
             PreferenceUtils.savePhotoList(photos, getActivity());
@@ -448,6 +446,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
                     bundle.putSerializable("event", event);
                     bundle.putParcelableArrayList("photos", photos);
                     bundle.putStringArrayList("photoId", photosDeleteList);
+                    bundle.putString("update", STATUS_UPDATE);
                     ((MainActivity) getActivity()).openVitrinaEvent(bundle);
                 }
             }
