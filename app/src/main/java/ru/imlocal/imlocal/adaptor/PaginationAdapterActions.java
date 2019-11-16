@@ -1,6 +1,7 @@
 package ru.imlocal.imlocal.adaptor;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.ui.FragmentListActions;
@@ -80,7 +82,7 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
         switch (viewType) {
             case ITEM:
                 View viewItem = inflater.inflate(R.layout.list_item_action, parent, false);
-                viewHolder = new ActionVH(viewItem);
+                viewHolder = new ActionVH(viewItem, context);
                 break;
             case LOADING:
                 View viewLoading = inflater.inflate(R.layout.item_progress, parent, false);
@@ -98,39 +100,7 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
         switch (getItemViewType(position)) {
             case ITEM:
                 ActionVH actionVH = (ActionVH) holder;
-                if (action != null) {
-                    if (favoritesActions.containsKey(action.getId())) {
-                        actionVH.ibAddToFavorites.setImageResource(R.drawable.ic_heart_pressed);
-                    } else {
-                        actionVH.ibAddToFavorites.setImageResource(R.drawable.ic_heart);
-                    }
-
-                    if (action.getShop() != null) {
-                        if (action.getShop().getShopShortName() != null) {
-                            actionVH.tvShopTitle.setText(action.getShop().getShopShortName());
-                            Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(actionVH.ivIcon);
-                            actionVH.tvShopRating.setText(String.valueOf(action.getShop().getShopAvgRating()));
-                        }
-                    } else {
-                        actionVH.tvShopTitle.setText("Неверный id");
-                        actionVH.ivIcon.setImageResource(R.drawable.testimg);
-                        actionVH.tvShopRating.setText("000");
-                    }
-
-                    if (!action.getActionPhotos().isEmpty()) {
-                        actionVH.tvEventTitle.setText(action.getTitle());
-                        actionVH.tvEventAdress.setText(Utils.replaceString(action.getShop().getShopAddress().toString()));
-                        actionVH.tvActionDescription.setText(action.getFullDesc());
-                        actionVH.tvDate.setText(action.getBegin() + "-" + action.getEnd());
-                        Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
-                                .placeholder(R.drawable.placeholder)
-                                .into(actionVH.ivActionIcon);
-                    } else {
-                        actionVH.ivActionIcon.setVisibility(View.GONE);
-                    }
-                }
+                actionVH.bind(action);
                 break;
 
             case LOADING:
@@ -312,14 +282,11 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
-
         void onItemShare(int position);
-
         void onItemAddToFavorites(int position, ImageButton imageButton);
     }
 
-    class ActionVH extends RecyclerView.ViewHolder {
+    class ActionVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView ivIcon;
         TextView tvEventTitle;
         TextView tvEventAdress;
@@ -331,8 +298,13 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
         ImageButton ibShare;
         ImageButton ibAddToFavorites;
 
-        ActionVH(View v) {
+        Action currentAction;
+        Context context;
+
+        ActionVH(View v, Context context) {
             super(v);
+            this.context = context;
+            v.setOnClickListener(this);
             tvShopTitle = v.findViewById(R.id.tv_shop_title);
             tvShopRating = v.findViewById(R.id.tv_shop_rating);
             tvEventTitle = v.findViewById(R.id.tv_action_title);
@@ -343,18 +315,6 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
             ibAddToFavorites = v.findViewById(R.id.ib_add_to_favorites);
             ivIcon = v.findViewById(R.id.iv_icon);
             ivActionIcon = v.findViewById(R.id.iv_action_icon);
-
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
-                        }
-                    }
-                }
-            });
 
             ibShare.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -379,6 +339,51 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
                     }
                 }
             });
+        }
+
+        void bind(Action action) {
+            currentAction = action;
+            if (action != null) {
+                if (favoritesActions.containsKey(action.getId())) {
+                    ibAddToFavorites.setImageResource(R.drawable.ic_heart_pressed);
+                } else {
+                    ibAddToFavorites.setImageResource(R.drawable.ic_heart);
+                }
+
+                if (action.getShop() != null) {
+                    if (action.getShop().getShopShortName() != null) {
+                        tvShopTitle.setText(action.getShop().getShopShortName());
+                        Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + action.getShop().getShopPhotoArray().get(0).getShopPhoto())
+                                .placeholder(R.drawable.placeholder)
+                                .into(ivIcon);
+                        tvShopRating.setText(String.valueOf(action.getShop().getShopAvgRating()));
+                    }
+                } else {
+                    tvShopTitle.setText("Неверный id");
+                    ivIcon.setImageResource(R.drawable.testimg);
+                    tvShopRating.setText("000");
+                }
+
+                if (!action.getActionPhotos().isEmpty()) {
+                    tvEventTitle.setText(action.getTitle());
+                    tvEventAdress.setText(Utils.replaceString(action.getShop().getShopAddress().toString()));
+                    tvActionDescription.setText(action.getFullDesc());
+                    tvDate.setText(action.getBegin() + "-" + action.getEnd());
+                    Picasso.get().load(BASE_IMAGE_URL + ACTION_IMAGE_DIRECTION + action.getActionPhotos().get(0).getActionPhoto())
+                            .placeholder(R.drawable.placeholder)
+                            .into(ivActionIcon);
+                } else {
+                    ivActionIcon.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("action", currentAction);
+            Utils.hideKeyboardFrom(context, view);
+            ((MainActivity) context).openVitrinaAction(bundle);
         }
     }
 }

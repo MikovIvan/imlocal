@@ -39,7 +39,6 @@ import java.util.concurrent.TimeoutException;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.PaginationAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
@@ -173,13 +172,13 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    public void onItemClick(int position) {
-        Action action = actionList.get(position);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("action", action);
-        ((MainActivity) getActivity()).openVitrinaAction(bundle);
-    }
+//    @Override
+//    public void onItemClick(int position) {
+//        Action action = actionList.get(position);
+//        Bundle bundle = new Bundle();
+//        bundle.putSerializable("action", action);
+//        ((MainActivity) getActivity()).openVitrinaAction(bundle);
+//    }
 
     @Override
     public void onItemShare(int position) {

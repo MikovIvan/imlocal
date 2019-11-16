@@ -1,6 +1,7 @@
 package ru.imlocal.imlocal.adaptor;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.ui.FragmentListPlaces;
@@ -50,7 +52,6 @@ public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.V
     private List<Shop> dataShops;
     private List<Shop> dataShopsFiltered;
     private Context context;
-    private PaginationAdapterPlaces.OnItemClickListener mListener;
 
     public PaginationAdapterPlaces(List<Shop> dataShops, Context context, FragmentListPlaces fragmentListPlaces) {
         this.context = context;
@@ -67,10 +68,6 @@ public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.V
         this.dataShops = dataShops;
     }
 
-    public void setOnItemClickListener(PaginationAdapterPlaces.OnItemClickListener listener) {
-        mListener = listener;
-    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
@@ -79,7 +76,7 @@ public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.V
         switch (viewType) {
             case ITEM:
                 View viewItem = inflater.inflate(R.layout.list_item_shop, parent, false);
-                viewHolder = new ShopVH(viewItem);
+                viewHolder = new ShopVH(viewItem, context);
                 break;
             case LOADING:
                 View viewLoading = inflater.inflate(R.layout.item_progress, parent, false);
@@ -97,44 +94,7 @@ public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.V
         switch (getItemViewType(position)) {
             case ITEM:
                 ShopVH shopVH = (ShopVH) holder;
-                if (shop != null) {
-                    shopVH.tvShopTitle.setText(shop.getShopShortName());
-
-//       для отображения описания магазина, чтобы соответсвовало макетам
-                    shopVH.tvShopTitle.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            shopVH.tvShopTitle.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            int linecount = shopVH.tvShopTitle.getLineCount();
-                            switch (linecount) {
-                                case 1:
-                                    shopVH.tvShopDescription.setMaxLines(3);
-                                    break;
-                                case 2:
-                                    shopVH.tvShopDescription.setMaxLines(2);
-                                    break;
-                                case 3:
-                                    shopVH.tvShopDescription.setMaxLines(3);
-                                    break;
-                            }
-                        }
-                    });
-
-                    if (shop.getShopPhotoArray() != null && !shop.getShopPhotoArray().isEmpty()) {
-                        Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
-                                .placeholder(R.drawable.placeholder)
-                                .into(shopVH.ivShopIcon);
-                    } else {
-                        Picasso.get().load(R.drawable.placeholder).placeholder(R.drawable.placeholder).into(shopVH.ivShopIcon);
-                    }
-                    shopVH.tvShopDescription.setText(shop.getShopShortDescription());
-                    shopVH.tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
-                    if (latitude != 0 && longitude != 0) {
-                        shopVH.tvDistance.setText(Utils.getDistanceInList(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude(), latitude, longitude));
-                    } else {
-                        shopVH.tvDistance.setText("");
-                    }
-                }
+                shopVH.bind(shop);
                 break;
 
             case LOADING:
@@ -286,10 +246,6 @@ public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.V
         if (errorMsg != null) this.errorMsg = errorMsg;
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
     protected class LoadingVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ProgressBar mProgressBar;
         private ImageButton mRetryBtn;
@@ -322,31 +278,75 @@ public class PaginationAdapterPlaces extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    class ShopVH extends RecyclerView.ViewHolder {
+    class ShopVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvDistance;
         ImageView ivShopIcon;
         TextView tvShopTitle;
         TextView tvShopDescription;
         TextView tvShopRating;
 
-        ShopVH(View v) {
+        Shop currentShop;
+        Context context;
+
+        ShopVH(View v, Context context) {
             super(v);
+            this.context = context;
+            v.setOnClickListener(this);
             tvDistance = v.findViewById(R.id.tv_distance);
             ivShopIcon = v.findViewById(R.id.iv_shopimage);
             tvShopTitle = v.findViewById(R.id.tv_title);
             tvShopDescription = v.findViewById(R.id.tv_description);
             tvShopRating = v.findViewById(R.id.tv_rating);
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
+        }
+
+        void bind(Shop shop) {
+            currentShop = shop;
+            if (shop != null) {
+                tvShopTitle.setText(shop.getShopShortName());
+
+//       для отображения описания магазина, чтобы соответсвовало макетам
+                tvShopTitle.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        tvShopTitle.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        int linecount = tvShopTitle.getLineCount();
+                        switch (linecount) {
+                            case 1:
+                                tvShopDescription.setMaxLines(3);
+                                break;
+                            case 2:
+                                tvShopDescription.setMaxLines(2);
+                                break;
+                            case 3:
+                                tvShopDescription.setMaxLines(3);
+                                break;
                         }
                     }
+                });
+
+                if (shop.getShopPhotoArray() != null && !shop.getShopPhotoArray().isEmpty()) {
+                    Picasso.get().load(BASE_IMAGE_URL + SHOP_IMAGE_DIRECTION + shop.getShopPhotoArray().get(0).getShopPhoto())
+                            .placeholder(R.drawable.placeholder)
+                            .into(ivShopIcon);
+                } else {
+                    Picasso.get().load(R.drawable.placeholder).placeholder(R.drawable.placeholder).into(ivShopIcon);
                 }
-            });
+                tvShopDescription.setText(shop.getShopShortDescription());
+                tvShopRating.setText(String.valueOf(shop.getShopAvgRating()));
+                if (latitude != 0 && longitude != 0) {
+                    tvDistance.setText(Utils.getDistanceInList(shop.getShopAddress().getLatitude(), shop.getShopAddress().getLongitude(), latitude, longitude));
+                } else {
+                    tvDistance.setText("");
+                }
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("shop", currentShop);
+            Utils.hideKeyboardFrom(context, view);
+            ((MainActivity) context).openVitrinaShop(bundle);
         }
     }
 }

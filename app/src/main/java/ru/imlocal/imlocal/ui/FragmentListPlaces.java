@@ -50,7 +50,7 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 
-public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterPlaces.OnItemClickListener {
+public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     public static List<Shop> shopList = new ArrayList<>();
     private static List<Shop> copyList = new ArrayList<>();
 
@@ -194,7 +194,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         isLastPage = false;
         loadFirstPage();
         mSwipeRefreshLayout.setRefreshing(false);
-
     }
 
     @Override
@@ -208,14 +207,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         searchView.setQueryHint("Введите название места");
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        Shop shop = shopList.get(position);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("shop", shop);
-        ((MainActivity) getActivity()).openVitrinaShop(bundle);
     }
 
     @Override
@@ -257,7 +248,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        adapter.getFilter().filter(query);
         return false;
     }
 
@@ -329,7 +319,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private Call<List<Shop>> callAllShops() {
 //        return api.getAllShops(latitude + "," + longitude, 110000, currentPage, 10);
         String s = "55.7655,37.4693";
-        return api.getAllShops(s, 100000, currentPage, 20);
+        return api.getAllShops(s, 100000, currentPage, 10);
     }
 
     private void showErrorView(Throwable throwable) {
@@ -406,7 +396,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private void displayData(List<Shop> shops) {
         adapter = new PaginationAdapterPlaces(shops, getActivity(), FragmentListPlaces.this);
         rvPlaces.setAdapter(adapter);
-        adapter.setOnItemClickListener(this);
+//        adapter.setOnItemClickListener(this);
     }
 
     private List<Shop> fetchResults(Response<List<Shop>> response) {
