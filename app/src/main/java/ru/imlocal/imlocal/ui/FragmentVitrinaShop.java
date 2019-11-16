@@ -679,15 +679,19 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
             }
         });
-        Call<Shop> call2 = api.deleteShop(Credentials.basic(user.getAccessToken(), ""), shop.getShopId());
-        call2.enqueue(new Callback<Shop>() {
+        Call<Boolean> call2 = api.deleteShop(Credentials.basic(user.getAccessToken(), ""), shop.getShopId());
+        call2.enqueue(new Callback<Boolean>() {
             @Override
-            public void onResponse(Call<Shop> call, Response<Shop> response) {
-
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()) {
+                    if (response.body()) {
+                        ((MainActivity) getActivity()).openBusiness();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<Shop> call, Throwable t) {
+            public void onFailure(Call<Boolean> call, Throwable t) {
 
             }
         });

@@ -372,15 +372,19 @@ public class FragmentVitrinaEvent extends Fragment implements FragmentDeleteDial
 
     @Override
     public void onDeleted() {
-        Call<Event> call = api.deleteEvent(Credentials.basic(user.getAccessToken(), ""), event.getId());
-        call.enqueue(new Callback<Event>() {
+        Call<Boolean> call = api.deleteEvent(Credentials.basic(user.getAccessToken(), ""), event.getId());
+        call.enqueue(new Callback<Boolean>() {
             @Override
-            public void onResponse(Call<Event> call, Response<Event> response) {
-
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()) {
+                    if (response.body()) {
+                        ((MainActivity) getActivity()).openBusiness();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<Event> call, Throwable t) {
+            public void onFailure(Call<Boolean> call, Throwable t) {
 
             }
         });

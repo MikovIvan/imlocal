@@ -454,15 +454,19 @@ public class FragmentVitrinaAction extends Fragment implements View.OnClickListe
 
     @Override
     public void onDeleted() {
-        Call<Action> call3 = api.deleteAction(Credentials.basic(user.getAccessToken(), ""), action.getId());
-        call3.enqueue(new Callback<Action>() {
+        Call<Boolean> call3 = api.deleteAction(Credentials.basic(user.getAccessToken(), ""), action.getId());
+        call3.enqueue(new Callback<Boolean>() {
             @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
-
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()) {
+                    if (response.body()) {
+                        ((MainActivity) getActivity()).openBusiness();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<Action> call, Throwable t) {
+            public void onFailure(Call<Boolean> call, Throwable t) {
 
             }
         });

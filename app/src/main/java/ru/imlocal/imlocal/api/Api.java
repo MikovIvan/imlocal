@@ -195,15 +195,15 @@ public interface Api {
 
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("shops/{id}")
-    Call<Shop> deleteShop(@Header("Authorization") String credentials, @Path("id") int id);
+    Call<Boolean> deleteShop(@Header("Authorization") String credentials, @Path("id") int id);
 
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("happenings/{id}")
-    Call<Event> deleteEvent(@Header("Authorization") String credentials, @Path("id") int id);
+    Call<Boolean> deleteEvent(@Header("Authorization") String credentials, @Path("id") int id);
 
     @Headers("Content-Type: application/json; charset=utf-8")
     @DELETE("events/{id}")
-    Call<Action> deleteAction(@Header("Authorization") String credentials, @Path("id") String id);
+    Call<Boolean> deleteAction(@Header("Authorization") String credentials, @Path("id") String id);
 
     @FormUrlEncoded
     @POST("shop-rating/create")
