@@ -82,7 +82,7 @@ public class FragmentBusiness extends Fragment implements View.OnClickListener, 
         ((MainActivity) getActivity()).enableUpButtonViews(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
-        
+
         status = STATUS_NONE;
         clearPreferences();
         eventListBusiness.clear();

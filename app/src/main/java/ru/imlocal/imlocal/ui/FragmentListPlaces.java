@@ -41,7 +41,6 @@ import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.PaginationAdapterPlaces;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
@@ -51,7 +50,7 @@ import ru.imlocal.imlocal.utils.PreferenceUtils;
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 
-public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterPlaces.OnItemClickListener {
+public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterPlaces.OnItemClickListener {
     public static List<Shop> shopList = new ArrayList<>();
     private static List<Shop> copyList = new ArrayList<>();
 

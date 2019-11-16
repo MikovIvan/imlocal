@@ -44,7 +44,6 @@ import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.PaginationAdapterEvents;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterEvent;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.decorators.DisableDaysDecorator;
 import ru.imlocal.imlocal.entity.Event;
@@ -55,7 +54,7 @@ import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER;
 
-public class FragmentListEvents extends Fragment implements View.OnClickListener, RecyclerViewAdapterEvent.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterCallback, PaginationAdapterEvents.OnItemClickListener {
+public class FragmentListEvents extends Fragment implements View.OnClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterCallback, PaginationAdapterEvents.OnItemClickListener {
 
     private SwitchButton sbFreeEvents;
     private TextView tvDatePicker;

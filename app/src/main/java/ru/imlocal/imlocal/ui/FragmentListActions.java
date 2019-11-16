@@ -42,7 +42,6 @@ import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.PaginationAdapterActions;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterActions;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
@@ -59,7 +58,7 @@ import static ru.imlocal.imlocal.utils.Constants.Kind;
 import static ru.imlocal.imlocal.utils.Utils.addToFavorites;
 import static ru.imlocal.imlocal.utils.Utils.removeFromFavorites;
 
-public class FragmentListActions extends Fragment implements PaginationAdapterCallback, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterActions.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterActions.OnItemClickListener {
+public class FragmentListActions extends Fragment implements PaginationAdapterCallback, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener, PaginationAdapterActions.OnItemClickListener {
 
     private List<Action> actionList = new ArrayList<>();
     private List<Action> copyList = new ArrayList<>();
