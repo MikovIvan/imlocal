@@ -70,6 +70,7 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private boolean isLastPage = false;
     private int currentPage = PAGE_START;
     private boolean isCategoryPressed;
+    private boolean isSortByRating = false;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -138,8 +139,10 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 if (position == 0) {
                     sortByRating();
+                    isSortByRating = true;
                 } else {
                     sortByDistance();
+                    isSortByRating = false;
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -305,7 +308,11 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                 shopList.addAll(results);
                 copyList.addAll(results);
                 filter(copyList, CATEGORY);
-                sortByDistance();
+                if (isSortByRating) {
+                    sortByRating();
+                } else {
+                    sortByDistance();
+                }
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;

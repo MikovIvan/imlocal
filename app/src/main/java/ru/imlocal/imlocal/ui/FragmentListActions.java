@@ -78,6 +78,7 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
     private boolean isLastPage = false;
     private int currentPage = PAGE_START;
     private boolean isCategoryPressed;
+    private boolean isSortByRating = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,8 +116,10 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 if (position == 0) {
                     sortByRating();
+                    isSortByRating = true;
                 } else {
                     sortByDistance();
+                    isSortByRating = false;
                     Log.d("List", adapter.getActions().toString());
                     Log.d("List", "Coord: " + latitude + " " + longitude);
                 }
@@ -299,7 +302,11 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                 actionList.addAll(results);
                 copyList.addAll(results);
                 filter(copyList, CATEGORY);
-                sortByDistance();
+                if (isSortByRating) {
+                    sortByRating();
+                } else {
+                    sortByDistance();
+                }
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
