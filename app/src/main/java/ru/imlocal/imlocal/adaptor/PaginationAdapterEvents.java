@@ -18,7 +18,10 @@ import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.LocalDate;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
@@ -30,6 +33,7 @@ import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.EVENT_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
+import static ru.imlocal.imlocal.utils.Constants.SIMPLE_DATE_FORMAT;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat;
 import static ru.imlocal.imlocal.utils.Utils.newDateFormat2;
 
@@ -259,6 +263,20 @@ public class PaginationAdapterEvents extends RecyclerView.Adapter<RecyclerView.V
             }
         }
         notifyDataSetChanged();
+        sortByDate();
+    }
+
+    public void sortByDate() {
+        Collections.sort(dataEvents, new Comparator<Event>() {
+            @Override
+            public int compare(Event e1, Event e2) {
+                try {
+                    return SIMPLE_DATE_FORMAT.parse(e2.getBegin()).compareTo(SIMPLE_DATE_FORMAT.parse(e1.getBegin()));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        });
     }
 
     public void add(Event event) {

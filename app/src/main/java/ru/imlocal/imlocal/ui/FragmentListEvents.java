@@ -157,6 +157,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
                 isShowFree = isChecked;
                 filter(copyList, CATEGORY);
+                sortByDate();
             }
         });
     }
@@ -294,6 +295,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
                 eventList.addAll(results);
                 copyList.addAll(results);
                 filter(copyList, CATEGORY);
+                sortByDate();
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -367,6 +369,7 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
                     progressBar.setVisibility(View.GONE);
                     displayData(eventList);
 
+                    sortByDate();
                     isLastPage = false;
                     if (currentPage < TOTAL_PAGES) adapter.addLoadingFooter();
                     else isLastPage = true;
@@ -385,6 +388,10 @@ public class FragmentListEvents extends Fragment implements View.OnClickListener
         adapter = new PaginationAdapterEvents(events, getContext(), FragmentListEvents.this);
         rvEvents.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
+    }
+
+    private void sortByDate() {
+        adapter.sortByDate();
     }
 
     private List<Event> fetchResults(Response<List<Event>> response) {
