@@ -77,6 +77,10 @@ public class Shop implements Serializable {
     @SerializedName("shopAvgRating")
     @Expose
     private double shopAvgRating;
+    @SerializedName("shopLinkPdf")
+    @Expose
+    private String shopLinkPdf;
+
 
     public Shop() {
     }
@@ -93,6 +97,14 @@ public class Shop implements Serializable {
         this.shopShortDescription = shopShortDescription;
         this.shopFullDescription = shopFullDescription;
         this.shopAddress = shopAddress;
+    }
+
+    public String getShopLinkPdf() {
+        return shopLinkPdf;
+    }
+
+    public void setShopLinkPdf(String shopLinkPdf) {
+        this.shopLinkPdf = shopLinkPdf;
     }
 
     public List<Event> getShopEventList() {

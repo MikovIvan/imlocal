@@ -12,6 +12,7 @@ public class Constants {
 
     //    public static final String BASE_IMAGE_URL = "https://imlocal.ru/img/";
     public static final String BASE_IMAGE_URL = "https://atolserver.xyz/img/";
+    public static final String BASE_URL = "https://atolserver.xyz/";
     public static final String SHOP_IMAGE_DIRECTION = "shopPhoto/";
     public static final String ACTION_IMAGE_DIRECTION = "eventPhoto/";
     public static final String EVENT_IMAGE_DIRECTION = "happeningPhoto/";

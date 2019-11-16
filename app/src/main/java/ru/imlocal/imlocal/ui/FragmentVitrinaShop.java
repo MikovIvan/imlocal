@@ -63,6 +63,7 @@ import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.user;
 import static ru.imlocal.imlocal.ui.FragmentBusiness.status;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
+import static ru.imlocal.imlocal.utils.Constants.BASE_URL;
 import static ru.imlocal.imlocal.utils.Constants.BEAUTY;
 import static ru.imlocal.imlocal.utils.Constants.CHILDREN;
 import static ru.imlocal.imlocal.utils.Constants.FOOD;
@@ -86,6 +87,8 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
     private TextView tvPrice;
     private TextView tvAboutShop;
     private TextView tvEstimate;
+    private TextView tvPdf;
+    private ImageView ivPdfDownload;
     private ViewFlipper viewFlipperShop;
     private Button btnRating;
     private RecyclerView rvListPlaces;
@@ -131,12 +134,15 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
         btnRating = view.findViewById(R.id.btn_rating);
         tvEstimate = view.findViewById(R.id.tv_estimate);
         viewFlipperShop = view.findViewById(R.id.flipper_vitrina_shop);
+        tvPdf = view.findViewById(R.id.tv_pdf);
+        ivPdfDownload = view.findViewById(R.id.iv_download);
 
         btnRating.setOnClickListener(this);
         tvEstimate.setOnClickListener(this);
         tvWebsite.setOnClickListener(this);
         tvAdress.setOnClickListener(this);
         tvShopPhone.setOnClickListener(this);
+        tvPdf.setOnClickListener(this);
 
         bundle = getArguments();
         shop = (Shop) bundle.getSerializable("shop");
@@ -146,6 +152,11 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
         if (bundle.getString("update") != null) {
             update = bundle.getString("update");
+        }
+
+        if (shop.getShopLinkPdf() != null && !shop.getShopLinkPdf().equals("")) {
+            tvPdf.setVisibility(View.VISIBLE);
+            ivPdfDownload.setVisibility(View.VISIBLE);
         }
 
         rvListPlaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -561,6 +572,10 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
                 Intent openPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + tvShopPhone.getText()));
                 startActivity(openPhone);
                 break;
+            case R.id.tv_pdf:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(BASE_URL + shop.getShopLinkPdf()));
+                startActivity(browserIntent);
+                break;
         }
     }
 
@@ -667,18 +682,18 @@ public class FragmentVitrinaShop extends Fragment implements RecyclerViewAdapter
 
     @Override
     public void onDeleted() {
-        Call<ShopAddress> call1 = api.deleteShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddressId());
-        call1.enqueue(new Callback<ShopAddress>() {
-            @Override
-            public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<ShopAddress> call, Throwable t) {
-
-            }
-        });
+//        Call<ShopAddress> call1 = api.deleteShopAddress(Credentials.basic(user.getAccessToken(), ""), shop.getShopAddressId());
+//        call1.enqueue(new Callback<ShopAddress>() {
+//            @Override
+//            public void onResponse(Call<ShopAddress> call, Response<ShopAddress> response) {
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ShopAddress> call, Throwable t) {
+//
+//            }
+//        });
         Call<Boolean> call2 = api.deleteShop(Credentials.basic(user.getAccessToken(), ""), shop.getShopId());
         call2.enqueue(new Callback<Boolean>() {
             @Override
