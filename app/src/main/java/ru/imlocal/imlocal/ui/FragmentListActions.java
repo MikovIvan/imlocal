@@ -78,6 +78,8 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
     private int currentPage = PAGE_START;
     private boolean isCategoryPressed;
     private boolean isSortByRating = false;
+    private boolean isSearching = false;
+    private String search = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -172,14 +174,6 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-//    @Override
-//    public void onItemClick(int position) {
-//        Action action = actionList.get(position);
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("action", action);
-//        ((MainActivity) getActivity()).openVitrinaAction(bundle);
-//    }
-
     @Override
     public void onItemShare(int position) {
         Action action = actionList.get(position);
@@ -260,13 +254,14 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        adapter.getFilter().filter(query);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-        adapter.getFilter().filter(query);
+        isSearching = true;
+        search = query;
+        adapter.getFilter().filter(search);
         return false;
     }
 
@@ -305,6 +300,10 @@ public class FragmentListActions extends Fragment implements PaginationAdapterCa
                     sortByRating();
                 } else {
                     sortByDistance();
+                }
+
+                if (isSearching) {
+                    adapter.getFilter().filter(search);
                 }
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();

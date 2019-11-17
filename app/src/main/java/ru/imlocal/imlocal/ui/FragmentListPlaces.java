@@ -71,6 +71,8 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private int currentPage = PAGE_START;
     private boolean isCategoryPressed;
     private boolean isSortByRating = false;
+    private boolean isSearching = false;
+    private String search = "";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -253,7 +255,9 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
 
     @Override
     public boolean onQueryTextChange(String query) {
-        adapter.getFilter().filter(query);
+        isSearching = true;
+        search = query;
+        adapter.getFilter().filter(search);
         return false;
     }
 
@@ -302,6 +306,10 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                     sortByRating();
                 } else {
                     sortByDistance();
+                }
+
+                if (isSearching) {
+                    adapter.getFilter().filter(search);
                 }
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
