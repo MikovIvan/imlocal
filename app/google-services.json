@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "338845371809",
+    "firebase_url": "https://imlocal-1087e.firebaseio.com",
+    "project_id": "imlocal-1087e",
+    "storage_bucket": "imlocal-1087e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338845371809:android:6a5c3cea08cc83915acfe0",
+        "android_client_info": {
+          "package_name": "ru.imlocal.imlocal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338845371809-tqonr65uv15plloalfkg0et61o0rcs6q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRvq4VMlng_wjC7rvrPSU83mitKdZJH_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338845371809-tqonr65uv15plloalfkg0et61o0rcs6q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
