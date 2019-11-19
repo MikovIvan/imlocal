@@ -120,7 +120,8 @@ public interface Api {
                           @Part("shopShortDescription") RequestBody shopShortDescription,
                           @Part("shopFullDescription") RequestBody shopFullDescription,
                           @Part MultipartBody.Part[] file,
-                          @Path("id") String id
+                          @Path("id") String id,
+                          @Part MultipartBody.Part pdf
     );
 
     @Multipart
