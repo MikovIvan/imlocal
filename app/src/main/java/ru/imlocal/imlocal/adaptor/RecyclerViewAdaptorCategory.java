@@ -107,7 +107,7 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
     public void onBindViewHolder(RecyclerViewAdaptorCategory.ViewHolder holder, final int position) {
         Category category = data.get(position);
         holder.tvCategory.setText(category.getName());
-        holder.tvCategory.setBackground(category.isSelected() ? context.getResources().getDrawable(R.color.color_main) : context.getResources().getDrawable(R.color.color_background));
+        holder.tvCategory.setBackground(category.isSelected() ? context.getResources().getDrawable(R.color.color_main) : context.getResources().getDrawable(android.R.color.white));
         holder.tvCategory.setTextColor(category.isSelected() ? Color.WHITE : context.getResources().getColor(R.color.color_main));
 
         holder.tvCategory.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +125,7 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                     isRepeated = true;
                 }
 
-                holder.tvCategory.setBackground(category.isSelected() ? context.getResources().getDrawable(R.color.color_main) : context.getResources().getDrawable(R.color.color_background));
+                holder.tvCategory.setBackground(category.isSelected() ? context.getResources().getDrawable(R.color.color_main) : context.getResources().getDrawable(android.R.color.white));
                 holder.tvCategory.setTextColor(category.isSelected() ? Color.WHITE : context.getResources().getColor(R.color.color_main));
                 lastSelectedPosition = holder.getAdapterPosition();
                 if (mListener != null) {
