@@ -50,6 +50,7 @@
             android:id="@+id/tv_vitrina_name_of_place"
             app:layout_constraintBottom_toTopOf="@id/tv_event_type"
             style="@style/HeaderTextStyle"
+            android:paddingEnd="@dimen/spacing_normal_16"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Салют в честь открытия парка" />
 
