@@ -50,6 +50,7 @@ public class Constants {
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_TO = new SimpleDateFormat("dd.MM.yy");
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_FROM = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT2 = new SimpleDateFormat("dd.MM.yyyy");
 
     public enum Kind {
         shop,

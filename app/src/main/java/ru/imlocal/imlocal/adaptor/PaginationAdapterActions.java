@@ -21,8 +21,10 @@ import com.squareup.picasso.Picasso;
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import ru.imlocal.imlocal.MainActivity;
@@ -38,6 +40,7 @@ import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.ACTION_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.BASE_IMAGE_URL;
 import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
+import static ru.imlocal.imlocal.utils.Constants.SIMPLE_DATE_FORMAT2;
 
 public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
@@ -184,6 +187,16 @@ public class PaginationAdapterActions extends RecyclerView.Adapter<RecyclerView.
         Collections.sort(dataActionsFiltered, (s1, s2) ->
                 Double.compare(Geo.distance(new Point(s1.getShop().getShopAddress().getLatitude(), s1.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude)),
                         Geo.distance(new Point(s2.getShop().getShopAddress().getLatitude(), s2.getShop().getShopAddress().getLongitude()), new Point(latitude, longitude))));
+        Collections.sort(dataActionsFiltered, new Comparator<Action>() {
+            @Override
+            public int compare(Action e1, Action e2) {
+                try {
+                    return SIMPLE_DATE_FORMAT2.parse(e2.getBegin()).compareTo(SIMPLE_DATE_FORMAT2.parse(e1.getBegin()));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        });
     }
 
     public void sortByRating() {
