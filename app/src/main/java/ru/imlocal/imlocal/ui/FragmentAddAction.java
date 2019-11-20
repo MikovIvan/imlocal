@@ -224,7 +224,7 @@ public class FragmentAddAction extends Fragment implements RecyclerViewAdapterPh
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.go_to_preview) {
-            if (!etActionName.getText().toString().equals("") && etActionName.getText().length() <= 30) {
+            if (!etActionName.getText().toString().equals("") && etActionName.getText().length() <= 50) {
                 action.setTitle(String.valueOf(etActionName.getText()));
             } else {
                 Snackbar.make(getView(), "Название неправильное", Snackbar.LENGTH_LONG).show();

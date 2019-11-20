@@ -395,7 +395,7 @@ public class FragmentAddEvent extends Fragment implements RecyclerViewAdapterPho
             if (!etAddPrice.getText().toString().endsWith(KEY_RUB) && !etAddPrice.getText().toString().equals("") && event.getPrice() != 0) {
                 event.setPrice(Integer.parseInt(etAddPrice.getText().toString()));
             }
-            if (!etEventName.getText().toString().equals("") && etEventName.getText().length() <= 30) {
+            if (!etEventName.getText().toString().equals("") && etEventName.getText().length() <= 50) {
                 event.setTitle(String.valueOf(etEventName.getText()));
             } else {
                 Snackbar.make(getView(), "Название неправильное", Snackbar.LENGTH_LONG).show();
