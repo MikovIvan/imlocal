@@ -132,7 +132,8 @@ public class FragmentVitrinaEvent extends Fragment implements FragmentDeleteDial
         }
 
         tvEventName.setText(event.getTitle());
-        tvEventAdress.setText(event.getAddress().substring(0, event.getAddress().length() - 8));
+        tvEventAdress.setText(event.getAddress());
+//                .substring(0, event.getAddress().length() - 8));
         setEventType(event);
         if (event.getPrice() > 0) {
             tvEventPrice.setText(event.getPrice() + Constants.KEY_RUB);
