@@ -31,7 +31,7 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                 data = new ArrayList<>();
                 data.add(new Category("Еда"));
                 data.add(new Category("Дети"));
-                data.add(new Category("Фитнес"));
+                data.add(new Category("Спорт"));
                 data.add(new Category("Красота"));
                 data.add(new Category("Покупки"));
                 data.add(new Category("Все"));
@@ -56,7 +56,7 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                 data = new ArrayList<>();
                 data.add(new Category("Еда"));
                 data.add(new Category("Дети"));
-                data.add(new Category("Фитнес"));
+                data.add(new Category("Спорт"));
                 data.add(new Category("Красота"));
                 data.add(new Category("Покупки"));
                 this.context = context;
@@ -79,7 +79,7 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                 data = new ArrayList<>();
                 data.add(new Category("Еда"));
                 data.add(new Category("Дети"));
-                data.add(new Category("Фитнес"));
+                data.add(new Category("Спорт"));
                 data.add(new Category("Красота"));
                 data.add(new Category("Покупки"));
                 this.context = context;
