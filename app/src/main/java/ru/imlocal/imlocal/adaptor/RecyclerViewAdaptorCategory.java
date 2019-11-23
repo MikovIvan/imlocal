@@ -13,82 +13,75 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
+import ru.imlocal.imlocal.entity.Category;
 
 public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerViewAdaptorCategory.ViewHolder> {
     private int category_index;
-    private List<String> data;
+    private List<Category> data;
     private Context context;
     private OnItemCategoryClickListener mListener;
+    private int lastSelectedPosition = -1;
+    boolean isRepeated;
 
     public RecyclerViewAdaptorCategory(Context context, String category) {
         switch (category) {
             case "shop":
-                category_index = 5;
-                data = new ArrayList<>();
-                data.add("Еда");
-                data.add("Дети");
-                data.add("Фитнес");
-                data.add("Красота");
-                data.add("Покупки");
-                data.add("Все");
-                this.context = context;
-                break;
             case "action":
                 category_index = 5;
                 data = new ArrayList<>();
-                data.add("Еда");
-                data.add("Дети");
-                data.add("Фитнес");
-                data.add("Красота");
-                data.add("Покупки");
-                data.add("Все");
+                data.add(new Category("Еда"));
+                data.add(new Category("Дети"));
+                data.add(new Category("Спорт"));
+                data.add(new Category("Красота"));
+                data.add(new Category("Покупки"));
+                data.add(new Category("Все"));
                 this.context = context;
                 break;
             case "event":
                 category_index = 8;
                 data = new ArrayList<>();
-                data.add("Еда");
-                data.add("Дети");
-                data.add("Спорт");
-                data.add("Город");
-                data.add("Театр");
-                data.add("Шоу");
-                data.add("Ярмарка");
-                data.add("Творчество");
-                data.add("Все");
+                data.add(new Category("Еда"));
+                data.add(new Category("Дети"));
+                data.add(new Category("Спорт"));
+                data.add(new Category("Город"));
+                data.add(new Category("Театр"));
+                data.add(new Category("Шоу"));
+                data.add(new Category("Ярмарка"));
+                data.add(new Category("Творчество"));
+                data.add(new Category("Все"));
                 this.context = context;
                 break;
             case "add_action":
                 category_index = -1;
                 data = new ArrayList<>();
-                data.add("Еда");
-                data.add("Дети");
-                data.add("Фитнес");
-                data.add("Красота");
-                data.add("Покупки");
+                data.add(new Category("Еда"));
+                data.add(new Category("Дети"));
+                data.add(new Category("Спорт"));
+                data.add(new Category("Красота"));
+                data.add(new Category("Покупки"));
                 this.context = context;
                 break;
             case "add_event":
                 category_index = -1;
                 data = new ArrayList<>();
-                data.add("Еда");
-                data.add("Дети");
-                data.add("Спорт");
-                data.add("Город");
-                data.add("Театр");
-                data.add("Шоу");
-                data.add("Ярмарка");
-                data.add("Творчество");
+                data.add(new Category("Еда"));
+                data.add(new Category("Дети"));
+                data.add(new Category("Спорт"));
+                data.add(new Category("Город"));
+                data.add(new Category("Театр"));
+                data.add(new Category("Шоу"));
+                data.add(new Category("Ярмарка"));
+                data.add(new Category("Творчество"));
                 this.context = context;
                 break;
             case "add_shop":
                 category_index = -1;
                 data = new ArrayList<>();
-                data.add("Еда");
-                data.add("Дети");
-                data.add("Фитнес");
-                data.add("Красота");
-                data.add("Покупки");
+                data.add(new Category("Еда"));
+                data.add(new Category("Дети"));
+                data.add(new Category("Спорт"));
+                data.add(new Category("Красота"));
+                data.add(new Category("Покупки"));
                 this.context = context;
                 break;
         }
@@ -98,8 +91,8 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
         mListener = listener;
     }
 
-    public void setCategory_index(int category_index){
-        this.category_index = category_index;
+    public void setCategory_index(int category_index) {
+        data.get(category_index).setSelected(true);
         notifyDataSetChanged();
     }
 
@@ -112,13 +105,29 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onBindViewHolder(RecyclerViewAdaptorCategory.ViewHolder holder, final int position) {
-        holder.tvCategory.setText(data.get(position));
+        Category category = data.get(position);
+        holder.tvCategory.setText(category.getName());
+        holder.tvCategory.setBackground(category.isSelected() ? context.getResources().getDrawable(R.color.color_main) : context.getResources().getDrawable(android.R.color.white));
+        holder.tvCategory.setTextColor(category.isSelected() ? Color.WHITE : context.getResources().getColor(R.color.color_main));
 
         holder.tvCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                category_index = position;
-                notifyDataSetChanged();
+                if (lastSelectedPosition >= 0) {
+                    data.get(lastSelectedPosition).setSelected(false);
+                }
+
+                if (lastSelectedPosition == holder.getAdapterPosition() && isRepeated) {
+                    category.setSelected(false);
+                    isRepeated = false;
+                } else {
+                    category.setSelected(!category.isSelected());
+                    isRepeated = true;
+                }
+
+                holder.tvCategory.setBackground(category.isSelected() ? context.getResources().getDrawable(R.color.color_main) : context.getResources().getDrawable(android.R.color.white));
+                holder.tvCategory.setTextColor(category.isSelected() ? Color.WHITE : context.getResources().getColor(R.color.color_main));
+                lastSelectedPosition = holder.getAdapterPosition();
                 if (mListener != null) {
                     if (position != RecyclerView.NO_POSITION) {
                         mListener.onItemClickCategory(position);
@@ -126,14 +135,6 @@ public class RecyclerViewAdaptorCategory extends RecyclerView.Adapter<RecyclerVi
                 }
             }
         });
-
-        if (category_index == position) {
-            holder.tvCategory.setBackground(context.getResources().getDrawable(R.color.color_main));
-            holder.tvCategory.setTextColor(Color.WHITE);
-        } else {
-            holder.tvCategory.setBackgroundColor(Color.WHITE);
-            holder.tvCategory.setTextColor(context.getResources().getColor(R.color.color_main));
-        }
     }
 
     @Override

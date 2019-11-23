@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
+import com.yayandroid.locationmanager.LocationManager;
 
 public class Application extends android.app.Application {
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
@@ -23,5 +24,8 @@ public class Application extends android.app.Application {
         super.onCreate();
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+
+//        отключить в итоговой версии
+        LocationManager.enableLog(true);
     }
 }

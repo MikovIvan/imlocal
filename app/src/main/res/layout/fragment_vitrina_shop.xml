@@ -50,6 +50,7 @@
             android:id="@+id/tv_vitrina_name_of_place"
             app:layout_constraintBottom_toTopOf="@id/tv_event_type"
             style="@style/HeaderTextStyle"
+            android:paddingEnd="@dimen/spacing_normal_16"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Салют в честь открытия парка" />
 
@@ -227,7 +228,35 @@
             style="@style/HeaderTextStyle.Normal.Black"
             android:text="@string/events"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_about_shop_text" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_pdf" />
+
+        <ImageView
+            android:id="@+id/iv_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_file_download_black_24dp"
+            android:layout_marginStart="@dimen/spacing_normal_16"
+            android:layout_marginTop="@dimen/spacing_small_8"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/tv_about_shop_text"
+            app:layout_constraintEnd_toStartOf="@id/tv_pdf"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_pdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_small_8"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/color_text_light"
+            android:textSize="@dimen/font_small_14"
+            android:text="Посмотреть меню, расписание, услуги"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/iv_download"
+            app:layout_constraintTop_toTopOf="@id/iv_download"
+            app:layout_constraintBottom_toBottomOf="@id/iv_download"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_fragment_vitrina_shop_list_events"

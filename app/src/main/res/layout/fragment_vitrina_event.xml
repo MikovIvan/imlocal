@@ -59,8 +59,12 @@
             <TextView
                 android:id="@+id/tv_adress"
                 style="@style/MenuSmallTextStyle"
-                android:text="г. Москва, ул. Воронцовская, 20"
+                android:paddingEnd="@dimen/spacing_small_8"
+                android:text="г. Москва, ул. Воронцовская, 20 "
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/iv_1"
                 app:layout_constraintTop_toTopOf="@+id/iv_1" />
 

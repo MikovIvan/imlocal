@@ -136,6 +136,24 @@
         <!--            android:textColor="@color/color_text"-->
         <!--            android:textSize="12sp" />-->
 
+        <Button
+            android:id="@+id/btn_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Добавить фото"
+            android:paddingStart="32dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="8dp"
+            android:layout_marginStart="@dimen/spacing_normal_16"
+            android:layout_marginTop="@dimen/spacing_small_8"
+            android:fontFamily="sans-serif"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:textSize="@dimen/font_small_14"
+            android:textAllCaps="false"
+            android:background="@drawable/btn_round_main_color" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -298,7 +316,7 @@
             android:background="@drawable/btn_round_white"
             android:clickable="false"
             app:counterEnabled="true"
-            app:counterMaxLength="30"
+            app:counterMaxLength="50"
             app:counterOverflowTextAppearance="@style/MyCounterText"
             app:hintTextAppearance="@style/MyHintText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -310,11 +328,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:hint="Введите название ообытия"
+                android:hint="Введите название cобытия"
+                android:inputType="textCapSentences|textMultiLine"
                 android:imeOptions="actionDone"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:singleLine="true"
+                android:singleLine="false"
+                android:maxLines="2"
                 android:textColor="@color/color_text"
                 android:textColorHint="@color/color_hint"
                 android:textSize="@dimen/font_small_14" />
@@ -353,6 +373,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="Полное описание события"
+                android:inputType="textCapSentences|textMultiLine"
                 android:imeOptions="actionDone|actionSend"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"

@@ -1,11 +1,8 @@
 package ru.imlocal.imlocal.ui;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,30 +40,27 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
-import ru.imlocal.imlocal.adaptor.PaginationAdapter;
-import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterShops;
+import ru.imlocal.imlocal.adaptor.PaginationAdapterPlaces;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdaptorCategory;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.gps.MyLocation;
 import ru.imlocal.imlocal.utils.PaginationAdapterCallback;
 import ru.imlocal.imlocal.utils.PaginationScrollListener;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
 
 import static ru.imlocal.imlocal.MainActivity.api;
 import static ru.imlocal.imlocal.MainActivity.appBarLayout;
-import static ru.imlocal.imlocal.MainActivity.latitude;
-import static ru.imlocal.imlocal.MainActivity.longitude;
 
-public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdapterShops.OnItemClickListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
+public class FragmentListPlaces extends Fragment implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener, MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener, RecyclerViewAdaptorCategory.OnItemCategoryClickListener {
     public static List<Shop> shopList = new ArrayList<>();
-    private List<Shop> copyList = new ArrayList<>();
+    private static List<Shop> copyList = new ArrayList<>();
 
     private RecyclerView rvPlaces, rvCategory;
     private static final int PAGE_START = 1;
     private static int CATEGORY = 0;
     private static int TOTAL_PAGES = 2;
     private FloatingActionButton fab;
-    private PaginationAdapter adapter;
+    private PaginationAdapterPlaces adapter;
+    private RecyclerViewAdaptorCategory adaptorCategory;
     private LinearLayoutManager linearLayoutManager;
     private ProgressBar progressBar;
     private LinearLayout errorLayout;
@@ -76,6 +69,10 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private int currentPage = PAGE_START;
+    private boolean isCategoryPressed;
+    private boolean isSortByRating = false;
+    private boolean isSearching = false;
+    private String search = "";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -93,7 +90,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         appBarLayout.setVisibility(View.VISIBLE);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
-        getCurrentLocation(getActivity());
 
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -138,20 +134,24 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
 
         MaterialSpinner spinner = view.findViewById(R.id.spinner_sort);
         spinner.setItems("по рейтингу", "по удаленности");
+        spinner.setSelectedIndex(1);
+        spinner.setTextColor(getActivity().getResources().getColor(R.color.color_main));
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 if (position == 0) {
                     sortByRating();
+                    isSortByRating = true;
                 } else {
                     sortByDistance();
+                    isSortByRating = false;
                 }
                 adapter.notifyDataSetChanged();
             }
         });
 
         rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdaptorCategory adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
+        adaptorCategory = new RecyclerViewAdaptorCategory(getContext(), "shop");
         rvCategory.setAdapter(adaptorCategory);
         adaptorCategory.setOnItemClickListener(this);
 
@@ -196,16 +196,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         isLastPage = false;
         loadFirstPage();
         mSwipeRefreshLayout.setRefreshing(false);
-
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                getCurrentLocation(getActivity());
-//                Log.d("GPS2", "Swipe gps: " + longitude + " " + latitude);
-//                mSwipeRefreshLayout.setRefreshing(false);
-//                adapter.notifyDataSetChanged();
-//            }
-//        }, 4000);
     }
 
     @Override
@@ -222,52 +212,52 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     @Override
-    public void onItemClick(int position) {
-        Shop shop = shopList.get(position);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("shop", shop);
-        ((MainActivity) getActivity()).openVitrinaShop(bundle);
-    }
-
-    @Override
     public void onItemClickCategory(int position) {
         switch (position) {
             case 0:
-                CATEGORY = 1;
-                filter(copyList, 1);
+                isCatPressed(1);
                 break;
             case 1:
-                CATEGORY = 2;
-                filter(copyList, 2);
+                isCatPressed(2);
                 break;
             case 2:
-                CATEGORY = 3;
-                filter(copyList, 3);
+                isCatPressed(3);
                 break;
             case 3:
-                CATEGORY = 4;
-                filter(copyList, 4);
+                isCatPressed(4);
                 break;
             case 4:
-                CATEGORY = 5;
-                filter(copyList, 5);
+                isCatPressed(5);
                 break;
             case 5:
-                CATEGORY = 0;
-                filter(copyList, 0);
+                isCatPressed(0);
                 break;
         }
     }
 
+    private void isCatPressed(int cat) {
+        if (isCategoryPressed && CATEGORY == cat) {
+            isCategoryPressed = false;
+            CATEGORY = 0;
+            filter(copyList, 0);
+        } else {
+            isCategoryPressed = true;
+            CATEGORY = cat;
+            filter(copyList, cat);
+        }
+        adaptorCategory.notifyDataSetChanged();
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
-        adapter.getFilter().filter(query);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-        adapter.getFilter().filter(query);
+        isSearching = true;
+        search = query;
+        adapter.getFilter().filter(search);
         return false;
     }
 
@@ -293,24 +283,6 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         adapter.filter(filterList, i);
     }
 
-    private void getCurrentLocation(Context context) {
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
-                @Override
-                public void gotLocation(Location location) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-// когда будет готово апи получение магазинов будет тут
-                    Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
-                }
-            };
-            MyLocation myLocation = new MyLocation();
-            myLocation.getLocation(context, locationResult);
-        }
-    }
-
     @Override
     public void retryPageLoad() {
         loadNextPage();
@@ -321,7 +293,8 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
         callAllShops().enqueue(new Callback<List<Shop>>() {
             @Override
             public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
-
+                Log.d("GPS2", response.body().toString());
+                Log.d("GPS2", response.toString());
                 adapter.removeLoadingFooter();
                 isLoading = false;
 
@@ -329,6 +302,15 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
                 shopList.addAll(results);
                 copyList.addAll(results);
                 filter(copyList, CATEGORY);
+                if (isSortByRating) {
+                    sortByRating();
+                } else {
+                    sortByDistance();
+                }
+
+                if (isSearching) {
+                    adapter.getFilter().filter(search);
+                }
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -343,7 +325,9 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     private Call<List<Shop>> callAllShops() {
-        return api.getShops(currentPage);
+//        return api.getAllShops(latitude + "," + longitude, 110000, currentPage, 10);
+        String s = "55.7655,37.4693";
+        return api.getAllShops(s, 100000, currentPage, 10);
     }
 
     private void showErrorView(Throwable throwable) {
@@ -384,21 +368,30 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
             @Override
             public void onResponse(Call<List<Shop>> call, Response<List<Shop>> response) {
                 hideErrorView();
+                Log.d("GPS2", response.toString());
+                Log.d("GPS2", response.body().toString());
+                if (response.headers().get("X-Pagination-Page-Count") == null) {
+                    if (errorLayout.getVisibility() == View.GONE) {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        txtError.setText("нет мест около вас");
+                    }
+                } else {
+                    TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
+                    List<Shop> results = fetchResults(response);
+                    shopList.clear();
+                    copyList.clear();
+                    shopList.addAll(results);
+                    copyList.addAll(results);
+                    progressBar.setVisibility(View.GONE);
 
-                TOTAL_PAGES = Integer.parseInt(response.headers().get("X-Pagination-Page-Count"));
-                List<Shop> results = fetchResults(response);
-                shopList.clear();
-                copyList.clear();
-                shopList.addAll(results);
-                copyList.addAll(results);
-                progressBar.setVisibility(View.GONE);
-                displayData(shopList);
-
-                isLastPage = false;
-                if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
-                else isLastPage = true;
+                    displayData(shopList);
+                    sortByDistance();
+                    isLastPage = false;
+                    if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                    else isLastPage = true;
+                }
             }
-
 
             @Override
             public void onFailure(Call<List<Shop>> call, Throwable t) {
@@ -409,9 +402,9 @@ public class FragmentListPlaces extends Fragment implements PaginationAdapterCal
     }
 
     private void displayData(List<Shop> shops) {
-        adapter = new PaginationAdapter(shops, getActivity(), FragmentListPlaces.this);
+        adapter = new PaginationAdapterPlaces(shops, getActivity(), FragmentListPlaces.this);
         rvPlaces.setAdapter(adapter);
-        adapter.setOnItemClickListener(this);
+//        adapter.setOnItemClickListener(this);
     }
 
     private List<Shop> fetchResults(Response<List<Shop>> response) {

@@ -16,7 +16,7 @@ import ru.imlocal.imlocal.utils.NetworkUtil;
 
 public class RetrofitClient {
 
-        private static final String BASE_URL = "https://www.yiilessons.xyz/api/";
+    private static final String BASE_URL = "https://atolserver.xyz/api/";
 //    private static final String BASE_URL = "https://imlocal.ru/api/";
     private static RetrofitClient instance;
     private Retrofit retrofit;

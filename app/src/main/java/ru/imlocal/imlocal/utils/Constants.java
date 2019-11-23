@@ -11,7 +11,8 @@ public class Constants {
     public static final String MAPKIT_API_KEY = "98816d8a-89ae-4d74-84c8-db5263756c22";
 
     //    public static final String BASE_IMAGE_URL = "https://imlocal.ru/img/";
-    public static final String BASE_IMAGE_URL = "https://www.yiilessons.xyz/img/";
+    public static final String BASE_IMAGE_URL = "https://atolserver.xyz/img/";
+    public static final String BASE_URL = "https://atolserver.xyz/";
     public static final String SHOP_IMAGE_DIRECTION = "shopPhoto/";
     public static final String ACTION_IMAGE_DIRECTION = "eventPhoto/";
     public static final String EVENT_IMAGE_DIRECTION = "happeningPhoto/";
@@ -32,6 +33,8 @@ public class Constants {
     public static final String ACTION = "action";
     public static final String USER = "user";
     public static final String STATUS_UPDATE = "update";
+    public static final String STATUS_NONE = "none";
+    public static final String STATUS_PREVIEW = "preview";
 
     public static final String TAB = "tab";
     public static final String REQUESTING_LOCATION_PERMISSON = "requestingLocationPermission";
@@ -46,6 +49,8 @@ public class Constants {
 
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_TO = new SimpleDateFormat("dd.MM.yy");
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_FROM = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT2 = new SimpleDateFormat("dd.MM.yyyy");
 
     public enum Kind {
         shop,

@@ -1,16 +1,11 @@
 package ru.imlocal.imlocal.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.core.content.ContextCompat;
 
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
@@ -21,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Credentials;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,11 +26,8 @@ import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
 import ru.imlocal.imlocal.entity.User;
-import ru.imlocal.imlocal.gps.MyLocation;
 
 import static ru.imlocal.imlocal.MainActivity.api;
-import static ru.imlocal.imlocal.MainActivity.latitude;
-import static ru.imlocal.imlocal.MainActivity.longitude;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER2;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER3;
 import static ru.imlocal.imlocal.utils.Constants.FORMATTER4;
@@ -93,8 +86,8 @@ public class Utils {
         return result;
     }
 
-    public static void addToFavorites(Constants.Kind kind, String sourceId, String userId) {
-        Call<User> call = api.addFavorites(String.valueOf(kind), sourceId, userId);
+    public static void addToFavorites(String accessToken, Constants.Kind kind, String sourceId, String userId) {
+        Call<User> call = api.addFavorites(Credentials.basic(accessToken, ""), String.valueOf(kind), sourceId, userId);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -109,8 +102,8 @@ public class Utils {
         });
     }
 
-    public static void removeFromFavorites(Constants.Kind kind, String sourceId, String userId) {
-        Call<RequestBody> call = api.removeFavorites(String.valueOf(kind), sourceId, userId, "");
+    public static void removeFromFavorites(String accessToken, Constants.Kind kind, String sourceId, String userId) {
+        Call<RequestBody> call = api.removeFavorites(Credentials.basic(accessToken, ""), String.valueOf(kind), sourceId, userId, "");
         call.enqueue(new Callback<RequestBody>() {
             @Override
             public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
@@ -168,24 +161,7 @@ public class Utils {
         }
         return output;
     }
-
-    public static void getCurrentLocation(Context context) {
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
-                @Override
-                public void gotLocation(Location location) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    Log.d("GPS2", "LIST gps: " + longitude + " " + latitude);
-                }
-            };
-            MyLocation myLocation = new MyLocation();
-            myLocation.getLocation(context, locationResult);
-        }
-    }
-
+    
     public static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_tiny_4"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
@@ -29,7 +30,9 @@
 
     <TextView
         android:id="@+id/tv_shop_title"
-        style="@style/HeaderTextStyle.Normal.Black"
+        style="@style/HeaderTextStyle.Normal.Black.Action"
+        android:ellipsize="end"
+        android:maxLines="1"
         app:layout_constraintStart_toEndOf="@id/cv_icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Кафе-паб «Гвозди»" />

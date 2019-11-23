@@ -1,24 +1,22 @@
 package ru.imlocal.imlocal;
 
 import android.Manifest;
-import android.content.DialogInterface;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -42,11 +40,20 @@ import com.google.android.material.snackbar.Snackbar;
 import com.vk.sdk.VKSdk;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.search.SearchFactory;
+import com.yayandroid.locationmanager.base.LocationBaseActivity;
+import com.yayandroid.locationmanager.configuration.Configurations;
+import com.yayandroid.locationmanager.configuration.LocationConfiguration;
+import com.yayandroid.locationmanager.constants.FailType;
+import com.yayandroid.locationmanager.constants.ProcessType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.imlocal.imlocal.api.Api;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
@@ -68,29 +75,30 @@ import ru.imlocal.imlocal.ui.FragmentVitrinaAction;
 import ru.imlocal.imlocal.ui.FragmentVitrinaEvent;
 import ru.imlocal.imlocal.ui.FragmentVitrinaShop;
 import ru.imlocal.imlocal.utils.PreferenceUtils;
-import ru.imlocal.imlocal.utils.Utils;
 
 import static ru.imlocal.imlocal.utils.Constants.MAPKIT_API_KEY;
+import static ru.imlocal.imlocal.utils.Utils.actionMap;
+import static ru.imlocal.imlocal.utils.Utils.eventMap;
+import static ru.imlocal.imlocal.utils.Utils.setSnackbarOnClickListener;
+import static ru.imlocal.imlocal.utils.Utils.shopMap;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+public class MainActivity extends LocationBaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 23;
     public static double latitude;
     public static double longitude;
     private long backPressedTime;
     private Toast backToast;
-    private static boolean requestingLocationPermission;
+    private ProgressDialog progressDialog;
 
     public static Map<String, Shop> favoritesShops = new HashMap<>();
     public static Map<String, Event> favoritesEvents = new HashMap<>();
     public static Map<String, Action> favoritesActions = new HashMap<>();
 
-    public static boolean isLoading;
     public static User user = new User();
     public static AccessToken accessToken;
 
     public static Api api;
     public static AppBarLayout appBarLayout;
-    public static ProgressBar progressBar;
     public static NavigationView navigationView;
     public static MenuItem enter;
     public static GoogleSignInClient mGoogleSignInClient;
@@ -104,24 +112,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AccessTokenTracker accessTokenTracker;
     private String currentFragment;
 
-    public static void showLoadingIndicator(boolean show) {
-        isLoading = show;
-        if (isLoading) {
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initYandexMaps();
         setContentView(R.layout.activity_main);
 
+        getLocation();
+
         api = RetrofitClient.getInstance(this).getApi();
 
-        initView();
         initToolbar();
         initNavigationDrawer();
 
@@ -140,11 +140,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        requestingLocationPermission = PreferenceUtils.getRequestingLocationPermission(this);
-        if (!requestingLocationPermission) {
-            checkLocationPermission();
-        } else if (savedInstanceState == null) {
-            openViewPager();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+//            openViewPager();
             currentFragment = "FragmentViewPager";
         }
 
@@ -156,6 +158,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 currentFragment = frag.getClass().getSimpleName();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dismissProgress();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (getLocationManager().isWaitingForLocation()
+                && !getLocationManager().isAnyDialogShowing()) {
+            displayProgress();
+        }
     }
 
     public void openPolicy() {
@@ -404,6 +422,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         account = GoogleSignIn.getLastSignedInAccount(this);
         if (VKSdk.isLoggedIn() || account != null || (accessToken != null && !accessToken.isExpired())) {
             user = PreferenceUtils.getUser(MainActivity.this);
+            getFavorites();
             enter.setTitle(user.getUsername());
             setFavoritesAndLogoutButtonsInNavigationDrawer(true);
         }
@@ -441,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     openBusiness();
                 } else {
                     Snackbar.make(getWindow().getDecorView().findViewById(R.id.drawer_layout), getResources().getString(R.string.need_login), Snackbar.LENGTH_LONG)
-                            .setAction(getResources().getString(R.string.login), Utils.setSnackbarOnClickListener(this)).show();
+                            .setAction(getResources().getString(R.string.login), setSnackbarOnClickListener(this)).show();
                 }
                 break;
             case R.id.nav_favorites:
@@ -493,6 +512,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (!user.isLogin()) {
             closeLogin();
         }
@@ -500,15 +520,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragment.onActivityResult(requestCode, resultCode, data);
         }
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void configFbAuth() {
         callbackManager = CallbackManager.Factory.create();
-    }
-
-    private void initView() {
-        progressBar = findViewById(R.id.progressbar);
     }
 
     private void initNavigationDrawer() {
@@ -582,54 +597,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
+    private void getFavorites() {
+        Call<User> call1 = api.getFavorites(Credentials.basic(user.getAccessToken(), ""), user.getId(), "shopsFavorites,eventsFavorites,happeningsFavorites");
+        call1.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    favoritesShops.putAll(shopMap(response.body().getShopsFavoritesList()));
+                    favoritesEvents.putAll(eventMap(response.body().getEventsFavoritesList()));
+                    favoritesActions.putAll(actionMap(response.body().getActionsFavoritesList()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
-
-    public boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.title_location_permission)
-                        .setMessage(R.string.text_location_permission)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(MainActivity.this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_LOCATION);
-                            }
-                        })
-                        .create()
-                        .show();
-
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -640,21 +635,130 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        requestingLocationPermission = true;
-                        PreferenceUtils.saveRequestingLocationPermission(requestingLocationPermission, this);
-                        openViewPager();
-//                        Utils.getCurrentLocation(getApplicationContext());
+                            == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(this,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                                    == PackageManager.PERMISSION_GRANTED) {
+//                        openViewPager();
                     }
                 } else {
                     Toast.makeText(this, "Без этого разрешения ничего работать не будет", Toast.LENGTH_LONG).show();
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-
                 }
                 return;
             }
+        }
+    }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        dismissProgress();
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
+    }
+
+    @Override
+    public void onLocationFailed(int type) {
+        dismissProgress();
+        switch (type) {
+            case FailType.TIMEOUT: {
+                Toast.makeText(this, "Couldn't get location, and timeout!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.PERMISSION_DENIED: {
+                Toast.makeText(this, "Couldn't get location, because user didn't give permission!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.NETWORK_NOT_AVAILABLE: {
+                Toast.makeText(this, "Couldn't get location, because network is not accessible!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_NOT_AVAILABLE: {
+                Toast.makeText(this, "Couldn't get location, because Google Play Services not available!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_CONNECTION_FAIL: {
+                Toast.makeText(this, "Couldn't get location, because Google Play Services connection failed!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_SETTINGS_DIALOG: {
+                Toast.makeText(this, "Couldn't display settingsApi dialog!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_SETTINGS_DENIED: {
+                Toast.makeText(this, "Couldn't get location, because user didn't activate providers via settingsApi!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.VIEW_DETACHED: {
+                Toast.makeText(this, "Couldn't get location, because in the process view was detached!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.VIEW_NOT_REQUIRED_TYPE: {
+                Toast.makeText(this, "Couldn't get location, "
+                        + "because view wasn't sufficient enough to fulfill given configuration!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case FailType.UNKNOWN: {
+                Toast.makeText(this, "Ops! Something went wrong!", Toast.LENGTH_LONG).show();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public LocationConfiguration getLocationConfiguration() {
+        return Configurations.defaultConfiguration("Необходимо разрешение для определения местоположения!", "Не могли бы вы включить GPS?");
+    }
+
+    private void displayProgress() {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.getWindow().addFlags(Window.FEATURE_NO_TITLE);
+            progressDialog.setMessage("Getting location...");
+        }
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    private void dismissProgress() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    public void updateProgress(String text) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.setMessage(text);
+        }
+    }
+
+    @Override
+    public void onProcessTypeChanged(@ProcessType int processType) {
+        switch (processType) {
+            case ProcessType.GETTING_LOCATION_FROM_GOOGLE_PLAY_SERVICES: {
+                updateProgress("Getting Location from Google Play Services...");
+                if (latitude != 0.0 && longitude != 0.0) {
+                    openViewPager();
+                    currentFragment = "FragmentViewPager";
+                }
+                break;
+            }
+            case ProcessType.GETTING_LOCATION_FROM_GPS_PROVIDER: {
+                updateProgress("Getting Location from GPS...");
+                break;
+            }
+            case ProcessType.GETTING_LOCATION_FROM_NETWORK_PROVIDER: {
+                updateProgress("Getting Location from Network...");
+                break;
+            }
+            case ProcessType.ASKING_PERMISSIONS:
+            case ProcessType.GETTING_LOCATION_FROM_CUSTOM_PROVIDER:
+                // Ignored
+                break;
         }
     }
 }

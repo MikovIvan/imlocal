@@ -56,6 +56,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="Введите название места"
+                android:inputType="textCapSentences"
                 android:imeOptions="actionDone"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
@@ -99,6 +100,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="Краткое описание места"
+                android:inputType="textCapSentences|textMultiLine"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:singleLine="false"
@@ -138,6 +140,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="Полное описание места"
+                android:inputType="textCapSentences|textMultiLine"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="16dp"
@@ -199,6 +202,24 @@
             tools:listitem="@layout/list_item_photos"
             tools:showIn="@layout/list_item_photos">
         </androidx.recyclerview.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/btn_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Добавить фото"
+            android:paddingStart="32dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="8dp"
+            android:layout_marginStart="@dimen/spacing_normal_16"
+            android:layout_marginTop="@dimen/spacing_small_8"
+            android:fontFamily="sans-serif"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:textSize="@dimen/font_small_14"
+            android:textAllCaps="false"
+            android:background="@drawable/btn_round_main_color" />
 
         <TextView
             android:id="@+id/tv_add_shop_address"
@@ -302,8 +323,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/btn_round_white"
-            android:inputType="textWebEmailAddress"
             android:hint="Пн-Пт 16:00-21:00 Сб-Вс 10:00-20:00"
+            android:inputType="textCapSentences"
             android:textColorHint="@color/color_hint"
             android:padding="@dimen/spacing_small_8"
             android:textAlignment="textStart"

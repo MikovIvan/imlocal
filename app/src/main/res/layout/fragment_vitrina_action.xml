@@ -23,7 +23,8 @@
         android:layout_marginTop="@dimen/spacing_small_8"
         app:cardCornerRadius="40dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline5">
+        app:layout_constraintTop_toTopOf="@+id/guideline5"
+        app:layout_constraintBottom_toTopOf="@id/flipper_vitrina_action">
 
         <ImageView
             android:id="@+id/iv_icon"
@@ -37,13 +38,19 @@
     <TextView
         android:id="@+id/tv_shop_title"
         style="@style/HeaderTextStyle.Normal.Black"
+        android:maxLines="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/cv_icon"
         app:layout_constraintTop_toBottomOf="@+id/guideline5"
         tools:text="Кафе-паб «Гвозди»" />
 
     <TextView
         android:id="@+id/tv_shop_adress"
-        style="@style/SubTitleTextStyle.Top"
+        style="@style/SubTitleTextStyle.Top.Action"
+        android:maxLines="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/cv_icon"
         app:layout_constraintTop_toBottomOf="@+id/tv_shop_title"
         tools:text="Тут дб адрес" />

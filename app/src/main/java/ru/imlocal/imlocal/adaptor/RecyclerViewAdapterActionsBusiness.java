@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.imlocal.imlocal.R;
@@ -25,8 +25,8 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     private Context context;
     private OnItemClickListener mListener;
 
-    public RecyclerViewAdapterActionsBusiness(List<Action> dataActions, Context context) {
-        this.dataActions = dataActions;
+    public RecyclerViewAdapterActionsBusiness(Context context) {
+        this.dataActions = new ArrayList<>();
         this.context = context;
     }
 
@@ -57,9 +57,13 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
     }
 
     public interface OnItemClickListener {
-        void onEditActionClick(int position);
+        void onActionClick(int position);
+    }
 
-        void onDeleteActionClick(int position);
+    public void setData(List<Action> actions) {
+        dataActions.clear();
+        dataActions.addAll(actions);
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -67,8 +71,6 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
         TextView tvEventTitle;
         ImageView ivActionIcon;
         TextView tvActionDescription;
-        ImageButton ibEdit;
-        ImageButton ibDelete;
 
         ViewHolder(View v) {
             super(v);
@@ -76,29 +78,13 @@ public class RecyclerViewAdapterActionsBusiness extends RecyclerView.Adapter<Rec
             tvActionDescription = v.findViewById(R.id.tv_action_description_business);
             ivActionIcon = v.findViewById(R.id.iv_action_icon_business);
 
-            ibEdit = v.findViewById(R.id.ib_edit_business);
-            ibDelete = v.findViewById(R.id.ib_delete_business);
-
-
-            ibEdit.setOnClickListener(new View.OnClickListener() {
+            v.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View v) {
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.onEditActionClick(position);
-                        }
-                    }
-                }
-            });
-
-            ibDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onDeleteActionClick(position);
+                            mListener.onActionClick(position);
                         }
                     }
                 }

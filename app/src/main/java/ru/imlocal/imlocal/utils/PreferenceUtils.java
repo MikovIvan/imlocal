@@ -2,15 +2,20 @@ package ru.imlocal.imlocal.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import pl.aprilapps.easyphotopicker.MediaFile;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
@@ -132,5 +137,27 @@ public class PreferenceUtils {
             photosPathList.addAll(set);
         }
         return photosPathList;
+    }
+
+    public static void savePhotoList(List<MediaFile> photoList, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Uri.class, new UriSerializer())
+                .create();
+        String jsonPhotoList = gson.toJson(photoList);
+        prefsEditor.putString("photosList", jsonPhotoList);
+        prefsEditor.apply();
+    }
+
+    public static List<MediaFile> getPhotoList(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String jsonPhotoList = prefs.getString("photosList", "");
+        Type type = new TypeToken<List<MediaFile>>() {
+        }.getType();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Uri.class, new UriDeserializer())
+                .create();
+        return gson.fromJson(jsonPhotoList, type);
     }
 }

@@ -1,22 +1,21 @@
 package ru.imlocal.imlocal.ui;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import ru.imlocal.imlocal.MainActivity;
 import ru.imlocal.imlocal.R;
 import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavActions;
@@ -25,11 +24,12 @@ import ru.imlocal.imlocal.adaptor.RecyclerViewAdapterFavPlaces;
 import ru.imlocal.imlocal.entity.Action;
 import ru.imlocal.imlocal.entity.Event;
 import ru.imlocal.imlocal.entity.Shop;
-import ru.imlocal.imlocal.entity.User;
 import ru.imlocal.imlocal.utils.Constants;
 import ru.imlocal.imlocal.utils.Utils;
 
-import static ru.imlocal.imlocal.MainActivity.api;
+import static ru.imlocal.imlocal.MainActivity.favoritesActions;
+import static ru.imlocal.imlocal.MainActivity.favoritesEvents;
+import static ru.imlocal.imlocal.MainActivity.favoritesShops;
 import static ru.imlocal.imlocal.MainActivity.user;
 
 public class FragmentFavorites extends Fragment {
@@ -38,6 +38,10 @@ public class FragmentFavorites extends Fragment {
     private RecyclerViewAdapterFavEvents eventsAdapter;
     private RecyclerViewAdapterFavPlaces shopsAdapter;
     private Button show_actions, show_events, show_shops;
+
+    private List<Action> actionListFav = new ArrayList<>();
+    private List<Event> eventListFav = new ArrayList<>();
+    private List<Shop> shopListFav = new ArrayList<>();
 
     public FragmentFavorites() {
         // Required empty public constructor
@@ -55,25 +59,28 @@ public class FragmentFavorites extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         ((MainActivity) getActivity()).enableUpButtonViews(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.color_background)));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_toolbar_icon);
+
+        actionListFav.clear();
+        eventListFav.clear();
+        shopListFav.clear();
 
         rvActions = view.findViewById(R.id.list_actions);
         rvEvents = view.findViewById(R.id.list_events);
         rvShops = view.findViewById(R.id.list_shops);
 
-        show_actions = (Button)view.findViewById(R.id.btn_showallactions);
-        show_events = (Button)view.findViewById(R.id.btn_showallevents);
-        show_shops = (Button)view.findViewById(R.id.btn_showallshops);
+        show_actions = view.findViewById(R.id.btn_showallactions);
+        show_events = view.findViewById(R.id.btn_showallevents);
+        show_shops = view.findViewById(R.id.btn_showallshops);
         show_actions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (actionsAdapter != null)
-                {
+                if (actionsAdapter != null) {
                     actionsAdapter.setFullShow(!actionsAdapter.full_show);
-                    if (actionsAdapter.full_show)
-                    {
+                    if (actionsAdapter.full_show) {
                         show_actions.setText("Скрыть все мои акции");
-                    } else
-                    {
+                    } else {
                         show_actions.setText("Показать все мои акции");
                     }
                 }
@@ -82,14 +89,11 @@ public class FragmentFavorites extends Fragment {
         show_events.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (eventsAdapter != null)
-                {
+                if (eventsAdapter != null) {
                     eventsAdapter.setFullShow(!eventsAdapter.full_show);
-                    if (eventsAdapter.full_show)
-                    {
+                    if (eventsAdapter.full_show) {
                         show_events.setText("Скрыть все мои события");
-                    } else
-                    {
+                    } else {
                         show_events.setText("Показать все мои события");
                     }
                 }
@@ -98,36 +102,22 @@ public class FragmentFavorites extends Fragment {
         show_shops.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (shopsAdapter != null)
-                {
+                if (shopsAdapter != null) {
                     shopsAdapter.setFullShow(!shopsAdapter.full_show);
-                    if (shopsAdapter.full_show)
-                    {
+                    if (shopsAdapter.full_show) {
                         show_shops.setText("Скрыть все мои места");
-                    } else
-                    {
+                    } else {
                         show_shops.setText("Показать все мои места");
                     }
                 }
             }
         });
 
-        Call<User> call = api.loginUser(user);
-        call.enqueue(new Callback<User>() {
-             @Override
-             public void onResponse(Call<User> call, Response<User> response) {
-                 if (response.body().getId() != null) {
-                     Log.d("AUTH", "sucsecc " + response.body().getId());
-                     Log.d("AUTH", "message: " + response.message());
-                     displayData(response.body().getActionsFavoritesList(), response.body().getEventsFavoritesList(), response.body().getShopsFavoritesList());
-                 }
-             }
+        actionListFav.addAll(favoritesActions.values());
+        eventListFav.addAll(favoritesEvents.values());
+        shopListFav.addAll(favoritesShops.values());
 
-             @Override
-             public void onFailure(Call<User> call, Throwable t) {
-
-             }
-        });
+        displayData(actionListFav, eventListFav, shopListFav);
 
         return view;
     }
@@ -159,7 +149,8 @@ public class FragmentFavorites extends Fragment {
 
             @Override
             public void onItemAddToFavorites(int position, ImageButton imageButton) {
-                Utils.removeFromFavorites(Constants.Kind.event, actionList.get(position).getId(), user.getId());
+                Utils.removeFromFavorites(user.getAccessToken(), Constants.Kind.event, actionList.get(position).getId(), user.getId());
+                favoritesActions.remove(actionList.get(position).getId());
                 actionList.remove(position);
                 actionsAdapter.notifyItemRemoved(position);
                 actionsAdapter.notifyItemRangeChanged(0, actionList.size());
@@ -177,7 +168,8 @@ public class FragmentFavorites extends Fragment {
 
             @Override
             public void onItemAddToFavorites(int position, ImageButton imageButton) {
-                Utils.removeFromFavorites(Constants.Kind.happening, String.valueOf(eventList.get(position).getId()), user.getId());
+                Utils.removeFromFavorites(user.getAccessToken(), Constants.Kind.happening, String.valueOf(eventList.get(position).getId()), user.getId());
+                favoritesEvents.remove(String.valueOf(eventList.get(position).getId()));
                 eventList.remove(position);
                 eventsAdapter.notifyItemRemoved(position);
                 eventsAdapter.notifyItemRangeChanged(0, eventList.size());
@@ -195,7 +187,8 @@ public class FragmentFavorites extends Fragment {
 
             @Override
             public void onItemAddToFavorites(int position, ImageButton imageButton) {
-                Utils.removeFromFavorites(Constants.Kind.shop, String.valueOf(shopsList.get(position).getShopId()), user.getId());
+                Utils.removeFromFavorites(user.getAccessToken(), Constants.Kind.shop, String.valueOf(shopsList.get(position).getShopId()), user.getId());
+                favoritesShops.remove(String.valueOf(shopsList.get(position).getShopId()));
                 shopsList.remove(position);
                 shopsAdapter.notifyItemRemoved(position);
                 shopsAdapter.notifyItemRangeChanged(0, shopsList.size());
