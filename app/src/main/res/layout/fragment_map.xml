@@ -21,24 +21,6 @@
         app:layout_constraintBottom_toTopOf="@id/cardview_map"
         tools:listitem="@layout/list_item_category" />
 
-    <!--    <Button-->
-    <!--        android:id="@+id/btn_filter"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="@dimen/social_icons_40"-->
-    <!--        android:layout_margin="@dimen/spacing_small_8"-->
-    <!--        android:background="@drawable/btn_round_map_main_color"-->
-    <!--        android:drawableStart="@drawable/ic_filter"-->
-    <!--        android:drawablePadding="@dimen/spacing_normal_16"-->
-    <!--        android:fontFamily="sans-serif"-->
-    <!--        android:padding="@dimen/spacing_small_8"-->
-    <!--        android:paddingStart="@dimen/spacing_normal_16"-->
-    <!--        android:paddingEnd="@dimen/spacing_normal_16"-->
-    <!--        android:text="фильтр"-->
-    <!--        android:textColor="@android:color/white"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/cardview_map"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent" />-->
-
     <ImageButton
         android:id="@+id/ib_plus"
         android:layout_width="@dimen/social_icons_40"
