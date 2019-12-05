@@ -22,12 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 import com.yandex.mapkit.Animation;
+import com.yandex.mapkit.MapKit;
+import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.layers.ObjectEvent;
 import com.yandex.mapkit.map.CameraListener;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.CameraUpdateSource;
-import com.yandex.mapkit.map.CompositeIcon;
 import com.yandex.mapkit.map.IconStyle;
 import com.yandex.mapkit.map.InputListener;
 import com.yandex.mapkit.map.Map;
@@ -115,7 +116,6 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 if (isSelected) {
                     isSelected = false;
                     selected.setIconStyle(new IconStyle().setScale(0.5f));
-//                    selected.setIconStyle(new IconStyle().setScale(0.5f).setAnchor(new PointF(0.5f,0.5f)));
                 }
                 isSelected = true;
                 selected = shopObject;
@@ -164,18 +164,18 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
         mapView.getMap().setRotateGesturesEnabled(false);
         mapView.getMap().addInputListener(this);
 
-//        mapView.getMap().move(new CameraPosition(new Point(latitude, longitude), 14, 0, 0));
+        mapView.getMap().move(new CameraPosition(new Point(latitude, longitude), 14, 0, 0));
 //        для теста
-        mapView.getMap().move(new CameraPosition(new Point(55.7739, 37.4719), 19, 0, 0));
+//        mapView.getMap().move(new CameraPosition(new Point(55.7739, 37.4719), 19, 0, 0));
         Log.d("MAP", mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude() + " " + mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
         mapObjects = mapView.getMap().getMapObjects().addCollection();
         mapView.getMap().addCameraListener(this);
 
-//        MapKit mapKit = MapKitFactory.getInstance();
-//        userLocationLayer = mapKit.createUserLocationLayer(mapView.getMapWindow());
-//        userLocationLayer.setVisible(true);
-//        userLocationLayer.setHeadingEnabled(true);
-//        userLocationLayer.setObjectListener(this);
+        MapKit mapKit = MapKitFactory.getInstance();
+        userLocationLayer = mapKit.createUserLocationLayer(mapView.getMapWindow());
+        userLocationLayer.setVisible(true);
+        userLocationLayer.setHeadingEnabled(true);
+        userLocationLayer.setObjectListener(this);
 
 
         String point = getPoint(mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude(), mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
@@ -222,18 +222,14 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 new PointF((float) (mapView.getWidth() * 0.5), (float) (mapView.getHeight() * 0.5)),
                 new PointF((float) (mapView.getWidth() * 0.5), (float) (mapView.getHeight() * 0.83)));
         followUserLocation = false;
-        CompositeIcon pinIcon = userLocationView.getPin().useCompositeIcon();
-
-        pinIcon.setIcon(
-                "pin",
-                ImageProvider.fromResource(getActivity(), R.drawable.search_result),
+        userLocationView.getArrow().setIcon(ImageProvider.fromResource(
+                getActivity(), R.drawable.search_result),
                 new IconStyle().setAnchor(new PointF(0.5f, 0.5f))
                         .setRotationType(RotationType.ROTATE)
                         .setZIndex(1f)
-                        .setScale(0.5f)
-        );
+                        .setScale(0.5f));
 
-//        userLocationView.getAccuracyCircle().setFillColor(Color.BLUE);
+        userLocationView.getAccuracyCircle().setVisible(false);
     }
 
     @Override
@@ -268,16 +264,16 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
             getPlaces(point, setRange((int) mapView.getMap().getCameraPosition().getZoom()));
             Log.d("MAP", mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLatitude() + " " + mapView.getMapWindow().getMap().getCameraPosition().getTarget().getLongitude());
         }
-//        if (finish) {
-//            if (followUserLocation) {
-//                userLocationLayer.setAnchor(
-//                        new PointF((float) (mapView.getWidth() * 0.5), (float) (mapView.getHeight() * 0.5)),
-//                        new PointF((float) (mapView.getWidth() * 0.5), (float) (mapView.getHeight() * 0.83)));
-//                followUserLocation = false;
-//            } else {
-//                userLocationLayer.resetAnchor();
-//            }
-//        }
+        if (finish) {
+            if (followUserLocation) {
+                userLocationLayer.setAnchor(
+                        new PointF((float) (mapView.getWidth() * 0.5), (float) (mapView.getHeight() * 0.5)),
+                        new PointF((float) (mapView.getWidth() * 0.5), (float) (mapView.getHeight() * 0.83)));
+                followUserLocation = false;
+            } else {
+                userLocationLayer.resetAnchor();
+            }
+        }
     }
 
     @Override
@@ -311,12 +307,12 @@ public class FragmentMap extends Fragment implements UserLocationObjectListener,
                 break;
             case R.id.ib_user_location:
                 Toast.makeText(getActivity(), "Ждем апи", Toast.LENGTH_LONG).show();
-//                if (userLocationLayer.cameraPosition() != null) {
-//                    mapView.getMap().move(
-//                            new CameraPosition(userLocationLayer.cameraPosition().getTarget(), 14, 0.0f, 0.0f),
-//                            new Animation(Animation.Type.SMOOTH, USER_ZOOM_DURATION),
-//                            null);
-//                }
+                if (userLocationLayer.cameraPosition() != null) {
+                    mapView.getMap().move(
+                            new CameraPosition(userLocationLayer.cameraPosition().getTarget(), 14, 0.0f, 0.0f),
+                            new Animation(Animation.Type.SMOOTH, USER_ZOOM_DURATION),
+                            null);
+                }
                 break;
             case R.id.cardview_map:
                 PreferenceUtils.saveShop(shop, getActivity());
