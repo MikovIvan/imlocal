@@ -69,7 +69,7 @@ import static ru.imlocal.imlocal.utils.Constants.SHOP_IMAGE_DIRECTION;
 import static ru.imlocal.imlocal.utils.Constants.STATUS_UPDATE;
 import static ru.imlocal.imlocal.utils.Utils.hideKeyboardFrom;
 
-public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, FragmentAddressDialog.AddAddressFragmentAddressDialog {
+public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhotos.OnItemClickListener, FragmentAddAdress.AddAddressFragmentAddressDialog1 {
 
     private static final int PERMISSIONS_REQUEST_CODE = 7459;
 
@@ -179,7 +179,7 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         tvAddAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openAdressDialog();
+                openAddAddress();
             }
         });
 
@@ -271,9 +271,6 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                     Snackbar.make(getView(), "Неверный формат телефона", Snackbar.LENGTH_LONG).show();
                 }
             }
-//            else {
-//                Snackbar.make(getView(), "Введите телефон", Snackbar.LENGTH_LONG).show();
-//            }
             if (!etWebsite.getText().toString().equals("")) {
                 if (isValidUrl(etWebsite.getText().toString())) {
                     shop.setShopWeb(etWebsite.getText().toString());
@@ -281,25 +278,15 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                     Snackbar.make(getView(), "Неверный формат сайта", Snackbar.LENGTH_LONG).show();
                 }
             }
-//            else {
-//                Snackbar.make(getView(), "Введите адрес сайт", Snackbar.LENGTH_LONG).show();
-//            }
-
             if (!etMinPrice.getText().toString().endsWith(KEY_RUB) && !etMinPrice.getText().toString().equals("")) {
                 shop.setShopCostMin(etMinPrice.getText().toString());
             }
             if (!etMaxPrice.getText().toString().endsWith(KEY_RUB) && !etMaxPrice.getText().toString().equals("")) {
                 shop.setShopCostMax(etMaxPrice.getText().toString());
             }
-//            if (etMinPrice.getText().toString().equals("")) {
-//                Snackbar.make(getView(), "Введите минимальную стоимость", Snackbar.LENGTH_LONG).show();
-//            } else
             if (etMinPrice.getText().toString().contains(KEY_RUB) && !etMinPrice.getText().toString().endsWith(KEY_RUB)) {
                 Snackbar.make(getView(), "Неверно указана минимальная стоимость", Snackbar.LENGTH_LONG).show();
             }
-//            if (etMaxPrice.getText().toString().equals("")) {
-//                Snackbar.make(getView(), "Введите максимальную стоимость", Snackbar.LENGTH_LONG).show();
-//            } else
             if (etMaxPrice.getText().toString().contains(KEY_RUB) && !etMaxPrice.getText().toString().endsWith(KEY_RUB)) {
                 Snackbar.make(getView(), "Неверно указана максимальная стоимость", Snackbar.LENGTH_LONG).show();
             }
@@ -357,10 +344,10 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
         return super.onOptionsItemSelected(item);
     }
 
-    private void openAdressDialog() {
-        FragmentAddressDialog fragmentAddressDialog = new FragmentAddressDialog();
-        fragmentAddressDialog.setAddAddressFragmentAddressDialog(FragmentAddShop.this);
-        fragmentAddressDialog.show(getActivity().getSupportFragmentManager(), "addressDialog");
+    private void openAddAddress() {
+        FragmentAddAdress fragmentAddAdress = new FragmentAddAdress();
+        fragmentAddAdress.setAddAddressFragmentAddressDialog(FragmentAddShop.this);
+        fragmentAddAdress.show(getActivity().getSupportFragmentManager(), "addressDialog");
     }
 
     private void initMinMaxPrice(View view) {
@@ -483,12 +470,6 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
                 adaptorCategory.notifyDataSetChanged();
             }
         });
-    }
-
-    @Override
-    public void onAddressSelected(String address) throws IOException {
-        tvAddAddress.setText(address);
-        setShopAddress(address);
     }
 
     private void setShopAddress(String address) throws IOException {
@@ -671,6 +652,12 @@ public class FragmentAddShop extends Fragment implements RecyclerViewAdapterPhot
 
     private void requestPermissionsCompat(String[] permissions, int requestCode) {
         ActivityCompat.requestPermissions(getActivity(), permissions, requestCode);
+    }
+
+    @Override
+    public void onAddressSelected1(String address) throws IOException {
+        tvAddAddress.setText(address);
+        setShopAddress(address);
     }
 }
 
