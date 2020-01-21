@@ -3,11 +3,11 @@
     <string name="policy"><u>Политика конфиденциальности</u></string>
 
     <!--auth-->
-    <string name="facebook_app_id">facebook_app_id</string>
-    <string name="fb_login_protocol_scheme">fb_login_protocol_scheme</string>
+    <string name="facebook_app_id">2464279037139187</string>
+    <string name="fb_login_protocol_scheme">fb2464279037139187</string>
 
-    <string name="server_client_id">server_client_id</string>
-    <integer name="com_vk_sdk_AppId">0000</integer>
+    <string name="server_client_id">332679075210-j6m3l81a7l7e03k6tesu55a3s7imhq28.apps.googleusercontent.com</string>
+    <integer name="com_vk_sdk_AppId">7103569</integer>
 
     <!--navigation drawer-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
